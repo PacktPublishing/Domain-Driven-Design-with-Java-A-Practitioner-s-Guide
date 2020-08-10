@@ -1,6 +1,6 @@
-= Asciidoctor Maven Plugin: Asciidoctor Diagram Example
+= Implementing Domain-Driven Design Using Java
 
-An example project that demonstrates how to integrate Asciidoctor Diagram with the Asciidoctor Maven plugin.
+This is the source code repository for the book.
 
 == Usage
 
@@ -8,7 +8,7 @@ Convert the AsciiDoc to HTML5 by invoking the `process-resources` goal (configur
 
  $ mvn
 
-Open the file _target/generated-docs/example-manual.html_ in your browser to see the generated HTML file containing the generated diagram images.
+Open the file _target/generated-docs/outline.html_ in your browser to see the generated HTML file containing the generated diagram images.
 
 == Graphviz configuration
 Asciidoctor Diagram bundles both the ditaa and PlantUML libraries and will use them to generate diagrams.
@@ -17,24 +17,3 @@ There are two options to reference the installed Graphviz's _dot_ tool in order 
 
 === Configuration via system's PATH
 Visit link:http://www.graphviz.org/[Graphviz' site] for details on how to install the _dot_ command tool, and to make the _dot_ command available on your system's PATH.
-
-=== Configuration via plug-in attributes
-Once Graphviz binaries from the link:http://www.graphviz.org/[Graphviz' site] are available on the system, the plug-in attributes in the pom.xml can be used to reference to the _dot_ tool directly.
-This type of configuration may be especially useful when working in a CI environment.
-Example:
-
-[source,xml]
-----
-<plugin>
-    <groupId>org.asciidoctor</groupId>
-    <artifactId>asciidoctor-maven-plugin</artifactId>
-    ...
-    <configuration>
-        <attributes>
-            <graphvizdot>/PATH/TO/Graphviz/bin/dot</graphvizdot>
-        </attributes>
-        ...
-----
-
-== References
-For more examples and information about Asciidoctor Diagrams see link:http://asciidoctor.org/news/2014/02/18/plain-text-diagrams-in-asciidoctor/[]
