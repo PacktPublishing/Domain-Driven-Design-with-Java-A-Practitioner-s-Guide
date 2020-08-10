@@ -1,0 +1,30 @@
+== The Mechanics of Domain-Driven Design (30 Pages)
+
+=== Understanding the Problem
+
+==== Problem Space vs. Solution Space
+
+==== Dealing with Ambiguity
+
+=== Arriving at a Shared Understanding
+
+=== Breaking Down the Problem
+
+==== What is a Domain?
+
+==== What is a Sub-Domain?
+
+==== The Core Sub-Domain
+
+=== Modeling a Solution
+
+==== What is a Model?
+
+[WARNING]
+Anemic domain models
+
+==== Context Maps
+
+==== Bounded Contexts
+
+=== Implementing the Solution

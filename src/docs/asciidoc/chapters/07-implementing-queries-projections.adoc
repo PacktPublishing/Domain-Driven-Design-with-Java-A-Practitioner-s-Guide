@@ -1,0 +1,7 @@
+== Implementing Queries and Projections (10 pages)
+
+=== Persisting Distinct Query Models
+
+=== Exposing a REST-based API for Queries
+
+=== Creating Additional Views

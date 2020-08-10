@@ -1,0 +1,19 @@
+== Where and How Does DDD Fit? (15 pages)
+
+=== Architecture Styles
+
+=== Layered Architecture
+
+=== Onion Architecture
+
+=== Hexagonal Architecture
+
+=== Service Oriented Architecture
+
+=== Microservice Architecture
+
+=== Event-Driven Architecture (EDA)
+
+=== Command Query Responsibility Segregation (CQRS)
+
+=== Serverless Architecture

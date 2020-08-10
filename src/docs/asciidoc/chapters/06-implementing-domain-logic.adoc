@@ -1,0 +1,15 @@
+== Implementing Domain Logic (20 pages)
+
+=== Technical Requirements
+
+=== Command Handling
+
+==== Aggregate Design
+
+==== Business Validations
+
+==== State Stored vs Event Sourced Aggregates
+
+=== Publishing Events
+
+=== Implementing Queries/Projections

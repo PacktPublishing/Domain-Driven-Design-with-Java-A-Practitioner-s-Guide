@@ -1,0 +1,12 @@
+== Non-Functional Requirements (25 pages)
+
+=== Dealing With Eventual Consistency
+
+=== Choosing the Right Persistence Technology
+
+=== Event Versioning
+
+=== Monitoring, Metrics and Tracing
+
+=== Enhancing Performance
+

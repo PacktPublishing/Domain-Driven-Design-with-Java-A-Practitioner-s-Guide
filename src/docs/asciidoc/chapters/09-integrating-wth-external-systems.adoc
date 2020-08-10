@@ -1,0 +1,5 @@
+== Integrating with External Systems (15 pages)
+
+=== Implementing an Anti-Corruption Layer
+
+=== Legacy Application Migration Patterns

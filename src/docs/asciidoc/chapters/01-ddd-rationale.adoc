@@ -1,0 +1,17 @@
+== The Rationale for Domain-Driven Design (15 pages)
+
+=== Why Do Software Projects Fail?
+[quote, Henry Ford]
+Failure is simply the opportunity to begin again, this time more intelligently.
+
+=== Modern Systems and Dealing with Complexity
+[quote, Confucious]
+Life is really simple, but we insist on making it complicated.
+
+=== What is Domain-Driven Design?
+[quote, Eric Evans]
+The heart of software is its ability to solve domain-related problems for its user.
+
+=== Why is DDD Most Relevant? Why Now?
+[quote, Eric Evans]
+Domain-driven design is even more relevant now.

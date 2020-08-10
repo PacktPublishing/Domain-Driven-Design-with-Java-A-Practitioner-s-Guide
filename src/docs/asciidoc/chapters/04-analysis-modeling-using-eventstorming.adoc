@@ -1,0 +1,17 @@
+== Domain Analysis and Modeling Using EventStorming (30 pages)
+
+=== Introducing the [TBD] Application
+
+=== Narrowing Down Scope
+
+=== Introducing Domain Events
+
+=== Identifying Hot Spots, Puzzlers and Blockers
+
+=== Commands and User Intentions/Actions/Decisions
+
+=== Extracting Personas, Users and Actors
+
+=== Read/Query Models and Data Needed To Make Decisions
+
+=== Grouping Commands and Events into Aggregates

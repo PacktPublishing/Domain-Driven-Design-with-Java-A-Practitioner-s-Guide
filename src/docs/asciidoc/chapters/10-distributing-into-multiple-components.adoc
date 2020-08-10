@@ -1,0 +1,6 @@
+== Distributing into Microservices (15 pages)
+
+=== Right Sizing Components
+
+=== Maintaining Autonomy
+
