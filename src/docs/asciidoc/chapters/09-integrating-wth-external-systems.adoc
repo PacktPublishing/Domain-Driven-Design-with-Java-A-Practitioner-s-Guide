@@ -1,5 +1,12 @@
 == Integrating with External Systems (15 pages)
+[quote, Carl Jung]
+Wholeness is not achieved by cutting off a portion of one's being, but by integration of the contraries.
+
+Thus far, we have used DDD to implement a robust core for our application. However, most bounded contexts usually have both upstream and downstream dependencies which usually change at a pace which is different from these core components. To maintain both agility and reliability  and enable loose coupling, it is important to create what DDD calls the anti-corruption layer in order to shield the core from everything that surrounds it. In this chapter, we will look at integrating with a legacy Inventory Management system. We will round off by looking at common patterns when integrating with legacy applications.
+
+=== Technical Requirements
 
 === Implementing an Anti-Corruption Layer
 
 === Legacy Application Migration Patterns
+

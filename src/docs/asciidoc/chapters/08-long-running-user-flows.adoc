@@ -1,5 +1,15 @@
 == Long-Running User Flows (10 pages)
+[quote, Daniel Reardon]
+In the long run, the pessimist may be proven right, but the optimist has a better time on the trip.
+
+Not all capabilities can be implemented in the form of a simple request-response interaction, requiring the management of complex state and interactions either with external systems or human-centric operations or both. In other cases, there may be a need to perform business logic at a certain time in the future. In this chapter, we will look at implementing both long-running user operations (sages) and deadlines. We will also look at how we can keep track of the overall flow using log aggregation and distributed tracing. We will round off by looking at when/whether to choose explicit orchestrations components of implicit choreography.
 
 === Implementing Sagas
 
 === Taking Care of Deadlines
+
+=== Distributed Exception Handling
+
+=== Keeping Track of the Overall Flow
+
+=== Deciding between Orchestration and Choreography

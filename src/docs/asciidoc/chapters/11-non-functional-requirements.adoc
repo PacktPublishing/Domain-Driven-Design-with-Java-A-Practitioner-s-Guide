@@ -1,10 +1,14 @@
 == Non-Functional Requirements (25 pages)
+[quote, Anonymous]
+Sometimes I feel like I am being forgotten.
+
+While the core of the system may be met adequately, it is just as important to place focus on the operational characteristics of the system. In this chapter, we will look at common pitfalls and how to get past them.
 
 === Dealing With Eventual Consistency
 
-=== Choosing the Right Persistence Technology
+=== Scaling the Event Store with Snapshots
 
-=== Event Versioning
+=== Event Versioning and Upcasting
 
 === Monitoring, Metrics and Tracing
 

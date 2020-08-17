@@ -1,5 +1,10 @@
 == Implementing Domain Logic (20 pages)
 
+[quote, Eric Evans]
+To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
+
+In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the Online Order application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
+
 === Technical Requirements
 
 === Command Handling
@@ -12,4 +17,5 @@
 
 === Publishing Events
 
-=== Implementing Queries/Projections
+=== Exposing a REST-based API for Commands
+

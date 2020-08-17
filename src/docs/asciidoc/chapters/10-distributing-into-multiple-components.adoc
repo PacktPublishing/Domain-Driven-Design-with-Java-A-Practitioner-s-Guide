@@ -1,6 +1,14 @@
 == Distributing into Microservices (15 pages)
+[quote, Leslie Lamport]
+A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable.
+
+We now have a working application which is bundled as a single package. In this chapter, we will distribute the UI, the command side, the query side and the saga components into distinct components. We will also look at how to test the system as a whole using the excellent https://www.testcontainers.org/[testcontainers] library.
 
 === Right Sizing Components
 
 === Maintaining Autonomy
+
+=== Understanding the Costs of Distribution
+
+=== Testing the Overall System
 

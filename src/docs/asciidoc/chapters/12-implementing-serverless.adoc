@@ -1,9 +1,11 @@
 == Migrating to Serverless (15 pages)
 
+In this chapter, we will migrate the components developed thus far to adopt a serverless style of architecture.
+
 === Serverless Primer
 
 === Services as Functions
 
 === Serverless Persistence
 
-===
+=== Next Steps

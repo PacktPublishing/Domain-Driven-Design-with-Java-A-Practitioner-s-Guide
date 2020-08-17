@@ -1,5 +1,15 @@
 == The Rationale for Domain-Driven Design (15 pages)
 
+[quote, DDD Community]
+Domain-driven design (DDD) is an approach to developing software for complex needs by deeply connecting the implementation to an evolving model of the core business concepts.
+
+According to the Project Management Institute's (PMI) _Pulse of the Profession_ report published in February 2020, only *77%* of all projects meet their intended goals - and even this is true only in the most mature organizations.
+[#img-project-statistics]
+.Project Success - By the numbers
+[link=https://www.pmi.org/learning/library/forging-future-focused-culture-11908,window=_blank]
+image::https://www.pmi.org/kasimage/86ec8e38-f691-4fdd-ba92-0be79ddc1965/10.jpg[Project Statistics]
+Furthermore, approximately one in every ten projects are declared fail outright failures. At the same time, we also seem to be embarking on our most ambitious and complex projects. In this chapter, we examine how the practice of Domain-Driven Design provides a set of guidelines and techniques to improve the odds of success in our favor. While Eric Evans wrote his classic book on the subject way back in 2003, we look at how that work is extremely relevant in today's times.
+
 === Why Do Software Projects Fail?
 [quote, Henry Ford]
 Failure is simply the opportunity to begin again, this time more intelligently.
@@ -12,6 +22,6 @@ Life is really simple, but we insist on making it complicated.
 [quote, Eric Evans]
 The heart of software is its ability to solve domain-related problems for its user.
 
-=== Why is DDD Most Relevant? Why Now?
+=== Why is DDD Relevant? Why Now?
 [quote, Eric Evans]
 Domain-driven design is even more relevant now.

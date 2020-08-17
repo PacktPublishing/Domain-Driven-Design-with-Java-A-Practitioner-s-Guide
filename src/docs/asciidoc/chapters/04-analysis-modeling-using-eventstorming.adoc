@@ -1,6 +1,11 @@
 == Domain Analysis and Modeling Using EventStorming (30 pages)
 
-=== Introducing the [TBD] Application
+[quote,Alberto Brandolini]
+The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
+
+Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexible and convenient format for the collaborative exploration of complex domains. In this chapter, we will introduce the sample application used throughout the book and use the different flavors of EventStorming to arrive at a shared understanding of the problem and brainstorm ideas to arrive at a solution.
+
+=== Introducing the [Sample] Application
 
 === Narrowing Down Scope
 

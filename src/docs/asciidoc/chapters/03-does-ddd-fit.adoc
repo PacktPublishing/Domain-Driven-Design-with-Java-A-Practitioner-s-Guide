@@ -1,5 +1,10 @@
 == Where and How Does DDD Fit? (15 pages)
 
+[quote,Bob Goff]
+We won’t be distracted by comparison if we are captivated with purpose.
+
+Software architecture refers to the fundamental structures of a software system and the discipline of creating such structures and systems. Over the years, we have accumulated a series of architecture styles to help us deal with system complexity. In this chapter we will examine how DDD compares with several of these architecture styles and how/where it fits in the overall scheme of things when crafting a software solution.
+
 === Architecture Styles
 
 === Layered Architecture

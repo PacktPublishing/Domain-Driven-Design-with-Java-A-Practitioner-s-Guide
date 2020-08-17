@@ -1,7 +1,13 @@
-== Implementing a Task-based User Interface (20 pages)
+== Implementing the User Interface -- Task-based (20 pages)
+[quote, Marty Rubin]
+To accomplish a difficult task, one must first make it easy.
+
+The essence of DDD is a lot about capturing the business process and user intent a lot more closely. Task-based UIs (in contrast to CRUD-based UIs) treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In this chapter, we will design the UI for the Online Order application using the https://vaadin.com/[Vaadin]footnote:[https://vaadin.com/] framework. We will also employ https://martinfowler.com/articles/consumerDrivenContracts.html[consumer-driven contracts]footnote:[https://martinfowler.com/articles/consumerDrivenContracts.html] using https://docs.pact.io/[Pact JVM]footnote:[https://docs.pact.io/] to express expectations of the user interface to the service implementation.
 
 === Technical Requirements
 
-=== TODO
+=== Task-based vs. CRUD-based UIs
 
-=== TODO
+=== Implementing the Place Order Screen
+
+=== Implementing the Contract Test
