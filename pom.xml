@@ -56,7 +56,6 @@
                         <id>generate-html-doc</id>
                         <phase>generate-resources</phase>
                         <goals>
-                            <goal>auto-refresh</goal>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
