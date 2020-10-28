@@ -1,4 +1,5 @@
 == The Mechanics of Domain-Driven Design (30 Pages)
+
 [quote,Creighton Abrams]
 When eating an elephant, take one bite at a time.
 
@@ -15,6 +16,7 @@ As mentioned in the previous chapter, many things can put a project off course. 
 === Breaking Down the Problem
 
 ==== What is a Domain?
+
 
 ==== What is a Sub-Domain?
 

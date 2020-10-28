@@ -1,6 +1,6 @@
 = Implementing Domain-Driven Design with Java
 Premanand Chandrasekaran <https://github.com/premanandc[@premanandc]>
-v1.0, 2020-08-09
+v1.0, 2020-08-26
 :doctype: book
 :page-layout!:
 :toc: left

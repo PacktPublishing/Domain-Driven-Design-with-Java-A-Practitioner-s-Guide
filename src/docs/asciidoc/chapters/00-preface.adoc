@@ -1,11 +1,16 @@
 == Preface
+
 Domain-Driven Design makes available a set of techniques and patterns that non-technical experts, architects and developers to work together and decompose complex systems into well-factored, collaborating, loosely coupled subsystems.
+Write more here... TODO.
 
 === Who This Book Is For
+
 Developers working with Domain-Driven Design will be able to put their knowledge to work with this practical guide to create elegant software designs that are pleasant to work with and easy to work with and reason about. The book provides a hands-on approach to implementation and associated methodologies that will have you up-and-running, and productive in no time.
 
 === What You Will Learn
+
 By the end of this book, you will be able to architect, design and implement robust, modern and loosely coupled distributed architectures employing domain-driven design.
 
 === Acknowledgements
+
 TODO

@@ -2,13 +2,17 @@
 
 This is the source code repository for the book.
 
+== Pre-Requisites
+* JDK 14
+* Maven 3.3+
+
 == Usage
 
 Convert the AsciiDoc to HTML5 by invoking the `process-resources` goal (configured as the default goal):
 
  $ mvn
 
-Open the file _target/generated-docs/outline.html_ in your browser to see the generated HTML file containing the generated diagram images.
+Open the file _target/generated-docs/main.html_ in your browser to see the generated HTML file containing the generated diagram images.
 
 == Graphviz configuration
 Asciidoctor Diagram bundles both the ditaa and PlantUML libraries and will use them to generate diagrams.
