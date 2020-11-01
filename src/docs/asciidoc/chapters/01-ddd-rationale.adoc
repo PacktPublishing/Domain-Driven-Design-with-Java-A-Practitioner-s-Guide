@@ -3,8 +3,8 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 == The Rationale for Domain-Driven Design (15 pages)
 
-[quote,DDD Community]
-Domain-driven design (DDD) is an approach to developing software for complex needs by deeply connecting the implementation to an evolving model of the core business concepts.
+[quote, Frank Sonnenberg, "Soul Food: Change Your Thinking, Change Your Life"]
+Before acting on any recommendation, know the rationale.
 
 According to the Project Management Institute's (PMI) _Pulse of the Profession_ report published in February 2020, only *77%* of all projects meet their intended goals -- and even this is true only in the most mature organizations. For less mature organizations, this number falls to just *56%* i.e. approximately one in every two projects does not meet its intended goals.
 
@@ -62,58 +62,11 @@ image::project-failure-causes.png[scaledwidth=75%]
 
 It follows that it is impossible to build something that clients can use, are happy with and makes them more effective at their jobs if the wrong thing gets built -- even much less for the project to be built on time, and under budget.
 
-.Effects of Inaccurate Requirements
-image::inaccurate-project-requirements.png[scaledwidth=50%]
-
-The unfortunate reality is that this seemingly funny tree swing graphic originally created originally created in the 60s (over 50 years ago!) remains true even today.
-
 ==== Silo Mentality
 IT teams, especially in large organizations are staffed with mono-skilled roles such as UX designer, developer, tester, architect, business analyst, project manager, product owner, business sponsor, etc. In a lot of cases, these people are parts of distinct organization units/departments -- each with its own set of priorities and motivations. To make matters even worse, the geographical separation between these people only keeps increasing. The need to keep costs The current COVID-19 ecosystem does not help matters either.
 
 .Silo mentality and the loss of information fidelity
-[plantuml,silo-mentality]
-....
-@startuml
-    skinparam handwritten true
-    left to right direction
-    actor business
-    rectangle wall as r1
-    actor "product owner" as po
-    rectangle wall as r2
-    actor architect
-    rectangle wall as r3
-    actor developer
-    rectangle wall as r4
-    actor tester
-    rectangle wall as r5
-    actor operator
-    business --> r1 : requirements
-    note top
-      loss in fidelity
-    end note
-    r1 --> po
-    po --> r2
-    note top
-      loss in fidelity
-    end note
-    r2 --> architect
-    architect --> r3
-    note top
-      loss in fidelity
-    end note
-    r3 --> developer
-    developer --> r4
-    note top
-      loss in fidelity
-    end note
-    r4 --> tester
-    tester --> r5
-    note top
-      loss in fidelity
-    end note
-    r5 --> operator
-@enduml
-....
+image::silo-mentality.png[scaledwidth=75%]
 
 All this results in a loss in fidelity of information at every stage in the _assembly line_, which then results in misconceptions, inaccuracies, delays and eventually failure!
 
@@ -122,8 +75,20 @@ Agile software delivery methods manifested themselves in the late 90s, early 200
 
 In contrast, agile methods seem to favor a much more nimble and iterative approach to software development with a high focus on working software over other artifacts such as documentation. Most teams these days claim to practice some form of iterative software development. However, this obsession to claim conformance to a specific https://thedigitalprojectmanager.com/agile-methodologies[agile methodologies] (https://thedigitalprojectmanager.com/agile-methodologies) as opposed to the underlying principles, a lot of teams misconstrue having just enough architecture with having no perceptible architecture. This results in a situation where adding new features or enhancing existing ones takes a lot longer than what it previously used to -- which then accelerates the devolution of the solution to become the dreaded http://www.laputan.org/mud/mud.html#BigBallOfMud[big ball of mud] (http://www.laputan.org/mud/mud.html#BigBallOfMud).
 
+==== Excessive Incidental Complexity
+Mike Cohn popularized the notion of the https://www.mountaingoatsoftware.com/blog/the-forgotten-layer-of-the-test-automation-pyramid[test pyramid] (https://www.mountaingoatsoftware.com/blog/the-forgotten-layer-of-the-test-automation-pyramid) where he talks about how a large number of unit tests should form the foundation of a sound testing strategy -- with numbers decreasing significantly as one moves up the pyramid. The rationale here is that as one moves up the pyramid, the cost of upkeep goes up copiously while speed of execution slows down manifold. In reality though, a lot of teams seem to adopt a strategy that is the exact opposite of this -- known as the testing ice cream cone as depicted below:
+
+.Testing Strategy: Expectation vs. Reality
+image::test-pyramid-reality.png[]
+
+The testing ice cream cone is a classic case of what Fred Brooks calls incidental complexity in his seminal paper titled http://faculty.salisbury.edu/~xswang/Research/Papers/SERelated/no-silver-bullet.pdf[No Silver Bullet -- Essence and Accident in Software Engineering] (http://faculty.salisbury.edu/~xswang/Research/Papers/SERelated/no-silver-bullet.pdf).
+
+All software has some amount of https://en.wikipedia.org/wiki/Essential_complexity[essential complexity] (https://en.wikipedia.org/wiki/Essential_complexity) that is inherent to the problem being solved. This is especially true when creating solutions for non-trivial problems.  However, incidental or accidental complexity is not directly attributable to the problem itself -- but is caused by limitations of the people involved, their skill levels, the tools and/or abstractions being used. Not keeping tabs on incidental complexity causes teams to veer away from focusing on the real problems, solving which provide the most value. It naturally follows that such teams minimize their odds of success appreciably.
+
 ==== Uncontrolled Technical Debt
-We are in the midst of the fourth industrial revolution where the world is becoming more and more digital -- with technology being a significant driver of value for businesses. This has meant that companies are being required to modernize their software systems much more rapidly than they ever have. The mad rush to churn out business features quickly has also meant that software teams have had to dedicate a lot more time and effort towards simply managing complexity as opposed to thinking about producing architecturally sound solutions.
+Financial debt is the act of borrowing money from an outside party to quickly finance the operations of a business -- with the promise to repay the principal plus the agreed upon rate of interest in a timely manner. Under the right circumstances, this can accelerate the growth of a business considerably while allowing the owner to retain ownership, reduced taxes and lower interest rates. On the other hand, the inability to pay back this debt on time can adversely affect credit rating, result in higher interest rates, cash flow difficulties, and other restrictions.
+
+Technical debt is what results when development teams take arguably sub-optimal actions to expedite the delivery of a set of features or projects. For a period of time, just like borrowed money allows you to do things sooner than you could otherwise, technical debt can result in short term speed. In the long term, however, software teams will have to dedicate a lot more time and effort towards simply managing complexity as opposed to thinking about producing architecturally sound solutions. This can result in a vicious negative cycle as illustrated in the diagram below:
 
 .Technical Debt -- Implications
 [plantuml,tech-debt]
@@ -150,21 +115,32 @@ Project --right[dashed]--> Fail : Leads to
 @enduml
 ....
 
-A recent McKinsey surveyfootnote:tech-debt-mckinsey[https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity] sent out to CIOs, around 60% reported that the amount of tech debt increased over the past three years. At the same time, over 90% of CIOs allocated less than a fifth of their tech budget towards paying it off. Martin Fowler explores the deep correlationfootnote:fowler-quality-cost[https://martinfowler.com/articles/is-quality-worth-cost.html#WeAreUsedToATrade-offBetweenQualityAndCost] between high software quality (or the lack thereof) and the ability to enhance software predictably. While carrying a certain amount of tech debt is inevitable and part of doing business, not having a plan to systematically pay off this debt can have significantly detrimental effects on team productivity and ability to deliver value.
+In a recent https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity[McKinsey survey] (https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity) sent out to CIOs, around 60% reported that the amount of tech debt increased over the past three years. At the same time, over 90% of CIOs allocated less than a fifth of their tech budget towards paying it off. Martin Fowler explores the deep correlationfootnote:fowler-quality-cost[https://martinfowler.com/articles/is-quality-worth-cost.html#WeAreUsedToATrade-offBetweenQualityAndCost] between high software quality (or the lack thereof) and the ability to enhance software predictably. While carrying a certain amount of tech debt is inevitable and part of doing business, not having a plan to systematically pay off this debt can have significantly detrimental effects on team productivity and ability to deliver value.
 
 === Modern Systems and Dealing with Complexity
+
+[quote,Albert Einstein]
+We can not solve our problems with the same level of thinking that created them.
+
+We find ourselves in the midst of the fourth industrial revolution where the world is becoming more and more digital -- with technology being a significant driver of value for businesses. Exponential advances in computing technology as illustrated by Moore's Law below,
+
+.Moore's Law
+image:moores-law.png[alt=Moore's Law]
+
+along with the rise of the internet as illustrated below,
+
+.Global Internet Traffic
+image:global-internet-traffic.png[alt=Global Internet Traffic]
+ has meant that companies are being required to modernize their software systems much more rapidly than they ever have. Along with all this, the onset of commodity computing services such as the public cloud has led to a move away from expensive centralized computing systems to more distributed computing ecosystems. As we attempt building our most complex solutions, monoliths are being replaced by an environ of collaborating microservices.
+
+As we enter an age of encountering our most complex business problems, we need to embrace new ways of thinking, a development philosophy and an arsenal of techniques to iteratively evolve mature software solutions that will stand the test of time. Domain-driven design promises to provide answers. In the rest of this book, we will examine what DDD is and why it is indispensable when working to provide solutions for non-trivial problems in today's world of massively distributed teams and applications.
+
+=== What is Domain-Driven Design?
 
 [quote,Confucius]
 Life is really simple, but we insist on making it complicated.
 
-TODO
-
-=== What is Domain-Driven Design?
-
-[quote,Eric Evans]
-The heart of software is its ability to solve domain-related problems for its user.
-
-In the previous section, we saw how an inaccurate understanding of business requirements, team silos coupled with system complexity get in the way of software project success. The idea of domain-driven design, originally conceived by Eric Evans in his 2003 book, is an approach to software development that focuses on expressing software solutions in the form of a model that closely embodies the core of the problem being solved. It provides a set of systematic techniques to analyze, architect and implement software solutions in a manner that enhances chances of success. While Evans' work was indeed seminal, ground-breaking and way ahead of its time, over the years, practical application has continued to remain a challenge -- likely another case of Chinese whispers :) In this section, we will look at some of the foundational terms and concepts behind domain-driven design. Elaboration and practical application of these concepts will happen in upcoming chapters of this book.
+In the previous section, we saw how an inaccurate understanding of business requirements, team silos, technical debt, etc. coupled with system complexity get in the way of software project success. The idea of domain-driven design, originally conceived by Eric Evans in his 2003 book, is an approach to software development that focuses on expressing software solutions in the form of a model that closely embodies the core of the problem being solved. It provides a set of systematic techniques to analyze, architect and implement software solutions in a manner that enhances chances of success. While Evans' work was indeed seminal, ground-breaking and way ahead of its time, over the years, practical application has continued to remain a challenge. In this section, we will look at some of the foundational terms and concepts behind domain-driven design. Elaboration and practical application of these concepts will happen in upcoming chapters of this book.
 
 ==== What is a Domain?
 
@@ -195,6 +171,8 @@ usecase "Online Orders"
 usecase Payments
 usecase Shipping
 usecase Identity
+usecase Logging
+usecase "Activity Tracking"
 cloud "<b>..................." as c2
 @enduml
 ....
@@ -217,9 +195,9 @@ usecase Reviews
 Breaking down a complex domain into more manageable subdomains is a great thing to do. However, not all subdomains are created equal. With any business, the following three types of subdomains are going to be encountered:
 
 * *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core sub-domains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above,
-* *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering
+* *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering is the primary focus of this business, catalog management may be a supporting subdomain.
 
-* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution For the retail example above, the identity subdomain might fall in that category.
+* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution For the retail example above, the identity, logging and activity tracking subdomains might fall in that category.
 
 NOTE: It is important to note that the notion of core vs. supporting vs. generic subdomains is very context specific. What is core for one business may be supporting or generic for another.
 
