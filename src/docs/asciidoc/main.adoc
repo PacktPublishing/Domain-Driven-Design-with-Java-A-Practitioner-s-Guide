@@ -1,10 +1,10 @@
 = Implementing Domain-Driven Design with Java
 Premanand Chandrasekaran <https://github.com/premanandc[@premanandc]>
-v1.0, 2020-08-26
+v1.0, 2020-11-02
 :doctype: book
 :page-layout!:
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :sectanchors:
 :sectlinks:
 :sectnums:
@@ -19,7 +19,7 @@ include::{includedir}/00-preface.adoc[]
 
 = Part 1: Foundations
 
-While the IT industry prides itself on being at the very bleeding edge of technology, it also oversees a relatively high proportion of projects that fail outright or do not meet their originally intended goals for one reason or another. In Part 1, we will look at reasons for software projects not achieving their intended objectives and how practising Domain-Driven Design (DDD) can significantly help improve the odds of achieving success. We will also do a quick tour of the main concepts that Eric Evans elaborated in his seminal book by the same name and examine why/how it is extremely relevant in today's distributed systems age.
+    While the IT industry prides itself on being at the very bleeding edge of technology, it also oversees a relatively high proportion of projects that fail outright or do not meet their originally intended goals for one reason or another. In Part 1, we will look at reasons for software projects not achieving their intended objectives and how practising Domain-Driven Design (DDD) can significantly help improve the odds of achieving success. We will also do a quick tour of the main concepts that Eric Evans elaborated in his seminal book by the same name and examine why/how it is extremely relevant in today's distributed systems age.
 
 include::{includedir}/01-ddd-rationale.adoc[]
 

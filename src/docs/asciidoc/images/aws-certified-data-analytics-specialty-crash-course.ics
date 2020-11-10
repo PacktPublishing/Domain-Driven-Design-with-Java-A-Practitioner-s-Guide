@@ -1,0 +1,90 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//O'Reilly//learning.oreilly.com//
+BEGIN:VEVENT
+SUMMARY:AWS Certified Data Analytics - Specialty Crash Course
+DTSTART;VALUE=DATE-TIME:20201221T150000Z
+DTEND;VALUE=DATE-TIME:20201221T183000Z
+DTSTAMP;VALUE=DATE-TIME:20201104T031523Z
+UID:0636920477204-0636920482857
+DESCRIPTION:The course is intended to prepare students for the newest AWS 
+ certification exam of 2020—the AWS Certified Data Analytics – Specialt
+ y (DAS-C01) exam. This training will cover the five knowledge domains of t
+ his certification exam: \n\n\n- Collection\n- Storage and Data Management\
+ n- Processing\n- Analytics and Visualization\n- Security\n \n\nBeing a Dat
+ a Analytics Professional is an exciting and sought-after position and the 
+ ability to demonstrate your knowledge of Data Analytics with one of the mo
+ st recognizable certifications in the industry—the AWS Certified Data An
+ alytics – Specialty certification—is a must. The certification proves 
+ the candidate is able to perform Data Analytics at scale in a cost efficie
+ nt and secure manner.\n\n\nGo to the event (https://learning.oreilly.com/l
+ ive-training/courses/aws-certified-data-analytics-specialty-crash-course/0
+ 636920477204/join/)\n
+LOCATION:Online
+ORGANIZER;CN=O´REILLY MEDIA:mailto:donotreply@oreilly.com
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+X-ALT-DESC;FMTTYPE=TEXT/HTML:\n<p>The course is intended to prepare studen
+ ts for the newest AWS certification exam of 2020—the AWS Certified Data 
+ Analytics – Specialty (DAS-C01) exam. This training will cover the five 
+ knowledge domains of this certification exam: </p>\n<ul>\n<li>Collection</
+ li>\n<li>Storage and Data Management</li>\n<li>Processing</li>\n<li>Analyt
+ ics and Visualization</li>\n<li>Security</li>\n</ul>\n<p>Being a Data Anal
+ ytics Professional is an exciting and sought-after position and the abilit
+ y to demonstrate your knowledge of Data Analytics with one of the most rec
+ ognizable certifications in the industry—the AWS Certified Data Analytic
+ s – Specialty certification—is a must. The certification proves the ca
+ ndidate is able to perform Data Analytics at scale in a cost efficient and
+  secure manner.</p>\n<p><a href="https://learning.oreilly.com/live-trainin
+ g/courses/aws-certified-data-analytics-specialty-crash-course/063692047720
+ 4/join/">Go to the event</a></p>\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:AWS Certified Data Analytics - Specialty Crash Course
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:AWS Certified Data Analytics - Specialty Crash Course
+DTSTART;VALUE=DATE-TIME:20201222T150000Z
+DTEND;VALUE=DATE-TIME:20201222T183000Z
+DTSTAMP;VALUE=DATE-TIME:20201104T031523Z
+UID:0636920477204-0636920482864
+DESCRIPTION:The course is intended to prepare students for the newest AWS 
+ certification exam of 2020—the AWS Certified Data Analytics – Specialt
+ y (DAS-C01) exam. This training will cover the five knowledge domains of t
+ his certification exam: \n\n\n- Collection\n- Storage and Data Management\
+ n- Processing\n- Analytics and Visualization\n- Security\n \n\nBeing a Dat
+ a Analytics Professional is an exciting and sought-after position and the 
+ ability to demonstrate your knowledge of Data Analytics with one of the mo
+ st recognizable certifications in the industry—the AWS Certified Data An
+ alytics – Specialty certification—is a must. The certification proves 
+ the candidate is able to perform Data Analytics at scale in a cost efficie
+ nt and secure manner.\n\n\nGo to the event (https://learning.oreilly.com/l
+ ive-training/courses/aws-certified-data-analytics-specialty-crash-course/0
+ 636920477204/join/)\n
+LOCATION:Online
+ORGANIZER;CN=O´REILLY MEDIA:mailto:donotreply@oreilly.com
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+X-ALT-DESC;FMTTYPE=TEXT/HTML:\n<p>The course is intended to prepare studen
+ ts for the newest AWS certification exam of 2020—the AWS Certified Data 
+ Analytics – Specialty (DAS-C01) exam. This training will cover the five 
+ knowledge domains of this certification exam: </p>\n<ul>\n<li>Collection</
+ li>\n<li>Storage and Data Management</li>\n<li>Processing</li>\n<li>Analyt
+ ics and Visualization</li>\n<li>Security</li>\n</ul>\n<p>Being a Data Anal
+ ytics Professional is an exciting and sought-after position and the abilit
+ y to demonstrate your knowledge of Data Analytics with one of the most rec
+ ognizable certifications in the industry—the AWS Certified Data Analytic
+ s – Specialty certification—is a must. The certification proves the ca
+ ndidate is able to perform Data Analytics at scale in a cost efficient and
+  secure manner.</p>\n<p><a href="https://learning.oreilly.com/live-trainin
+ g/courses/aws-certified-data-analytics-specialty-crash-course/063692047720
+ 4/join/">Go to the event</a></p>\n
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:AWS Certified Data Analytics - Specialty Crash Course
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

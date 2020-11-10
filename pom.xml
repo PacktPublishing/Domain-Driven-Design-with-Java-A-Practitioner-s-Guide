@@ -53,6 +53,9 @@
                         <require>asciidoctor-diagram</require>
                     </requires>
                     <attributes>
+                        <pagenums/>
+                        <toc/>
+                        <toclevels>3</toclevels>
                         <imagesdir>./images</imagesdir>
                         <toc>left</toc>
                         <icons>font</icons>
@@ -63,13 +66,25 @@
                         <graphvizdot>/usr/local/bin/dot</graphvizdot>
                         <source-highlighter>coderay</source-highlighter>
                     </attributes>
-                    <backend>html5</backend>
-                    <backend>pdf</backend>
                     <autoReloadInterval>1000</autoReloadInterval>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>generate-html-doc</id>
+                        <id>generate-docbook</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>docbook</backend>
+                            <attributes>
+                                <toc/>
+                                <toclevels>3</toclevels>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
@@ -79,17 +94,13 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-pdf-doc</id>
+                        <id>generate-pdf</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
-                            <attributes>
-                                <pagenums/>
-                                <toc/>
-                            </attributes>
                         </configuration>
                     </execution>
                 </executions>

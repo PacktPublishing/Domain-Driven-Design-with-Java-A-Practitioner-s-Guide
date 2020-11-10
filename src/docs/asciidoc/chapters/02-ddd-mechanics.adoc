@@ -17,7 +17,6 @@ As mentioned in the previous chapter, many things can put a project off course. 
 
 ==== What is a Domain?
 
-
 ==== What is a Sub-Domain?
 
 ==== The Core Sub-Domain
