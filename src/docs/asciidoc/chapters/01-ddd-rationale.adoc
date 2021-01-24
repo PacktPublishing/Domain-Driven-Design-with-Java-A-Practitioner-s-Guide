@@ -11,18 +11,11 @@ Before acting on any recommendation, know the rationale.
 
 === Introduction
 
-According to the Project Management Institute's (PMI) https://www.pmi.org/learning/library/forging-future-focused-culture-11908[_Pulse of the Profession_] report published in February 2020, only *77%* of all projects meet their intended goals -- and even this is true only in the most mature organizations. For less mature organizations, this number falls to just *56%* i.e. approximately one in every two projects does not meet its intended goals.
-
-[#img-project-statistics]
-.Project Success -- By the numbers
-[link=https://www.pmi.org/learning/library/forging-future-focused-culture-11908,window=_blank]
-image::project-success-numbers.jpg[Project Statistics - By the numbers]
-
-Furthermore, approximately one in every five projects is declared an outright failure. At the same time, we also seem to be embarking on our most ambitious and complex projects.
+According to the Project Management Institute's (PMI) https://www.pmi.org/learning/library/forging-future-focused-culture-11908[_Pulse of the Profession_] report published in February 2020, only *77%* of all projects meet their intended goals -- and even this is true only in the most mature organizations. For less mature organizations, this number falls to just *56%* i.e. approximately one in every two projects does not meet its intended goals. Furthermore, approximately one in every five projects is declared an outright failure. At the same time, we also seem to be embarking on our most ambitious and complex projects.
 
 In this chapter, we will examine the main causes for project failure and look at how applying domain-driven design provides a set of guidelines and techniques to improve the odds of success in our favor. While Eric Evans wrote his classic book on the subject way back in 2003, we look at why that work is still extremely relevant in today's times.
 
-=== Why Do Software Projects Fail?
+=== Why do software projects fail?
 
 [quote,Henry Ford]
 Failure is simply the opportunity to begin again, this time more intelligently.
@@ -56,27 +49,19 @@ According to the https://www.pmi.org/learning/library/project-success-definition
 
 |===
 
-With all of the above criteria being applied to assess project success, a large percentage of projects fail for one reason or another.Let's examine some of the top reasons in more detail:
+With all of these criteria being applied to assess project success, a large percentage of projects fail for one reason or another. Let's examine some of the top reasons in more detail:
 
-==== Inaccurate Requirements
-This chart below, derived from PMI's https://www.pmi.org/-/media/pmi/documents/public/pdf/learning/thought-leadership/pulse/pulse-of-the-profession-2017.pdf[__Pulse of the Profession__] report from 2017 highlights seems to highlight a very starking fact -- inaccurate or misinterpreted requirements cause a very large portion of projects to fail.
+==== Inaccurate requirements
+PMI's __Pulse of the Profession__ report from 2017 highlights a very starking fact -- a vast majority of projects fail due to inaccurate or misinterpreted requirements. It follows that it is impossible to build something that clients can use, are happy with and makes them more effective at their jobs if the wrong thing gets built -- even much less for the project to be built on time, and under budget.
 
-.Project Failure Causes
-[link=https://www.pmi.org/-/media/pmi/documents/public/pdf/learning/thought-leadership/pulse/pulse-of-the-profession-2017.pdf?sc_lang_temp=en,window=_blank]
-image::project-failure-causes.png[scaledwidth=75%]
-
-It follows that it is impossible to build something that clients can use, are happy with and makes them more effective at their jobs if the wrong thing gets built -- even much less for the project to be built on time, and under budget.
-
-[#_silo_mentality]
-==== Silo Mentality
-IT teams, especially in large organizations are staffed with mono-skilled roles such as UX designer, developer, tester, architect, business analyst, project manager, product owner, business sponsor, etc.In a lot of cases, these people are parts of distinct organization units/departments -- each with its own set of priorities and motivations.To make matters even worse, the geographical separation between these people only keeps increasing.The need to keep costs The current COVID-19 ecosystem does not help matters either.
+IT teams, especially in large organizations are staffed with mono-skilled roles such as UX designer, developer, tester, architect, business analyst, project manager, product owner, business sponsor, etc.In a lot of cases, these people are parts of distinct organization units/departments -- each with its own set of priorities and motivations. To make matters even worse, the geographical separation between these people only keeps increasing.The need to keep costs The current COVID-19 ecosystem does not help matters either.
 
 .Silo mentality and the loss of information fidelity
 image::silo-mentality.png[scaledwidth=75%]
 
 All this results in a loss in fidelity of information at every stage in the _assembly line_, which then results in misconceptions, inaccuracies, delays and eventually failure!
 
-==== Too Much Architecture
+==== Too much architecture
 Writing complex software is quite a task.One cannot just hope to sit down and start typing code -- although that approach might work in some trivial cases.Before translating business ideas into working software, a thorough understanding of the problem at hand is necessary.For example, it is not possible (or at least extremely hard) to build credit card software without understanding how credit cards work in the first place.To communicate one's understanding of a problem, it is not uncommon to create software models of the problem, before writing code.This model or collection of models represents the understanding of the problem and the architecture of the solution.
 
 Efforts to create a perfect model of the problem -- one that is accurate in a very broad context, are not dissimilar to the proverbial holy grail quest.Those accountable to produce the architecture can get stuck in https://proxy.c2.com/cgi/wiki?AnalysisParalysis[analysis paralysis] and/or https://wiki.c2.com/?BigDesignUpFront[big design up front], producing artifacts that are one or more of too high level, wishful, gold plated, buzzword-driven, disconnected from the real world -- while not solving any real business problems.This kind of _lock-in_ can be especially detrimental during the early phases of the project when knowledge levels of team members are still up and coming.Needless to say, projects adopting such approaches find it hard to meet with success consistently.
@@ -84,12 +69,12 @@ Efforts to create a perfect model of the problem -- one that is accurate in a ve
 [NOTE]
 For a more comprehensive list of http://agilemodeling.com/essays/enterpriseModelingAntiPatterns.htm[modeling anti-patterns], refer to Scott W. Ambler's http://agilemodeling.com[website] (http://agilemodeling.com) and https://www.amazon.com/Agile-Modeling-Effective-Practices-Programming/dp/0471202827[book] dedicated to the subject.
 
-==== Too Little Architecture
+==== Too little architecture
 Agile software delivery methods manifested themselves in the late 90s, early 2000s in response to heavyweight processes collectively known as _waterfall_. These processes seemed to favor https://en.wikipedia.org/wiki/Big_Design_Up_Front[big design up front] and abstract ivory tower thinking based on wishful, ideal world scenarios. This was based on the premise that thinking things out well in advance ends up saving serious development headaches later on as the project progresses.
 
 In contrast, agile methods seem to favor a much more nimble and iterative approach to software development with a high focus on working software over other artifacts such as documentation. Most teams these days claim to practice some form of iterative software development. However, this obsession to claim conformance to a specific family of https://thedigitalprojectmanager.com/agile-methodologies[agile methodologies] as opposed to the underlying principles, a lot of teams misconstrue having just enough architecture with having no perceptible architecture. This results in a situation where adding new features or enhancing existing ones takes a lot longer than what it previously used to -- which then accelerates the devolution of the solution to become the dreaded http://www.laputan.org/mud/mud.html#BigBallOfMud[big ball of mud].
 
-==== Excessive Incidental Complexity
+==== Excessive incidental complexity
 Mike Cohn popularized the notion of the https://www.mountaingoatsoftware.com/blog/the-forgotten-layer-of-the-test-automation-pyramid[test pyramid] where he talks about how a large number of unit tests should form the foundation of a sound testing strategy -- with numbers decreasing significantly as one moves up the pyramid. The rationale here is that as one moves up the pyramid, the cost of upkeep goes up copiously while speed of execution slows down manifold. In reality though, a lot of teams seem to adopt a strategy that is the exact opposite of this -- known as the testing ice cream cone as depicted below:
 
 .Testing Strategy: Expectation vs. Reality
@@ -97,7 +82,7 @@ image::test-pyramid-reality.png[]
 
 The testing ice cream cone is a classic case of what Fred Brooks calls incidental complexity in his seminal paper titled http://faculty.salisbury.edu/~xswang/Research/Papers/SERelated/no-silver-bullet.pdf[No Silver Bullet -- Essence and Accident in Software Engineering]. All software has some amount of https://en.wikipedia.org/wiki/Essential_complexity[essential complexity] that is inherent to the problem being solved. This is especially true when creating solutions for non-trivial problems.  However, incidental or accidental complexity is not directly attributable to the problem itself -- but is caused by limitations of the people involved, their skill levels, the tools and/or abstractions being used. Not keeping tabs on incidental complexity causes teams to veer away from focusing on the real problems, solving which provide the most value. It naturally follows that such teams minimize their odds of success appreciably.
 
-==== Uncontrolled Technical Debt
+==== Uncontrolled technical debt
 Financial debt is the act of borrowing money from an outside party to quickly finance the operations of a business -- with the promise to repay the principal plus the agreed upon rate of interest in a timely manner. Under the right circumstances, this can accelerate the growth of a business considerably while allowing the owner to retain ownership, reduced taxes and lower interest rates. On the other hand, the inability to pay back this debt on time can adversely affect credit rating, result in higher interest rates, cash flow difficulties, and other restrictions.
 
 Technical debt is what results when development teams take arguably sub-optimal actions to expedite the delivery of a set of features or projects. For a period of time, just like borrowed money allows you to do things sooner than you could otherwise, technical debt can result in short term speed. In the long term, however, software teams will have to dedicate a lot more time and effort towards simply managing complexity as opposed to thinking about producing architecturally sound solutions. This can result in a vicious negative cycle as illustrated in the diagram below:
@@ -223,9 +208,9 @@ cloud "Retail Domain" {
   cloud "Shopping Cart"
   cloud "Online Orders"
   cloud Payments
-  cloud Shipping
+  cloud Fulfillment
   cloud Identity
-  cloud Logging
+  cloud Auditing
   cloud "Activity Tracking"
   cloud "<b>..................." as c2
 }
@@ -259,7 +244,7 @@ Breaking down a complex domain into more manageable subdomains is a great thing 
 * *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core sub-domains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above,
 * *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering is the primary focus of this business, catalog management may be a supporting subdomain.
 
-* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution For the retail example above, the identity, logging and activity tracking subdomains might fall in that category.
+* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution For the retail example above, the identity, auditing and activity tracking subdomains might fall in that category.
 
 CAUTION: It is important to note that the notion of core vs. supporting vs. generic subdomains is very context specific. What is core for one business may be supporting or generic for another. Identifying and distilling the core domain requires deep understanding and experience of what problem is being attempted to be solved.
 

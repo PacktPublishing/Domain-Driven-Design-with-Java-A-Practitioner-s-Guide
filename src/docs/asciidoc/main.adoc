@@ -32,7 +32,7 @@ include::{includedir}/03-does-ddd-fit.adoc[]
 [partintro]
 In Part 2, we will implement a real-world application using JVM-based technologies such as Vaadin, Spring Boot, Axon Framework, Cadence, among others.
 
-include::{includedir}/04-analysis-modeling-using-eventstorming.adoc[]
+include::{includedir}/04-domain-analysis-modeling.adoc[]
 
 include::{includedir}/05-implementing-a-task-based-ui.adoc[]
 
