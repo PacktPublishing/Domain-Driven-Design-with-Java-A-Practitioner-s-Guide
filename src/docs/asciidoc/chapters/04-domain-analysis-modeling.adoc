@@ -12,6 +12,13 @@ Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexi
 In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity. While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally remains a complex process even today.
 
 ==== Documentary Letters of Credit
+Documentary Letters of Credit(LC) is a financial instrument issued by the Banks as a contract between the Buyer(or Importer) and the Seller(or Exporter).  This contract specifies terms and conditions of the transaction under which buyer promises to pay the exporter in exchange for the goods or services provided by the seller.  Letters of Credit transaction typically involves multiple parties besides the buyer and the seller.
+
+1. Bank that buyer has relationship with, with whom he requests for issuing the LC application, called the "Issuing Bank".
+2. Bank that advises the LC to the seller in their country, referred as the "Advising Bank".
+3. Bank that seller has relationship with, with whom he provides documents for the shipment of goods, or the services provided, referred as the "Negotiating Bank".
+4. Agency that handles shipment of goods, the "Freight Forwarder".
+5. It is very common to find that Issuing Bank in Exporter's country do not have any business relationship with the Negotiating Bank in the Importer's country.  In such cases, they involve a common Bank that both of them have relationship with, referred as "Reimbursement Bank".
 
 ==== Issuing Bank LC Application
 
