@@ -8,7 +8,12 @@ As we saw in the previous chapter, misinterpreted requirements cause a significa
 
 Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexible and convenient format for the collaborative exploration of complex domains. In this chapter, we will introduce the sample application used throughout the book and use the different flavors of EventStorming to arrive at a shared understanding of the problem and brainstorm ideas to arrive at a solution.
 
-=== Introducing the [Sample] Application
+=== Introducing the LC Application
+In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity. While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally remains a complex process even today.
+
+==== Documentary Letters of Credit
+
+==== Issuing Bank LC Application
 
 === Narrowing Down Scope
 
