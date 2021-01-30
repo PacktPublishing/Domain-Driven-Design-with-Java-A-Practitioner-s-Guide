@@ -11,8 +11,8 @@ Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexi
 === Introducing the LC Application
 In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity. While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries. Letters of Credit exist to simplify this process. Let's take a look at how they work.
 
-==== What are Letters of Credit (LCs)?
-Documentary Letters of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller). This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.  Letters of Credit transaction typically involves multiple parties. A simplified summary of the parties involved is described below:
+==== What is Letter of Credit (LCs)?
+Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller). This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.  Letters of Credit transaction typically involves multiple parties. A simplified summary of the parties involved is described below:
 
 1. *Importer*: The buyer of the goods or services.
 2. *Exporter*: The seller of the goods or services.
@@ -20,7 +20,7 @@ Documentary Letters of Credit (LC) is a financial instrument issued by the banks
 4. *Issuing Bank*: The bank that the importer requests to issue the LC application. Usually the importer has a pre-existing relationship with this bank.
 5. *Advising Bank*: The bank that informs the exporter about the issuance of the LC. This is usually a bank that is native to the exporter's country.
 6. *Negotiating Bank*: The bank that the exporter submits documents for the shipment of goods, or the services provided. Usually the exporter has a pre-existing relationship with this bank.
-7. *Reimbursement Bank*: It is very common to find that the _issuing bank_ in the _exporter_'s country does not have any business relationship with the _negotiating bank_ in the _importer_'s country.  In such cases, they involve a common bank that both the issuing and negotiating banks have a relationship with -- referred to as the _reimbursement bank_.
+7. *Reimbursement Bank*: The bank that reimburses the funds to the negotiating bank, at the request of the issuing bank.
 
 NOTE: It is important to note that the same bank can play more than one role for a given transaction. In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
