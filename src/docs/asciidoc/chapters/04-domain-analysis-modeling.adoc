@@ -29,6 +29,9 @@ XYZ Bank has reached out to us in order to automate the process of LC applicatio
 
 === Domain Storytelling
 
+[quote,Alberto Brandolini]
+It’s developers’ (mis)understanding, not expert knowledge that gets released in production.
+
 === Event Storming
 
 ==== Introducing Domain Events
