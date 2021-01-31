@@ -24,8 +24,27 @@ Documentary Letter of Credit (LC) is a financial instrument issued by the banks 
 
 NOTE: It is important to note that the same bank can play more than one role for a given transaction. In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
-==== Issuing Bank LC Application
+==== The Issuing Bank LC Application
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
+
+=== Enhancing Shared Understanding
+When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- business/product people, and those that translate those ideas into working software -- software developers). For this process to be effective, we will ideally find means that are:
+
+* Quick, informal and effective
+* Easy to learn and retain for both non-technical and technical team members
+* Pictorial - because a picture can be worth a thousand words
+* Usable for both coarse grained and fine grained scenarios
+
+There are several means to arrive at this shared understanding. Some of the commonly used approaches are listed below:
+
+* UML
+* BPMN
+* Use Cases
+* User Story Mapping
+* CRC Models
+* Data Flow Diagrams
+* TDD, BDD, FDD, ATDD
+
 
 === Domain Storytelling
 
