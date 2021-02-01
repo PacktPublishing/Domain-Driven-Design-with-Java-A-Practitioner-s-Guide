@@ -28,14 +28,14 @@ NOTE: It is important to note that the same bank can play more than one role for
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
 === Enhancing Shared Understanding
-When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- business/product people, and those that translate those ideas into working software -- software developers). For this process to be effective, we will ideally find means that are:
+When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- business/product people, and those that translate those ideas into working software -- software developers). For this process to be effective, we tend to look for approaches that are:
 
 * Quick, informal and effective
-* Easy to learn and retain for both non-technical and technical team members
+* Collaborative - Easy to learn and adopt for both non-technical and technical team members
 * Pictorial - because a picture can be worth a thousand words
-* Usable for both coarse grained and fine grained scenarios
+* Usable for both coarse grained and fine-grained scenarios
 
-There are several means to arrive at this shared understanding. Some of the commonly used approaches are listed below:
+There are several means to arrive at this shared understanding. Some commonly used approaches are listed below :
 
 * UML
 * BPMN
@@ -43,8 +43,13 @@ There are several means to arrive at this shared understanding. Some of the comm
 * User Story Mapping
 * CRC Models
 * Data Flow Diagrams
+
+NOTE: Isnt' the following out of place, as they are not modelling techniques but rather engineering focussed practices to write better code?
 * TDD, BDD, FDD, ATDD
 
+Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.  However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
+
+We would like to use *Domain Story telling* and *Event Storming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
 
 === Domain Storytelling
 
