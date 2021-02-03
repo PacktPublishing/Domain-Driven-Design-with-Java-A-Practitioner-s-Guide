@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ../images]
 [.text-justify]
 == Domain Analysis and Modeling (30 pages)
 
@@ -28,7 +29,7 @@ NOTE: It is important to note that the same bank can play more than one role for
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
 === Enhancing Shared Understanding
-When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- business/product people, and those that translate those ideas into working software -- software developers). For this process to be effective, we tend to look for approaches that are:
+When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- the business/product people, and those that translate those ideas into working software -- the software developers). For this process to be effective, we tend to look for approaches that are:
 
 * Quick, informal and effective
 * Collaborative - Easy to learn and adopt for both non-technical and technical team members
@@ -44,9 +45,6 @@ There are several means to arrive at this shared understanding. Some commonly us
 * CRC Models
 * Data Flow Diagrams
 
-NOTE: Isnt' the following out of place, as they are not modelling techniques but rather engineering focussed practices to write better code?
-* TDD, BDD, FDD, ATDD
-
 Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.  However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
 
 We would like to use *Domain Story telling* and *Event Storming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
@@ -55,6 +53,17 @@ We would like to use *Domain Story telling* and *Event Storming* as our means to
 
 [quote,Alberto Brandolini]
 It’s developers’ (mis)understanding, not expert knowledge that gets released in production.
+
+==== Introducing Domain Storytelling?
+One or two s
+
+.Domain storytelling in a single picture
+image::domain-storytelling-summary.png[]
+
+==== Using DST for the LC application
+XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between the domain expert and the software developer.
+
+
 
 === Event Storming
 
