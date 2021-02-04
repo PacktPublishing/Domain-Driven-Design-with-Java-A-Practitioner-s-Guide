@@ -60,6 +60,19 @@ Scientific research has now proven that learning methods that employ audio-visua
 .Domain storytelling in a single picture
 image::dst-summary.png[]
 
+A Domain story is conveyed using the following attributes :
+
+*Actors* - Stories are communicated from the perspective of an actor(noun), who plays an active role in the context of the particular story. It is a good practice to use the ubiquitous language for the particular domain.
+
+*Work Objects* - Actors act on some object, for example, applying for an LC. Again, this would be a term(noun) commonly used in the domain.
+
+*Activities* - Actions(verb) performed by the actor on a work object.  Represented by a labelled arrow connecting the actor and the work object.
+
+*Annotations* - Used to capture additional information as part of the story, usually represented in few sentences.
+
+*Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
+
+
 ==== Using DST for the LC application
 XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between the domain expert and the software developer.
 
