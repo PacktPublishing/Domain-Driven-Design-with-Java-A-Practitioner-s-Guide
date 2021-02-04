@@ -12,7 +12,7 @@ Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexi
 === Introducing the LC Application
 In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity. While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries. Letters of Credit exist to simplify this process. Let's take a look at how they work.
 
-==== What is Letter of Credit (LCs)?
+==== What are Letters of Credit (LCs)?
 Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller). This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.  Letters of Credit transaction typically involves multiple parties. A simplified summary of the parties involved is described below:
 
 1. *Importer*: The buyer of the goods or services.
@@ -55,7 +55,7 @@ We would like to use *Domain Story telling* and *Event Storming* as our means to
 It’s developers’ (mis)understanding, not expert knowledge that gets released in production.
 
 ==== Introducing Domain Storytelling
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also prompt the formation of new ideas. Domain storytelling is a collaborative modeling technique that employs these principles to serve as a very simple, quick and effective technique for sharing knowledge among team members. The technique itself is illustrated in the diagram below:
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ideas. Domain storytelling is a collaborative modeling technique that employs these principles to serve as a very simple, quick and effective technique for sharing knowledge among team members. The technique itself is illustrated in the diagram below:
 
 .Domain storytelling in a single picture
 image::dst-summary.png[]
