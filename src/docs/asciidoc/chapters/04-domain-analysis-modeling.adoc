@@ -54,8 +54,8 @@ We would like to use *Domain Story telling* and *Event Storming* as our means to
 [quote,Alberto Brandolini]
 It’s developers’ (mis)understanding, not expert knowledge that gets released in production.
 
-==== Introducing Domain Storytelling?
-One or two s
+==== Introducing Domain Storytelling
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also prompt the formation of new ideas. Domain storytelling is a collaborative modeling technique that employs these principles to serve as a very simple, quick and effective technique for sharing knowledge among team members. The technique itself is illustrated in the diagram below:
 
 .Domain storytelling in a single picture
 image::domain-storytelling-summary.png[]
