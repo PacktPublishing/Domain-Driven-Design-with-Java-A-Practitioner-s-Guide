@@ -99,7 +99,19 @@ A domain story is conveyed using the following attributes:
 *Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
 
 ==== Using DST for the LC application
-XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between the domain expert and the software developer.
+XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
+
+*Patrick* : __"Can you give me a high level overview of a typical LC Flow?"__ +
+*Katie* : __"Sure, it all begins with the Importer and Exporter entering into contract for purchase of goods or services."__
+
+NOTE: Insert first diagram here
+
+*Patrick* : __"Seems straight forward, so where does Bank come into the picture?"__ +
+*Katie* : __"This is an international trade and the importer and exporter needs to mitigate the financial risk involved in such business transactions and hence involve a Bank as a trusted medium"__ +
+*Patrick* : __"Got it, go on"__ +
+*Katie* : __"Importer reaches out to the Issuing Bank with an application requesting the issuance of an LC."__
+
+NOTE: Insert 2nd diagram here
 
 === Event Storming
 
