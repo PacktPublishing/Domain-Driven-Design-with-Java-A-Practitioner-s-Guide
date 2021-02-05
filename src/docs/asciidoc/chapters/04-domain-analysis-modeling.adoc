@@ -16,14 +16,14 @@ In this chapter, we will introduce the sample application used throughout the bo
 
 In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity.
 While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries.
-Letters of Credit exist to simplify this process.
+Letter of Credit exist to simplify this process.
 Let's take a look at how they work.
 
-==== What are Letters of Credit (LCs)?
+==== What is Letter of Credit (LCs)?
 
 Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller).
 This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.
-Letters of Credit transaction typically involves multiple parties.
+Letter of Credit transaction typically involves multiple parties.
 A simplified summary of the parties involved is described below:
 
 1. *Importer*: The buyer of the goods or services.
@@ -77,7 +77,7 @@ You’re never going to kill storytelling because it’s built into the human pl
 
 ==== Introducing Domain Storytelling
 
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members.
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language, and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members.
 
 NOTE: Attribution to original inventors
 
