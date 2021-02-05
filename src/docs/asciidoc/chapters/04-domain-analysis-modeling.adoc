@@ -77,7 +77,11 @@ You’re never going to kill storytelling because it’s built into the human pl
 
 ==== Introducing Domain Storytelling
 
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members. The pictorial notation of the technique is illustrated in the diagram below:
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members.
+
+NOTE: Attribution to original inventors
+
+The pictorial notation of the technique is illustrated in the diagram below:
 
 .Domain storytelling summarized
 image::dst-summary.png[]
