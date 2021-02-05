@@ -5,38 +5,58 @@ ifndef::imagesdir[:imagesdir: ../images]
 [quote,Alberto Brandolini]
 The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
 
-As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail. Arriving at a shared understanding and creating a useful domain model, necessitates high degrees of collaboration with domain experts. In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and event storming to enhance our collective understanding of the problem in a reliable and structured manner.
+As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.
+Arriving at a shared understanding and creating a useful domain model, necessitates high degrees of collaboration with domain experts.
+In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and event storming to enhance our collective understanding of the problem in a reliable and structured manner.
 
-Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexible and convenient format for the collaborative exploration of complex domains. In this chapter, we will introduce the sample application used throughout the book and use the different flavors of EventStorming to arrive at a shared understanding of the problem and brainstorm ideas to arrive at a solution.
+Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexible and convenient format for the collaborative exploration of complex domains.
+In this chapter, we will introduce the sample application used throughout the book and use the different flavors of EventStorming to arrive at a shared understanding of the problem and brainstorm ideas to arrive at a solution.
 
 === Introducing the LC Application
-In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity. While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries. Letters of Credit exist to simplify this process. Let's take a look at how they work.
+
+In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity.
+While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries.
+Letters of Credit exist to simplify this process.
+Let's take a look at how they work.
 
 ==== What are Letters of Credit (LCs)?
-Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller). This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.  Letters of Credit transaction typically involves multiple parties. A simplified summary of the parties involved is described below:
+
+Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller).
+This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.
+Letters of Credit transaction typically involves multiple parties.
+A simplified summary of the parties involved is described below:
 
 1. *Importer*: The buyer of the goods or services.
 2. *Exporter*: The seller of the goods or services.
-3. *Freight Forwarder*: The agency that handles shipment of goods on behalf of the exporter. This is only applicable in cases there is an exchange of physical goods.
-4. *Issuing Bank*: The bank that the importer requests to issue the LC application. Usually the importer has a pre-existing relationship with this bank.
+3. *Freight Forwarder*: The agency that handles shipment of goods on behalf of the exporter.
+This is only applicable in cases there is an exchange of physical goods.
+4. *Issuing Bank*: The bank that the importer requests to issue the LC application.
+Usually the importer has a pre-existing relationship with this bank.
 5. *Advising Bank*: The bank that informs the exporter about the issuance of the LC. This is usually a bank that is native to the exporter's country.
-6. *Negotiating Bank*: The bank that the exporter submits documents for the shipment of goods, or the services provided. Usually the exporter has a pre-existing relationship with this bank.
+6. *Negotiating Bank*: The bank that the exporter submits documents for the shipment of goods, or the services provided.
+Usually the exporter has a pre-existing relationship with this bank.
 7. *Reimbursement Bank*: The bank that reimburses the funds to the negotiating bank, at the request of the issuing bank.
 
-NOTE: It is important to note that the same bank can play more than one role for a given transaction. In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
+NOTE: It is important to note that the same bank can play more than one role for a given transaction.
+In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
 ==== The Issuing Bank LC Application
-XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
+
+XYZ Bank has reached out to us in order to automate the process of LC application and issuance.
+In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
 === Enhancing Shared Understanding
-When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- the business/product people, and those that translate those ideas into working software -- the software developers). For this process to be effective, we tend to look for approaches that are:
+
+When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- the business/product people, and those that translate those ideas into working software -- the software developers).
+For this process to be effective, we tend to look for approaches that are:
 
 * Quick, informal and effective
 * Collaborative - Easy to learn and adopt for both non-technical and technical team members
 * Pictorial - because a picture can be worth a thousand words
 * Usable for both coarse grained and fine-grained scenarios
 
-There are several means to arrive at this shared understanding. Some commonly used approaches are listed below :
+There are several means to arrive at this shared understanding.
+Some commonly used approaches are listed below :
 
 * UML
 * BPMN
@@ -45,38 +65,37 @@ There are several means to arrive at this shared understanding. Some commonly us
 * CRC Models
 * Data Flow Diagrams
 
-Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.  However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
+Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.
+However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
 
-We would like to use *Domain Story telling* and *Event Storming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
+We will use *domain storytelling* and *event storming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
 
 === Domain Storytelling
 
-[quote,Alberto Brandolini]
-It’s developers’ (mis)understanding, not expert knowledge that gets released in production.
+[quote,Margaret Atwood]
+You’re never going to kill storytelling because it’s built into the human plan. We come with it.
 
 ==== Introducing Domain Storytelling
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ideas. Domain storytelling is a collaborative modeling technique that employs these principles to serve as a very simple, quick and effective technique for sharing knowledge among team members. The technique itself is illustrated in the diagram below:
 
-.Domain storytelling in a single picture
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members. The pictorial notation of the technique is illustrated in the diagram below:
+
+.Domain storytelling summarized
 image::dst-summary.png[]
 
-A Domain story is conveyed using the following attributes :
+A domain story is conveyed using the following attributes:
 
-*Actors* - Stories are communicated from the perspective of an actor(noun), who plays an active role in the context of the particular story. It is a good practice to use the ubiquitous language for the particular domain.
+*Actors* - Stories are communicated from the perspective of an actor (noun), for example, the issuing bank, who plays an active role in the context of that particular story. It is a good practice to use the ubiquitous language for the particular domain.
 
-*Work Objects* - Actors act on some object, for example, applying for an LC. Again, this would be a term(noun) commonly used in the domain.
+*Work Objects* - Actors act on some object, for example, applying for an LC. Again, this would be a term (noun) commonly used in the domain.
 
-*Activities* - Actions(verb) performed by the actor on a work object.  Represented by a labelled arrow connecting the actor and the work object.
+*Activities* - Actions (verb) performed by the actor on a work object. Represented by a labelled arrow connecting the actor and the work object.
 
 *Annotations* - Used to capture additional information as part of the story, usually represented in few sentences.
 
 *Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
 
-
 ==== Using DST for the LC application
 XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between the domain expert and the software developer.
-
-
 
 === Event Storming
 
