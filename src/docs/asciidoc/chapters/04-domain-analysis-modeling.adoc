@@ -98,20 +98,51 @@ A domain story is conveyed using the following attributes:
 
 *Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
 
+*Groups* -
+
 ==== Using DST for the LC application
 XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
 
+
 *Patrick* : __"Can you give me a high level overview of a typical LC Flow?"__ +
-*Katie* : __"Sure, it all begins with the Importer and Exporter entering into contract for purchase of goods or services."__
+*Katie* : __"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."__ +
+*Patrick* : _"What form does this contract take? Is it a formal document? Or is this just a conversation?"_ +
+*Katie* : _"This is just a conversation."_ +
+*Patrick* : _"Oh okay. What does the conversation cover?"_ +
+*Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc. These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
 
-NOTE: Insert first diagram here
+image::lc-step01.png[]
 
-*Patrick* : __"Seems straight forward, so where does Bank come into the picture?"__ +
-*Katie* : __"This is an international trade and the importer and exporter needs to mitigate the financial risk involved in such business transactions and hence involve a Bank as a trusted medium"__ +
-*Patrick* : __"Got it, go on"__ +
-*Katie* : __"Importer reaches out to the Issuing Bank with an application requesting the issuance of an LC."__
+*Patrick* : __"Seems straight forward, so where does the bank come into the picture?"__ +
+*Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions. So they involve a bank as a trusted mediator."_ +
+*Patrick* : _"What kind of bank is this?"_ +
+*Katie* : _Usually, there are multiple banks involved. But it all starts with an *issuing bank*._ +
+*Patrick* : "What is an issuing bank?" +
+*Katie* : _"Any bank that is authorized to mediate international trade deals. This has to be a bank in the importer's country."_ +
+*Patrick*: _"Does the importer need to have an existing relationship with this bank?"_ +
+*Katie*: _"Not necessarily. There may be other banks with whom the importer may have a relationship with -- which in turn liaises with the issuing bank on the importer's behalf. But to keep it simple, let's assume that the importer has an existing relationship with the issuing bank -- which is our bank in this case."_ +
+*Patrick* : _"Does the importer provide details of the purchase order to the issuing bank to get started?"_ +
+*Katie* : _"Yes. The importer provides the details of the transaction by making an *LC application*."_ +
 
-NOTE: Insert 2nd diagram here
+image::lc-step02.png[]
+
+*Patrick* : _"What does the issuing bank do when they receive this LC application?"_ +
+*Katie* : _"Mainly two things -- whet the financial standing of the importer and the legality of the goods being imported."_ +
+*Patrick* : "Okay. What happens if everything checks out?" +
+*Katie* : _"The issuing bank approves the LC and notifies the importer."_ +
+
+image::lc-step03.png[]
+*Patrick* : _"What happens next? Does the issuing bank contact the exporter now?"_ +
+*Katie* : _"Not yet. It is not that simple. The issuing bank can only deal with a counterpart bank in the exporter's country. This bank is called the *advising bank*."_ +
+
+image::lc-step04.png[]
+
+*Patrick* : _"What does the advising bank do?"_ +
+*Katie* : _"The advising bank notifies the exporter about the LC". This concludes the issuance and advice flow for the LC._ +
+
+image::lc-step05.png[]
+
+image::lc-step06.png[]
 
 === Event Storming
 
