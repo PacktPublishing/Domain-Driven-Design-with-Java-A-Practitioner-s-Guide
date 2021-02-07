@@ -104,8 +104,8 @@ A domain story is conveyed using the following attributes:
 XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
 
 
-*Patrick* : __"Can you give me a high level overview of a typical LC Flow?"__ +
-*Katie* : __"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."__ +
+*Patrick* : _"Can you give me a high level overview of a typical LC Flow?"_ +
+*Katie* : _"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."_ +
 *Patrick* : _"What form does this contract take? Is it a formal document? Or is this just a conversation?"_ +
 *Katie* : _"This is just a conversation."_ +
 *Patrick* : _"Oh okay. What does the conversation cover?"_ +
@@ -113,14 +113,14 @@ XYZ Bank has a process that allows processing of LCs. However, this process is v
 
 image::lc-step01.png[]
 
-*Patrick* : __"Seems straight forward, so where does the bank come into the picture?"__ +
+*Patrick* : _"Seems straight forward, so where does the bank come into the picture?"_ +
 *Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions. So they involve a bank as a trusted mediator."_ +
 *Patrick* : _"What kind of bank is this?"_ +
-*Katie* : _Usually, there are multiple banks involved. But it all starts with an *issuing bank*._ +
-*Patrick* : "What is an issuing bank?" +
+*Katie* : "_Usually, there are multiple banks involved. But it all starts with an *issuing bank*._" +
+*Patrick* : _"What is an issuing bank?"_ +
 *Katie* : _"Any bank that is authorized to mediate international trade deals. This has to be a bank in the importer's country."_ +
-*Patrick*: _"Does the importer need to have an existing relationship with this bank?"_ +
-*Katie*: _"Not necessarily. There may be other banks with whom the importer may have a relationship with -- which in turn liaises with the issuing bank on the importer's behalf. But to keep it simple, let's assume that the importer has an existing relationship with the issuing bank -- which is our bank in this case."_ +
+*Patrick* : _"Does the importer need to have an existing relationship with this bank?"_ +
+*Katie* : _"Not necessarily. There may be other banks with whom the importer may have a relationship with -- which in turn liaises with the issuing bank on the importer's behalf. But to keep it simple, let's assume that the importer has an existing relationship with the issuing bank -- which is our bank in this case."_ +
 *Patrick* : _"Does the importer provide details of the purchase order to the issuing bank to get started?"_ +
 *Katie* : _"Yes. The importer provides the details of the transaction by making an *LC application*."_ +
 
