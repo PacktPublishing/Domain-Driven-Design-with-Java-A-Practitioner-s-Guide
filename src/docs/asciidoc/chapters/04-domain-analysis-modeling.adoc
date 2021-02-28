@@ -175,28 +175,31 @@ NOTE: *Why Domain Events*? When trying to understand a business process, it is c
 
 ==== Using Event Storming for the LC Application
 
-*Phase 1* : Recall significant domain events that happen in the system and paste them on the whiteboard, using Orange post-its as depicted below. Ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow begins to emerge.
+===== Phase 1: Event Chronology
+Recall significant domain events that happen in the system and paste them on the whiteboard, using Orange post-its as depicted below. Ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow begins to emerge.
 
-image::event-storming/events.png[]
+.To be updated
+image::event-storming/01-events.png[]
 
 This acts as an aid to understand the big picture.  This also enables people in the room to identify hotspots in the existing business process.  In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, that is applicant does not receive any information when their application is declined.
 
 To address this, we added a new domain event which explicitly indicates that an application is declined, as depicted below.
 
-image::event-storming/events.png[]
+.To be updated
+image::event-storming/01-events.png[]
 
-*Phase 2* : Recall
+===== Phase 2: Identify triggering activities and external systems
+Having arrived at a high level understanding of event chronology, the next step is to embellish the visual with activities/a that cause these events to occur (using blue stickies) and interactions with external systems (using ??? stickies) as depicted in the diagram below:
 
-image::event-storming/activities.png[]
+.To be updated
+image::event-storming/02-activities-and-external-systems.png[]
 
+===== Phase 3: Capture users, context and policies
+The next step is to capture *users* who perform these activities along with their functional *context* (using yellow stickies) and policies (using purple stickies) as depicted in the diagram below.
 
+image::event-storming/03-users-and-policies.png[]
 
-==== Identifying Hot Spots, Puzzlers and Blockers
+===== Phase 4: Read models
+image::event-storming/04-read-models.png[]
 
-==== Commands and User Intentions/Actions/Decisions
-
-==== Extracting Personas, Users and Actors
-
-=== Read/Query Models and Data Needed To Make Decisions
-
-=== Grouping Commands and Events into Aggregates
+===== Phase 5: Grouping Commands and Events into Aggregates
