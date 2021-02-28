@@ -154,13 +154,13 @@ image::domain-story-telling/lc-issue-step06.png[]
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*. But let's focus on issuance right now. We will discuss settlement at a later time."_ +
 
 === Event Storming
-In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. Eventstorming, originally conceived by Alberto Brandolini, is one such method.
+In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. Event storming, originally conceived by Alberto Brandolini, is one such method.
 
 In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes. Each of the note types (denoted by a color) serve a specific purpose as outlined below:
 
 * *Domain Event*: An event that is significant to the business process -- expressed in past tense.
 
-* *Command*: An action or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
+* *Command*: An action, or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
 
 * *Users*: A person who performs a business action/activity.
 
