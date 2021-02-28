@@ -98,7 +98,7 @@ A domain story is conveyed using the following attributes:
 
 *Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
 
-*Groups* -
+*Groups* - TODO
 
 ==== Using DST for the LC application
 XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
@@ -138,18 +138,45 @@ image::lc-issue--step03.png[]
 image::lc-issue-step04.png[]
 
 *Patrick* : _"What does the advising bank do?"_ +
-*Katie* : _"The advising bank notifies the exporter about the LC"._+
+*Katie* : _"The advising bank notifies the exporter about the LC."_ +
+*Patrick* : _"Doesn't the importer need to know that the LC has been advised?"_ +
+*Katie* : _"Yes. The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
 
 image::lc-issue-step05.png[]
 
-*Patrick* : _"When does the importer know about the LC being advised to the Exporter?"_ +
-*Katie* : _"Good Question. The issuing bank notifies the importer about the LC being advised to the exporter via the advising bank". This concludes the issuance and advice flow for the LC._ +
+*Patrick* : _"How does the exporter know how to proceed?"_ +
+*Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued."_ +
 
 image::lc-issue-step06.png[]
 
-=== Event Storming
+*Patrick* : _"Does the exporter initiate shipping at this time and how do they get paid?"_ +
+*Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*. But let's focus on issuance right now. We will discuss settlement at a later time."_ +
 
-==== Introducing Domain Events
+=== Event Storming
+In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. Eventstorming, originally conceived by Alberto Brandolini, is one such method.
+
+In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes. Each of the note types (denoted by a color) serve a specific purpose as outlined below:
+
+* *Domain Event*: An event that is significant to the business process -- expressed in past tense.
+
+* *Command*: An action or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
+
+* *Users*: A person who performs a business action/activity.
+
+* *Policies*: A set of business rules that need to be adhered to, for an action/activity to be successfully performed.
+
+* *Read Models*: A piece of information required to perform an action/activity.
+
+* *External Systems*: A system significant to the business process, but out of scope in the current context.
+
+
+NOTE: *Why Domain Events*? When trying to understand a business process, it is convenient to express significant facts or things that happen in that context. It can also be informal and easy for audiences that are uninitiated with this practice.
+
+==== Using Event Storming for the LC Application
+
+
+
+
 
 ==== Identifying Hot Spots, Puzzlers and Blockers
 
