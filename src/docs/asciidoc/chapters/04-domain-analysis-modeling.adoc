@@ -169,6 +169,7 @@ In this method, one simply starts by listing out all the events that are signifi
 
 * *External Systems*: A system significant to the business process, but out of scope in the current context.
 
+* *Hotspots*: Points of contention within the system that are likely confusing and/or puzzling beyond a small subsection of the team.
 
 NOTE: *Why Domain Events*? When trying to understand a business process, it is convenient to express significant facts or things that happen in that context. It can also be informal and easy for audiences that are uninitiated with this practice.
 
