@@ -175,7 +175,19 @@ NOTE: *Why Domain Events*? When trying to understand a business process, it is c
 
 ==== Using Event Storming for the LC Application
 
+*Phase 1* : Recall significant domain events that happen in the system and paste them on the whiteboard, using Orange post-its as depicted below. Ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow begins to emerge.
 
+image::event-storming/events.png[]
+
+This acts as an aid to understand the big picture.  This also enables people in the room to identify hotspots in the existing business process.  In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, that is applicant does not receive any information when their application is declined.
+
+To address this, we added a new domain event which explicitly indicates that an application is declined, as depicted below.
+
+image::event-storming/events.png[]
+
+*Phase 2* : Recall
+
+image::event-storming/activities.png[]
 
 
 
