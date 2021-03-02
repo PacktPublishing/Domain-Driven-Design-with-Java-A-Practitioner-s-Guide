@@ -5,12 +5,12 @@ ifndef::imagesdir[:imagesdir: ../images]
 [quote,Alberto Brandolini]
 The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
 
+=== Introduction
 As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.
 Arriving at a shared understanding and creating a useful domain model, necessitates high degrees of collaboration with domain experts.
-In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and event storming to enhance our collective understanding of the problem in a reliable and structured manner.
+In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
 
-Originally conceived by Alberto Brandolini, EventStorming has emerged as a flexible and convenient format for the collaborative exploration of complex domains.
-In this chapter, we will introduce the sample application used throughout the book and use the different flavors of EventStorming to arrive at a shared understanding of the problem and brainstorm ideas to arrive at a solution.
+Developers and architects will learn how to apply these techniques in real life situations to produce elegant software solutions that mirror the problem domain that needs to be solved. Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
 
 === Introducing the LC Application
 
@@ -19,7 +19,7 @@ While economic organizations such as the World Trade Organization (WTO) were for
 Letter of Credit exist to simplify this process.
 Let's take a look at how they work.
 
-==== What is Letter of Credit (LCs)?
+==== What is a Letter of Credit (LC)?
 
 Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller).
 This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.
@@ -56,7 +56,7 @@ For this process to be effective, we tend to look for approaches that are:
 * Usable for both coarse grained and fine-grained scenarios
 
 There are several means to arrive at this shared understanding.
-Some commonly used approaches are listed below :
+Some commonly used approaches are listed below:
 
 * UML
 * BPMN
@@ -68,7 +68,7 @@ Some commonly used approaches are listed below :
 Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.
 However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
 
-We will use *domain storytelling* and *event storming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
+We will use *domain storytelling* and *eventstorming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
 
 === Domain Storytelling
 
@@ -111,7 +111,7 @@ XYZ Bank has a process that allows processing of LCs. However, this process is v
 *Patrick* : _"Oh okay. What does the conversation cover?"_ +
 *Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc. These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
 
-image::domain-story-telling/lc-issue-step01.png[]
+image::lc-issue-step01.png[]
 
 *Patrick* : _"Seems straight forward, so where does the bank come into the picture?"_ +
 *Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions. So they involve a bank as a trusted mediator."_ +
@@ -124,83 +124,119 @@ image::domain-story-telling/lc-issue-step01.png[]
 *Patrick* : _"Does the importer provide details of the purchase order to the issuing bank to get started?"_ +
 *Katie* : _"Yes. The importer provides the details of the transaction by making an *LC application*."_ +
 
-image::domain-story-telling/lc-issue-step02.png[]
+image::lc-issue-step02.png[]
 
 *Patrick* : _"What does the issuing bank do when they receive this LC application?"_ +
 *Katie* : _"Mainly two things -- whet the financial standing of the importer and the legality of the goods being imported."_ +
 *Patrick* : "Okay. What happens if everything checks out?" +
 *Katie* : _"The issuing bank approves the LC and notifies the importer."_ +
 
-image::domain-story-telling/lc-issue--step03.png[]
-
+image::lc-issue--step03.png[]
 *Patrick* : _"What happens next? Does the issuing bank contact the exporter now?"_ +
 *Katie* : _"Not yet. It is not that simple. The issuing bank can only deal with a counterpart bank in the exporter's country. This bank is called the *advising bank*."_ +
 
-image::domain-story-telling/lc-issue-step04.png[]
+image::lc-issue-step04.png[]
 
 *Patrick* : _"What does the advising bank do?"_ +
 *Katie* : _"The advising bank notifies the exporter about the LC."_ +
 *Patrick* : _"Doesn't the importer need to know that the LC has been advised?"_ +
 *Katie* : _"Yes. The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
 
-image::domain-story-telling/lc-issue-step05.png[]
+image::lc-issue-step05.png[]
 
 *Patrick* : _"How does the exporter know how to proceed?"_ +
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued."_ +
 
-image::domain-story-telling/lc-issue-step06.png[]
+image::lc-issue-step06.png[]
 
 *Patrick* : _"Does the exporter initiate shipping at this time and how do they get paid?"_ +
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*. But let's focus on issuance right now. We will discuss settlement at a later time."_ +
 
-=== Event Storming
-In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. Event storming, originally conceived by Alberto Brandolini, is one such method.
+=== EventStorming
+In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. EventStorming, originally conceived by Alberto Brandolini, is one such method for the collaborative exploration of complex domains.
 
 In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes. Each of the note types (denoted by a color) serve a specific purpose as outlined below:
 
 * *Domain Event*: An event that is significant to the business process -- expressed in past tense.
 
-* *Command*: An action, or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
+* *Command*: An action or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
 
-* *Users*: A person who performs a business action/activity.
+* *User*: A person who performs a business action/activity.
 
-* *Policies*: A set of business rules that need to be adhered to, for an action/activity to be successfully performed.
+* *Policy*: A set of business rules that need to be adhered to, for an action/activity to be successfully performed.
 
-* *Read Models*: A piece of information required to perform an action/activity.
+* *Read Model*: A piece of information required to perform an action/activity.
 
-* *External Systems*: A system significant to the business process, but out of scope in the current context.
+* *External System*: A system significant to the business process, but out of scope in the current context.
 
-* *Hotspots*: Points of contention within the system that are likely confusing and/or puzzling beyond a small subsection of the team.
+* *Hotspot*: Point of contention within the system that is likely confusing and/or puzzling beyond a small subsection of the team.
+
+* *Aggregate*: An object graph whose state changes consistently and atomically.
 
 NOTE: *Why Domain Events*? When trying to understand a business process, it is convenient to express significant facts or things that happen in that context. It can also be informal and easy for audiences that are uninitiated with this practice.
 
-==== Using Event Storming for the LC Application
+==== Using EventStorming for the LC Application
 
-===== Phase 1: Event Chronology
-Recall significant domain events that happen in the system and paste them on the whiteboard, using Orange post-its as depicted below. Ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow begins to emerge.
-
-.To be updated
-image::event-storming/01-events.png[]
-
-This acts as an aid to understand the big picture.  This also enables people in the room to identify hotspots in the existing business process.  In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, that is applicant does not receive any information when their application is declined.
-
-To address this, we added a new domain event which explicitly indicates that an application is declined, as depicted below.
+===== Outline the event chronology
+During this exercise, we recall significant *domain events* (using orange stickies) that happen in the system and paste them on the whiteboard, as depicted below. We ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow will begin to emerge.
 
 .To be updated
 image::event-storming/01-events.png[]
 
-===== Phase 2: Identify triggering activities and external systems
-Having arrived at a high level understanding of event chronology, the next step is to embellish the visual with activities/a that cause these events to occur (using blue stickies) and interactions with external systems (using ??? stickies) as depicted in the diagram below:
+This acts as an aid to understand the big picture. This also enables people in the room to identify hotspots in the existing business process.  In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, i.e. applicants do not receive any information when their application is declined.
+
+To address this, we add a new domain event which explicitly indicates that an application is declined, as depicted below:
+
+.To be updated
+image::event-storming/01-events.png[]
+
+===== Identify triggering activities and external systems
+Having arrived at a high level understanding of event chronology, the next step is to embellish the visual with *activities/actions* that cause these events to occur (using blue stickies) and interactions with *external systems* (using pink stickies).
 
 .To be updated
 image::event-storming/02-activities-and-external-systems.png[]
 
-===== Phase 3: Capture users, context and policies
-The next step is to capture *users* who perform these activities along with their functional *context* (using yellow stickies) and policies (using purple stickies) as depicted in the diagram below.
+===== Capture users, context and policies
+The next step is to capture *users* who perform these activities along with their functional *context* (using yellow stickies) and policies (using purple stickies).
 
 image::event-storming/03-users-and-policies.png[]
 
-===== Phase 4: Read models
+===== Outline read models
+Every activity requires a certain set of data to be able to be performed. Users will need to view out-of-band data to that they need to act upon and also see the result of their actions. These sets of data are represented as *read models* (using green stickies).
+
 image::event-storming/04-read-models.png[]
 
-===== Phase 5: Grouping Commands and Events into Aggregates
+===== Group commands and events into aggregates
+The final step is to associate activities and the resulting events with an aggregate.
+
+.To be updated
+image::event-storming/04-read-models.png[]
+
+=== Summary
+In this chapter we examined two ways to enhance our collective of the problem domain using two lightweight modeling techniques -- domain storytelling and eventstorming.
+
+Domain storytelling uses a simple pictorial notation to share business knowledge among domain experts and technical team members. Eventstorming, on the other hand, uses a chronological ordering of domain events that occur as part of the business process to gain that same shared understanding.
+
+Domain storytelling can be used as an introductory technique to establish high level understanding of the business domain, while eventstorming can be used to inform detailed design decisions.
+
+In the next chapter, we will start implementation of the business logic, model our aggregate along with commands and domain events.
+
+=== Further Reading
+
+[cols="4,1,6"]
+|===
+|Title |Author |Location
+
+|Domain Storytelling
+|Stefan Hofer and Henning Schwentner
+|https://leanpub.com/domainstorytelling
+
+|Introducing EventStorming
+|Alberto Brandolini
+|https://leanpub.com/introducing_eventstorming
+
+|EventStorming
+|Allen Holub
+|https://learning.oreilly.com/videos/event-storming/0636920362104/
+
+|===
