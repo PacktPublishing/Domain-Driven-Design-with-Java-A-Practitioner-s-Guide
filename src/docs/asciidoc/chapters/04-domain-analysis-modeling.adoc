@@ -1,9 +1,9 @@
 ifndef::imagesdir[:imagesdir: ../images]
 [.text-justify]
-== Domain Analysis and Modeling (30 pages)
+== Domain Analysis and Modeling
 
-[quote,Alberto Brandolini]
-The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
+[quote,Steve Blais]
+The real answer to asking the right questions is simple: keep asking. In the end, the right questions are those that get you the relevant information.
 
 === Introduction
 As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.
@@ -40,10 +40,9 @@ Usually the exporter has a pre-existing relationship with this bank.
 NOTE: It is important to note that the same bank can play more than one role for a given transaction.
 In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
-==== The Issuing Bank LC Application
+==== The LC Issuance Application
 
-XYZ Bank has reached out to us in order to automate the process of LC application and issuance.
-In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
+XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
 === Enhancing Shared Understanding
 
@@ -77,9 +76,7 @@ You’re never going to kill storytelling because it’s built into the human pl
 
 ==== Introducing Domain Storytelling
 
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language, real-world examples, and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members.
-
-NOTE: Attribution to original inventors
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language, real-world examples, and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members. Domain Storytelling is a technique invented and popularized by Stefan Hofer and Henning Schwentner based on some related work done at the University of Hamburg called _cooperation pictures_.
 
 A pictorial notation of the technique is illustrated in the diagram below:
 
@@ -153,6 +150,9 @@ image::domain-story-telling/lc-issue-step06.png[]
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*. But let's focus on issuance right now. We will discuss settlement at a later time."_ +
 
 === EventStorming
+[quote, Alberto Brandolini]
+The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
+
 In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. EventStorming, originally conceived by Alberto Brandolini, is one such method for the collaborative exploration of complex domains.
 
 In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes. Each of the note types (denoted by a color) serve a specific purpose as outlined below:
@@ -174,14 +174,14 @@ In this method, one simply starts by listing out all the events that are signifi
 * *Aggregate*: An object graph whose state changes consistently and atomically.
 
 .EventStorming legend
-image::event-storming/event-storming-summary.png[]
+image::event-storming/event-storming-summary.png[scaledwidth=5  0%]
 
 NOTE: *Why Domain Events*? When trying to understand a business process, it is convenient to express significant facts or things that happen in that context. It can also be informal and easy for audiences that are uninitiated with this practice. This provides an easy to digest visual representation of the domain complexity.
 
-==== Using EventStorming for the LC Application
+==== Using EventStorming for the LC Issuance Application
 Now that we have a high level understanding of the current business process, thanks to the domain storytelling workshop, let's look at how we can delve deeper using eventstorming. The following is an excerpt of the stages from an eventstorming workshop for the same application.
 
-===== Outline the event chronology
+===== 1. Outline the event chronology
 During this exercise, we recall significant *domain events* (using orange stickies) that happen in the system and paste them on the whiteboard, as depicted below. We ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow will begin to emerge.
 
 .Event chronology
@@ -194,19 +194,19 @@ To address this, we added a new domain event which explicitly indicates that an 
 .New event to handle declined applications
 image::event-storming/02-events.png[]
 
-===== Identify triggering activities and external systems
+===== 2. Identify triggering activities and external systems
 Having arrived at a high level understanding of event chronology, the next step is to embellish the visual with *activities/actions* that cause these events to occur (using blue stickies) and interactions with *external systems* (using pink stickies).
 
 .Activities and external systems
 image::event-storming/03-activities-and-external-systems.png[]
 
-===== Capture users, context and policies
+===== 3. Capture users, context and policies
 The next step is to capture *users* who perform these activities along with their functional *context* (using yellow stickies) and policies (using purple stickies).
 
 .Users and policies
 image::event-storming/04-users-and-policies-full.png[]
 
-===== Outline read models
+===== 4. Outline read models
 Every activity requires a certain set of data to be able to be performed. Users will need to view out-of-band data to that they need to act upon and also see the result of their actions. These sets of data are represented as *read models* (using green stickies).
 
 .Big picture eventstorming workshop board
