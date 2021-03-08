@@ -3,14 +3,17 @@ ifndef::imagesdir[:imagesdir: ../images]
 == Domain Analysis and Modeling
 
 [quote,Steve Blais]
-The real answer to asking the right questions is simple: keep asking. In the end, the right questions are those that get you the relevant information.
+The real answer to asking the right questions is simple: keep asking.
+In the end, the right questions are those that get you the relevant information.
 
 === Introduction
+
 As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.
 Arriving at a shared understanding and creating a useful domain model, necessitates high degrees of collaboration with domain experts.
 In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
 
-Developers and architects will learn how to apply these techniques in real life situations to produce elegant software solutions that mirror the problem domain that needs to be solved. Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
+Developers and architects will learn how to apply these techniques in real life situations to produce elegant software solutions that mirror the problem domain that needs to be solved.
+Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
 
 === Introducing the LC Application
 
@@ -42,7 +45,8 @@ In the most complex cases, there can be four distinct banks involved for a trans
 
 ==== The LC Issuance Application
 
-XYZ Bank has reached out to us in order to automate the process of LC application and issuance. In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
+XYZ Bank has reached out to us in order to automate the process of LC application and issuance.
+In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
 === Enhancing Shared Understanding
 
@@ -64,7 +68,7 @@ Some commonly used approaches are listed below:
 * CRC Models
 * Data Flow Diagrams
 
-Above modelling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.
+Above modeling techniques have tried to formalize knowledge and express them in form of a structure diagram or text to help in delivering the business requirements as a software product.
 However, this attempt has not narrowed but has widened the gap between the business and, the software systems.
 
 We will use *domain storytelling* and *eventstorming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
@@ -72,11 +76,15 @@ We will use *domain storytelling* and *eventstorming* as our means to capture bu
 === Domain Storytelling
 
 [quote,Margaret Atwood]
-You’re never going to kill storytelling because it’s built into the human plan. We come with it.
+You’re never going to kill storytelling because it’s built into the human plan.
+We come with it.
 
 ==== Introducing Domain Storytelling
 
-Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively. In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones. Domain storytelling is a collaborative modeling technique that combines a pictorial language, real-world examples, and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members. Domain Storytelling is a technique invented and popularized by Stefan Hofer and Henning Schwentner based on some related work done at the University of Hamburg called _cooperation pictures_.
+Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively.
+In addition, teaching what one has learnt to someone else helps reinforce ideas and also stimulates the formation of new ones.
+Domain storytelling is a collaborative modeling technique that combines a pictorial language, real-world examples, and a workshop format to serve as a very simple, quick and effective technique for sharing knowledge among team members.
+Domain Storytelling is a technique invented and popularized by Stefan Hofer and Henning Schwentner based on some related work done at the University of Hamburg called _cooperation pictures_.
 
 A pictorial notation of the technique is illustrated in the diagram below:
 
@@ -85,59 +93,83 @@ image::dst-summary.png[]
 
 A domain story is conveyed using the following attributes:
 
-*Actors* - Stories are communicated from the perspective of an actor (noun), for example, the issuing bank, who plays an active role in the context of that particular story. It is a good practice to use the ubiquitous language for the particular domain.
+*Actors* - Stories are communicated from the perspective of an actor (noun), for example, the issuing bank, who plays an active role in the context of that particular story.
+It is a good practice to use the ubiquitous language for the particular domain.
 
 *Work Objects* - Actors act on some object, for example, applying for an LC. Again, this would be a term (noun) commonly used in the domain.
 
-*Activities* - Actions (verb) performed by the actor on a work object. Represented by a labelled arrow connecting the actor and the work object.
+*Activities* - Actions (verb) performed by the actor on a work object.
+Represented by a labelled arrow connecting the actor and the work object.
 
 *Annotations* - Used to capture additional information as part of the story, usually represented in few sentences.
 
-*Sequence Numbers* - Usually, stories are told one sentence after the other. Sequence numbers helps capture the sequence of the activities in a story.
+*Sequence Numbers* - Usually, stories are told one sentence after the other.
+Sequence numbers helps capture the sequence of the activities in a story.
 
 *Groups* - An outline to represent a collection of related concepts ranging from repeated/optional activities to sub-domains/organizational boundaries.
 
 ==== Using DST for the LC application
-XYZ Bank has a process that allows processing of LCs. However, this process is very archaic, paper-based and manually intensive. Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason. So they are looking to digitize and simplify this process. We will employ a DST workshop to capture the current business flow. The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
 
+XYZ Bank has a process that allows processing of LCs.
+However, this process is very archaic, paper-based and manually intensive.
+Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason.
+So they are looking to digitize and simplify this process.
+We will employ a DST workshop to capture the current business flow.
+The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
 
 *Patrick* : _"Can you give me a high level overview of a typical LC Flow?"_ +
 *Katie* : _"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."_ +
-*Patrick* : _"What form does this contract take? Is it a formal document? Or is this just a conversation?"_ +
+*Patrick* : _"What form does this contract take?
+Is it a formal document?
+Or is this just a conversation?"_ +
 *Katie* : _"This is just a conversation."_ +
-*Patrick* : _"Oh okay. What does the conversation cover?"_ +
-*Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc. These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
+*Patrick* : _"Oh okay.
+What does the conversation cover?"_ +
+*Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc.
+These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
 
 image::domain-story-telling/lc-issue-step01.png[]
 
 *Patrick* : _"Seems straight forward, so where does the bank come into the picture?"_ +
-*Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions. So they involve a bank as a trusted mediator."_ +
+*Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions.
+So they involve a bank as a trusted mediator."_ +
 *Patrick* : _"What kind of bank is this?"_ +
-*Katie* : "_Usually, there are multiple banks involved. But it all starts with an *issuing bank*._" +
+*Katie* : "_Usually, there are multiple banks involved.
+But it all starts with an *issuing bank*._" +
 *Patrick* : _"What is an issuing bank?"_ +
-*Katie* : _"Any bank that is authorized to mediate international trade deals. This has to be a bank in the importer's country."_ +
+*Katie* : _"Any bank that is authorized to mediate international trade deals.
+This has to be a bank in the importer's country."_ +
 *Patrick* : _"Does the importer need to have an existing relationship with this bank?"_ +
-*Katie* : _"Not necessarily. There may be other banks with whom the importer may have a relationship with -- which in turn liaises with the issuing bank on the importer's behalf. But to keep it simple, let's assume that the importer has an existing relationship with the issuing bank -- which is our bank in this case."_ +
+*Katie* : _"Not necessarily.
+There may be other banks with whom the importer may have a relationship with -- which in turn liaises with the issuing bank on the importer's behalf.
+But to keep it simple, let's assume that the importer has an existing relationship with the issuing bank -- which is our bank in this case."_ +
 *Patrick* : _"Does the importer provide details of the purchase order to the issuing bank to get started?"_ +
-*Katie* : _"Yes. The importer provides the details of the transaction by making an *LC application*."_ +
+*Katie* : _"Yes.
+The importer provides the details of the transaction by making an *LC application*."_ +
 
 image::domain-story-telling/lc-issue-step02.png[]
 
 *Patrick* : _"What does the issuing bank do when they receive this LC application?"_ +
 *Katie* : _"Mainly two things -- whet the financial standing of the importer and the legality of the goods being imported."_ +
-*Patrick* : "Okay. What happens if everything checks out?" +
+*Patrick* : "Okay.
+What happens if everything checks out?" +
 *Katie* : _"The issuing bank approves the LC and notifies the importer."_ +
 
 image::domain-story-telling/lc-issue--step03.png[]
-*Patrick* : _"What happens next? Does the issuing bank contact the exporter now?"_ +
-*Katie* : _"Not yet. It is not that simple. The issuing bank can only deal with a counterpart bank in the exporter's country. This bank is called the *advising bank*."_ +
+*Patrick* : _"What happens next?
+Does the issuing bank contact the exporter now?"_ +
+*Katie* : _"Not yet.
+It is not that simple.
+The issuing bank can only deal with a counterpart bank in the exporter's country.
+This bank is called the *advising bank*."_ +
 
 image::domain-story-telling/lc-issue-step04.png[]
 
 *Patrick* : _"What does the advising bank do?"_ +
 *Katie* : _"The advising bank notifies the exporter about the LC."_ +
 *Patrick* : _"Doesn't the importer need to know that the LC has been advised?"_ +
-*Katie* : _"Yes. The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
+*Katie* : _"Yes.
+The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
 
 image::domain-story-telling/lc-issue-step05.png[]
 
@@ -147,19 +179,26 @@ image::domain-story-telling/lc-issue-step05.png[]
 image::domain-story-telling/lc-issue-step06.png[]
 
 *Patrick* : _"Does the exporter initiate shipping at this time and how do they get paid?"_ +
-*Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*. But let's focus on issuance right now. We will discuss settlement at a later time."_ +
+*Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*.
+But let's focus on issuance right now.
+We will discuss settlement at a later time."_ +
 
 === EventStorming
-[quote, Alberto Brandolini]
+
+[quote,Alberto Brandolini]
 The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
 
-In the previous section, we gained a high level understanding of the LC Issuance process. To be able to build a real-world application, it will help to use a method that delves into the next level of detail. EventStorming, originally conceived by Alberto Brandolini, is one such method for the collaborative exploration of complex domains.
+In the previous section, we gained a high level understanding of the LC Issuance process.
+To be able to build a real-world application, it will help to use a method that delves into the next level of detail.
+EventStorming, originally conceived by Alberto Brandolini, is one such method for the collaborative exploration of complex domains.
 
-In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes. Each of the note types (denoted by a color) serve a specific purpose as outlined below:
+In this method, one simply starts by listing out all the events that are significant to the business domain in roughly chronological order on a wall or whiteboard using a bunch of colored sticky notes.
+Each of the note types (denoted by a color) serve a specific purpose as outlined below:
 
 * *Domain Event*: An event that is significant to the business process -- expressed in past tense.
 
-* *Command*: An action or an activity that may result in one or more domain events occurring. This is either user initiated or system initiated, in response to a domain event.
+* *Command*: An action or an activity that may result in one or more domain events occurring.
+This is either user initiated or system initiated, in response to a domain event.
 
 * *User*: A person who performs a business action/activity.
 
@@ -174,20 +213,30 @@ In this method, one simply starts by listing out all the events that are signifi
 * *Aggregate*: An object graph whose state changes consistently and atomically.
 
 .EventStorming legend
-image::event-storming/event-storming-summary.png[scaledwidth=5  0%]
+image::event-storming/event-storming-summary.png[scaledwidth=50%,align="center"]
 
-NOTE: *Why Domain Events*? When trying to understand a business process, it is convenient to express significant facts or things that happen in that context. It can also be informal and easy for audiences that are uninitiated with this practice. This provides an easy to digest visual representation of the domain complexity.
+NOTE: *Why Domain Events*?
+When trying to understand a business process, it is convenient to express significant facts or things that happen in that context.
+It can also be informal and easy for audiences that are uninitiated with this practice.
+This provides an easy to digest visual representation of the domain complexity.
 
 ==== Using EventStorming for the LC Issuance Application
-Now that we have a high level understanding of the current business process, thanks to the domain storytelling workshop, let's look at how we can delve deeper using eventstorming. The following is an excerpt of the stages from an eventstorming workshop for the same application.
+
+Now that we have a high level understanding of the current business process, thanks to the domain storytelling workshop, let's look at how we can delve deeper using eventstorming.
+The following is an excerpt of the stages from an eventstorming workshop for the same application.
 
 ===== 1. Outline the event chronology
-During this exercise, we recall significant *domain events* (using orange stickies) that happen in the system and paste them on the whiteboard, as depicted below. We ensure that the event stickies are pasted roughly in the chronological order of occurrence.  As the timeline is enforced, the business flow will begin to emerge.
+
+During this exercise, we recall significant *domain events* (using orange stickies) that happen in the system and paste them on the whiteboard, as depicted below.
+We ensure that the event stickies are pasted roughly in the chronological order of occurrence.
+As the timeline is enforced, the business flow will begin to emerge.
 
 .Event chronology
 image::event-storming/01-events.png[]
 
-This acts as an aid to understand the big picture. This also enables people in the room to identify hotspots in the existing business process.  In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, i.e. applicants do not receive any information when their application is declined.
+This acts as an aid to understand the big picture.
+This also enables people in the room to identify hotspots in the existing business process.
+In the above illustration, we realized that, the process to handle "declined LC applications" is sub-optimal, i.e. applicants do not receive any information when their application is declined.
 
 To address this, we added a new domain event which explicitly indicates that an application is declined, as depicted below:
 
@@ -195,26 +244,36 @@ To address this, we added a new domain event which explicitly indicates that an 
 image::event-storming/02-events.png[]
 
 ===== 2. Identify triggering activities and external systems
+
 Having arrived at a high level understanding of event chronology, the next step is to embellish the visual with *activities/actions* that cause these events to occur (using blue stickies) and interactions with *external systems* (using pink stickies).
 
 .Activities and external systems
 image::event-storming/03-activities-and-external-systems.png[]
 
 ===== 3. Capture users, context and policies
+
 The next step is to capture *users* who perform these activities along with their functional *context* (using yellow stickies) and policies (using purple stickies).
 
 .Users and policies
 image::event-storming/04-users-and-policies-full.png[]
 
 ===== 4. Outline read models
-Every activity requires a certain set of data to be able to be performed. Users will need to view out-of-band data to that they need to act upon and also see the result of their actions. These sets of data are represented as *read models* (using green stickies).
+
+Every activity requires a certain set of data to be able to be performed.
+Users will need to view out-of-band data to that they need to act upon and also see the result of their actions.
+These sets of data are represented as *read models* (using green stickies).
 
 .Big picture eventstorming workshop board
 image::event-storming/05-read-models.png[]
 
 NOTE: For both the domain storytelling and eventstorming workshops, it works best when we have approximately 6-8 people participating with a right mix of domain and technology experts.
 
-This concludes the eventstorming workshop to gain a reasonably detailed understanding of the LC application and issuance process. Does this mean that we have concluded the domain requirements gathering process? Not at all -- while we have made significant strides in understanding the domain, there is still a long way to go. The process of elaborating domain requirements is perpetual. Where are we in this continuum? The picture below is an attempt to clarify:
+This concludes the eventstorming workshop to gain a reasonably detailed understanding of the LC application and issuance process.
+Does this mean that we have concluded the domain requirements gathering process?
+Not at all -- while we have made significant strides in understanding the domain, there is still a long way to go.
+The process of elaborating domain requirements is perpetual.
+Where are we in this continuum?
+The picture below is an attempt to clarify:
 
 .Domain requirements elaboration continuum
 image::domain-requirements-elaboration.png[]
@@ -222,9 +281,11 @@ image::domain-requirements-elaboration.png[]
 In subsequent chapters we will examine the other techniques in more detail.
 
 === Summary
+
 In this chapter we examined two ways to enhance our collective understanding of the problem domain using two lightweight modeling techniques -- domain storytelling and eventstorming.
 
-Domain storytelling uses a simple pictorial notation to share business knowledge among domain experts and technical team members. Eventstorming, on the other hand, uses a chronological ordering of domain events that occur as part of the business process to gain that same shared understanding.
+Domain storytelling uses a simple pictorial notation to share business knowledge among domain experts and technical team members.
+Eventstorming, on the other hand, uses a chronological ordering of domain events that occur as part of the business process to gain that same shared understanding.
 
 Domain storytelling can be used as an introductory technique to establish high level understanding of the problem space, while eventstorming can be used to inform detailed design decisions of the solution space.
 
@@ -232,7 +293,7 @@ In the next chapter, we will start implementation of the business logic, model o
 
 === Further Reading
 
-[cols="4,1,6"]
+[cols="3,3,6"]
 |===
 |Title |Author |Location
 
