@@ -285,7 +285,7 @@ He who has a why to live for can bear almost any how.
 In a lot of ways, domain-driven design was way ahead of its time when Eric Evans introduced the concepts and principles back in 2003. DDD seems to have gone from strength to strength. In this section, we will examine why DDD is even more relevant today, than it was when Eric Evans wrote his book on the subject way back in 2003.
 
 ==== Rise of Open Source
-Eric Evans, during his keynote address at the Explore DDD conference in 2017, lamented about how difficult it was to implement even the simplest concepts like immutability in value objects when his book had released. In contrast though, nowadays, it's simply a matter of importing a mature, well documented, tested library like https://projectlombok.org/[Project Lombok] or https://immutables.github.io/[Immutables] to be productive, literally in a matter of minutes. To say that open source software has revolutionized the software industry would be an understatement! At the time of this writing, the public maven repository (https://mvnrepository.com) indexes no less than a staggering *18.3 million artifacts* in a large assortment of popular categories ranging from databases, language runtimes to test frameworks and many many more.
+Eric Evans, during his keynote address at the Explore DDD conference in 2017, lamented about how difficult it was to implement even the simplest concepts like immutability in value objects when his book had released. In contrast though, nowadays, it's simply a matter of importing a mature, well documented, tested library like https://projectlombok.org/[Project Lombok] or https://immutables.github.io/[Immutables] to be productive, literally in a matter of minutes. To say that open source software has revolutionized the software industry would be an understatement! At the time of this writing, the public maven repository (https://mvnrepository.com) indexes no less than a staggering *18.3 million artifacts* in a large assortment of popular categories ranging from databases, language runtimes to test frameworks and many many more as shown in the chart below:
 
 .Open source Java over the years. Source: https://mvnrepository.com/
 [.text-center,link=https://mvnrepository.com/,window=_blank]
@@ -308,9 +308,21 @@ Domain-driven design with its emphasis on dealing with complexity by breaking un
 === Summary
 In this chapter we examined some common reasons for why software projects fail. We saw how inaccurate or misinterpreted requirements, architecture (or the lack thereof), excessive technical debt, etc. can get in the way of meeting business goals and success.
 
-We looked at the basic building blocks of domain-driven design such as domains, subdomains, ubiquitous language, domain models, bounded contexts and context maps. We also examined why the principles and techniques of domain-driven design are still very much relevant in the modern age of microservices and serverless.
+We looked at the basic building blocks of domain-driven design such as domains, subdomains, ubiquitous language, domain models, bounded contexts and context maps. We also examined why the principles and techniques of domain-driven design are still very much relevant in the modern age of microservices and serverless. You should now be able to appreciate the basic terms of DDD and understand why it is important in today’s context.
 
 In the next chapter we will take a closer look at the real-world mechanics of domain-driven design. We will delve deeper into the strategic and tactical design elements of DDD and look at how using these can help form the basis for better communication and create more robust designs.
+
+=== Questions
+
+1. What are the most common reasons for software projects to fail?
+
+2. What do the terms domain and sub-domain mean?
+
+3. What are the different types of sub-domains?
+
+4. What is the difference between sub-domains and bounded contexts?
+
+5. Why is DDD relevant in today’s context?
 
 === Further Reading
 
@@ -382,3 +394,14 @@ In the next chapter we will take a closer look at the real-world mechanics of do
 |Martin Fowler
 |https://martinfowler.com/articles/is-quality-worth-cost.html#WeAreUsedToATrade-offBetweenQualityAndCost
 |===
+
+=== Answers
+1. Refer to section 1.2
+
+2. Refer to sections 1.4.1 and 1.4.2
+
+3. Refer to section 1.4.3
+
+4. Refer to section 1.4.7
+
+5. Refer to section 1.5

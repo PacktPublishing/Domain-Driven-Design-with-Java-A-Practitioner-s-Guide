@@ -1,5 +1,6 @@
 ifndef::imagesdir[:imagesdir: ../images]
 [.text-justify]
+
 == Domain Analysis and Modeling
 
 [quote,Steve Blais]
@@ -14,6 +15,12 @@ In this chapter, we will introduce the sample application we will use throughout
 
 Developers and architects will learn how to apply these techniques in real life situations to produce elegant software solutions that mirror the problem domain that needs to be solved.
 Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
+
+=== Technical requirements
+There are no specific technical requirements for this chapter. However, given that it may become necessary to collaborate remotely as opposed to being in the same room with access to a whiteboard, it will be useful to have access to the following:
+
+1. Digital whiteboard (like https://www.mural.co/ or http://miro.com/)
+2. Online domain storytelling modeler (like https://www.wps.de/modeler/)
 
 === Introducing the LC Application
 
@@ -79,6 +86,7 @@ We will use *domain storytelling* and *eventstorming* as our means to capture bu
 You’re never going to kill storytelling because it’s built into the human plan.
 We come with it.
 
+[#_introducing_domain_storytelling]
 ==== Introducing Domain Storytelling
 
 Scientific research has now proven that learning methods that employ audio-visual aids assist both the teacher and the learners in retaining and internalizing concepts very effectively.
@@ -188,6 +196,8 @@ We will discuss settlement at a later time."_ +
 [quote,Alberto Brandolini]
 The amount of energy necessary to refute bullshit is an order of magnitude bigger than to produce it.
 
+[#_introducing_eventstorming]
+==== Introducing EventStorming
 In the previous section, we gained a high level understanding of the LC Issuance process.
 To be able to build a real-world application, it will help to use a method that delves into the next level of detail.
 EventStorming, originally conceived by Alberto Brandolini, is one such method for the collaborative exploration of complex domains.
@@ -291,6 +301,16 @@ Domain storytelling can be used as an introductory technique to establish high l
 
 In the next chapter, we will start implementation of the business logic, model our aggregate along with commands and domain events.
 
+=== Questions
+
+1. When should you use domain storytelling?
+
+2. Pick an application in your current context. Can you use domain storytelling to capture actors, work objects and activities for the scenario you picked?
+
+3. When should you use eventstorming?
+
+4. Pick an application in your current context. Can you use eventstorming to capture domain events, actors, actions, hotspots, read models, external systems, etc. for the scenario you picked?
+
 === Further Reading
 
 [cols="3,3,6"]
@@ -326,3 +346,10 @@ In the next chapter, we will start implementation of the business logic, model o
 |https://learning.oreilly.com/videos/event-storming/0636920362104/
 
 |===
+
+=== Answers
+
+1. Refer to section <<_introducing_domain_storytelling>>
+2. Share and validate the domain storytelling artifact you created with your teammates.
+3. Refer to section <<_introducing_eventstorming>>
+4. Share and validate the eventstorming artifact you created with your teammates.
