@@ -23,6 +23,33 @@
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.build.directory}/generated-docs</workingDirectory>
+                    <executable>pandoc</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>
+                                <argument>-f</argument>
+                                <argument>docbook</argument>
+                                <argument>-t</argument>
+                                <argument>docx</argument>
+                                <argument>05.xml</argument>
+                                <argument>-o</argument>
+                                <argument>main.docx</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
