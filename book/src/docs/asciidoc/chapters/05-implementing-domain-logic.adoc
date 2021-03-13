@@ -1,3 +1,5 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
 == Implementing Domain Logic (20 pages)
 
 [quote, Eric Evans]
@@ -9,11 +11,17 @@ In the section on <<command-query-responsibility-segregation-cqrs>>, we describe
 
 === Command Handling
 
-==== Aggregate Design
+==== Aggregate design
 
-==== Business Validations
+image::event-storming/05-read-models.png[]
 
-==== State Stored vs Event Sourced Aggregates
+==== Test-Driving the system
+
+==== Structural validations
+
+==== Business validations (Policies)
+
+==== State stored vs event sourced aggregates
 
 === Publishing Events
 

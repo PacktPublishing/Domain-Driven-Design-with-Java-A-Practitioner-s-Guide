@@ -1,5 +1,5 @@
 = Implementing Domain-Driven Design with Java
-Premanand Chandrasekaran <https://github.com/premanandc[@premanandc]>
+Premanand Chandrasekaran<https://github.com/premanandc[@premanandc]> and Karthik Krishnan<https://github.com/karthik-krishnan[@karthik]>
 v1.0, 2020-11-02
 :doctype: book
 :page-layout!:

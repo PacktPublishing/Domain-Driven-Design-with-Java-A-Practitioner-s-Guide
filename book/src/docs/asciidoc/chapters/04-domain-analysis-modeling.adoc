@@ -136,7 +136,7 @@ What does the conversation cover?"_ +
 *Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc.
 These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
 
-image::domain-story-telling/lc-issue-step01.png[]
+image::domain-storytelling/lc-issue-step01.png[]
 
 *Patrick* : _"Seems straight forward, so where does the bank come into the picture?"_ +
 *Katie* : _"This is international trade and both the importer and the exporter need to mitigate the financial risk involved in such business transactions.
@@ -155,7 +155,7 @@ But to keep it simple, let's assume that the importer has an existing relationsh
 *Katie* : _"Yes.
 The importer provides the details of the transaction by making an *LC application*."_ +
 
-image::domain-story-telling/lc-issue-step02.png[]
+image::domain-storytelling/lc-issue-step02.png[]
 
 *Patrick* : _"What does the issuing bank do when they receive this LC application?"_ +
 *Katie* : _"Mainly two things -- whet the financial standing of the importer and the legality of the goods being imported."_ +
@@ -163,7 +163,7 @@ image::domain-story-telling/lc-issue-step02.png[]
 What happens if everything checks out?" +
 *Katie* : _"The issuing bank approves the LC and notifies the importer."_ +
 
-image::domain-story-telling/lc-issue--step03.png[]
+image::domain-storytelling/lc-issue--step03.png[]
 *Patrick* : _"What happens next?
 Does the issuing bank contact the exporter now?"_ +
 *Katie* : _"Not yet.
@@ -171,7 +171,7 @@ It is not that simple.
 The issuing bank can only deal with a counterpart bank in the exporter's country.
 This bank is called the *advising bank*."_ +
 
-image::domain-story-telling/lc-issue-step04.png[]
+image::domain-storytelling/lc-issue-step04.png[]
 
 *Patrick* : _"What does the advising bank do?"_ +
 *Katie* : _"The advising bank notifies the exporter about the LC."_ +
@@ -179,12 +179,12 @@ image::domain-story-telling/lc-issue-step04.png[]
 *Katie* : _"Yes.
 The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
 
-image::domain-story-telling/lc-issue-step05.png[]
+image::domain-storytelling/lc-issue-step05.png[]
 
 *Patrick* : _"How does the exporter know how to proceed?"_ +
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued."_ +
 
-image::domain-story-telling/lc-issue-step06.png[]
+image::domain-storytelling/lc-issue-step06.png[]
 
 *Patrick* : _"Does the exporter initiate shipping at this time and how do they get paid?"_ +
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*.
