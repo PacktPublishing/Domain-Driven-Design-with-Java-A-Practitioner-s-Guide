@@ -97,7 +97,7 @@ Domain Storytelling is a technique invented and popularized by Stefan Hofer and 
 A pictorial notation of the technique is illustrated in the diagram below:
 
 .Domain storytelling summarized
-image::dst-summary.png[]
+image::domain-storytelling/dst-summary.png[]
 
 A domain story is conveyed using the following attributes:
 
