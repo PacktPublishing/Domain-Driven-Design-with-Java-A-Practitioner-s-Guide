@@ -42,7 +42,7 @@
                                 <argument>docbook</argument>
                                 <argument>-t</argument>
                                 <argument>docx</argument>
-                                <argument>05.xml</argument>
+                                <argument>05-implementing-domain-logic.xml</argument>
                                 <argument>-o</argument>
                                 <argument>main.docx</argument>
                             </arguments>
