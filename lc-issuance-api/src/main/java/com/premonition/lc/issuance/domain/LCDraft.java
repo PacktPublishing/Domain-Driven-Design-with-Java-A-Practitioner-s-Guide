@@ -1,7 +1,7 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.InitiateLCDraftCommand;
-import com.premonition.lc.issuance.domain.events.LCDraftInitiatedEvent;
+import com.premonition.lc.issuance.domain.commands.CreateLCDraftCommand;
+import com.premonition.lc.issuance.domain.events.LCDraftCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -20,12 +20,12 @@ public class LCDraft {
     }
 
     @CommandHandler
-    LCDraft(InitiateLCDraftCommand command) {
-        apply(new LCDraftInitiatedEvent(command.getId()));
+    LCDraft(CreateLCDraftCommand command) {
+        apply(new LCDraftCreatedEvent(command.getId()));
     }
 
     @EventSourcingHandler
-    private void on(LCDraftInitiatedEvent event) {
+    private void on(LCDraftCreatedEvent event) {
         this.id = event.getId();
     }
 }

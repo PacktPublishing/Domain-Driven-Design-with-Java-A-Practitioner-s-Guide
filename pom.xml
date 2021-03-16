@@ -53,6 +53,7 @@
         <asciidoctorj.pdf.version>1.5.3</asciidoctorj.pdf.version>
         <jruby.version>9.2.13.0</jruby.version>
         <axon-framework.version>4.4.7</axon-framework.version>
+        <moneta.version>1.4.2</moneta.version>
     </properties>
 
     <dependencyManagement>
@@ -67,6 +68,12 @@
                 <artifactId>axon-test</artifactId>
                 <version>${axon-framework.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.javamoney</groupId>
+                <artifactId>moneta</artifactId>
+                <version>${moneta.version}</version>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
