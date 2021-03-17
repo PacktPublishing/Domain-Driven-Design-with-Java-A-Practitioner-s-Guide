@@ -126,6 +126,7 @@
                             <allow-uri-read>true</allow-uri-read>
                             <graphvizdot>/usr/local/bin/dot</graphvizdot>
                             <source-highlighter>coderay</source-highlighter>
+                            <coderay-css>style</coderay-css>
                         </attributes>
                         <autoReloadInterval>1000</autoReloadInterval>
                     </configuration>
