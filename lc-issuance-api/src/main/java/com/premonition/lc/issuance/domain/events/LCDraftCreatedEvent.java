@@ -1,17 +1,14 @@
 package com.premonition.lc.issuance.domain.events;
 
+import com.premonition.lc.issuance.domain.LCId;
 import lombok.Data;
 
 import javax.money.MonetaryAmount;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 public class LCDraftCreatedEvent {
-    private final UUID id;
+    private final LCId id;
 
     private String applicant;
     private String beneficiary;
@@ -20,7 +17,7 @@ public class LCDraftCreatedEvent {
     private String merchandise;
     private String advisingBank;
 
-    public LCDraftCreatedEvent(UUID id) {
+    public LCDraftCreatedEvent(LCId id) {
         this.id = id;
     }
 }
