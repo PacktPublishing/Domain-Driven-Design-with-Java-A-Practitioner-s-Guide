@@ -1,7 +1,11 @@
 package com.premonition.lc.issuance.domain;
 
+import com.premonition.lc.issuance.domain.commands.AttachDocumentCommand;
 import com.premonition.lc.issuance.domain.commands.CreateLCDraftCommand;
+import com.premonition.lc.issuance.domain.commands.DetachDocumentCommand;
 import com.premonition.lc.issuance.domain.commands.IssueLCCommand;
+import com.premonition.lc.issuance.domain.events.DocumentAttachedEvent;
+import com.premonition.lc.issuance.domain.events.DocumentDetachedEvent;
 import com.premonition.lc.issuance.domain.events.LCDraftCreatedEvent;
 import org.axonframework.messaging.interceptors.BeanValidationInterceptor;
 import org.axonframework.test.aggregate.AggregateTestFixture;
@@ -14,6 +18,7 @@ import java.time.LocalDate;
 
 import static com.premonition.lc.issuance.domain.Country.INDIA;
 import static com.premonition.lc.issuance.domain.Country.USA;
+import static com.premonition.lc.issuance.domain.Document.Type.DRIVING_LICENSE;
 import static java.util.UUID.randomUUID;
 import static javax.money.Monetary.getCurrency;
 
@@ -94,14 +99,14 @@ public class LCDraftAggregateTests {
                 .clientId(ClientId.from(randomUUID()))
                 .build();
 
-        fixture.given()
+        fixture.givenNoPriorActivity()
                 .when(command)
                 .expectException(InvalidBeneficiaryCountryException.class)
                 .expectNoEvents();
     }
 
     @Test
-    void shouldHaveAdvisingBankInTheCountryOfBeneficiary() throws Exception {
+    void shouldHaveAdvisingBankInTheCountryOfBeneficiary() {
         CreateLCDraftCommand command = CreateLCDraftCommand.builder()
                 .id(id)
                 .applicant(applicant)
@@ -127,6 +132,31 @@ public class LCDraftAggregateTests {
         fixture.given(new LCDraftCreatedEvent(id))
                 .when(new IssueLCCommand(id))
                 .expectException(DomainException.class)
+                .expectNoEvents();
+    }
+
+    @Test
+    void shouldAllowAttachingDocument() {
+        final Document document = Document.standard(DRIVING_LICENSE);
+        fixture.given(new LCDraftCreatedEvent(id))
+                .when(new AttachDocumentCommand(id, document))
+                .expectEvents(new DocumentAttachedEvent(id, document));
+    }
+
+    @Test
+    void shouldAllowDetachingDocument() {
+        final Document document = Document.standard(DRIVING_LICENSE);
+        fixture.given(new LCDraftCreatedEvent(id), new DocumentAttachedEvent(id, document))
+                .when(new DetachDocumentCommand(id, document))
+                .expectEvents(new DocumentDetachedEvent(id, document));
+    }
+
+    @Test
+    void shouldNotDetachDocumentThatWasNotPreviouslyAttached() {
+        final Document document = Document.adhoc("Test");
+        fixture.given(new LCDraftCreatedEvent(id))
+                .when(new DetachDocumentCommand(id, document))
+                .expectException(DocumentNotAttachedException.class)
                 .expectNoEvents();
     }
 }
