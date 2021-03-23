@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 import static com.premonition.lc.issuance.domain.Country.INDIA;
 import static com.premonition.lc.issuance.domain.Country.USA;
-import static com.premonition.lc.issuance.domain.Document.Type.DRIVING_LICENSE;
+import static com.premonition.lc.issuance.domain.Document.Type.CERTIFICATE_OF_ORIGIN;
 import static java.util.UUID.randomUUID;
 import static javax.money.Monetary.getCurrency;
 
@@ -137,7 +137,7 @@ public class LCDraftAggregateTests {
 
     @Test
     void shouldAllowAttachingDocument() {
-        final Document document = Document.standard(DRIVING_LICENSE);
+        final Document document = Document.standard(CERTIFICATE_OF_ORIGIN);
         fixture.given(new LCDraftCreatedEvent(id))
                 .when(new AttachDocumentCommand(id, document))
                 .expectEvents(new DocumentAttachedEvent(id, document));
@@ -145,7 +145,7 @@ public class LCDraftAggregateTests {
 
     @Test
     void shouldAllowDetachingDocument() {
-        final Document document = Document.standard(DRIVING_LICENSE);
+        final Document document = Document.standard(CERTIFICATE_OF_ORIGIN);
         fixture.given(new LCDraftCreatedEvent(id), new DocumentAttachedEvent(id, document))
                 .when(new DetachDocumentCommand(id, document))
                 .expectEvents(new DocumentDetachedEvent(id, document));
