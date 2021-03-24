@@ -22,14 +22,14 @@ There are no specific technical requirements for this chapter. However, given th
 1. Digital whiteboard (like https://www.mural.co/ or http://miro.com/)
 2. Online domain storytelling modeler (like https://www.wps.de/modeler/)
 
-=== Introducing the LC Application
+=== Introducing the LC application
 
 In many countries, international trade represents a significant portion of the gross domestic product (GDP) -- making an exchange of capital, goods, and services between untrusted parties spread across the globe a necessity.
 While economic organizations such as the World Trade Organization (WTO) were formed specifically to ease and facilitate this process, differences in factors such as economic policy, trade laws, currency, etc. ensure that carrying out trade internationally can be a complex process with several entities involved across countries.
 Letter of Credit exist to simplify this process.
 Let's take a look at how they work.
 
-==== What is a Letter of Credit (LC)?
+==== What is a Letter of Credit (LC)
 
 Documentary Letter of Credit (LC) is a financial instrument issued by the banks as a contract between the importer (or buyer) and the exporter (or seller).
 This contract specifies terms and conditions of the transaction under which importer promises to pay the exporter in exchange for the goods or services provided by the exporter.
@@ -50,12 +50,12 @@ Usually the exporter has a pre-existing relationship with this bank.
 NOTE: It is important to note that the same bank can play more than one role for a given transaction.
 In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
-==== The LC Issuance Application
+==== The LC issuance application
 
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance.
 In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
 
-=== Enhancing Shared Understanding
+=== Enhancing shared understanding
 
 When working with a problem where domain concepts are unclear, there is a need to arrive at a common understanding among key team members (both those that have bright ideas -- the business/product people, and those that translate those ideas into working software -- the software developers).
 For this process to be effective, we tend to look for approaches that are:
@@ -80,7 +80,7 @@ However, this attempt has not narrowed but has widened the gap between the busin
 
 We will use *domain storytelling* and *eventstorming* as our means to capture business knowledge from domain experts for consumption of Developers, Business Analysts etc.
 
-=== Domain Storytelling
+=== Domain storytelling
 
 [quote,Margaret Atwood]
 You’re never going to kill storytelling because it’s built into the human plan.
@@ -128,13 +128,13 @@ The following is an excerpt of a conversation between *Katie*, __the domain expe
 *Patrick* : _"Can you give me a high level overview of a typical LC Flow?"_ +
 *Katie* : _"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."_ +
 *Patrick* : _"What form does this contract take?
-Is it a formal document?
+Is it a formal documentClause?
 Or is this just a conversation?"_ +
 *Katie* : _"This is just a conversation."_ +
 *Patrick* : _"Oh okay.
 What does the conversation cover?"_ +
 *Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc.
-These details may be captured in a purchase order -- which is a simple document elaborating the above._ +
+These details may be captured in a purchase order -- which is a simple documentClause elaborating the above._ +
 
 image::domain-storytelling/lc-issue-step01.png[]
 
@@ -225,12 +225,12 @@ This is either user initiated or system initiated, in response to a domain event
 .EventStorming legend
 image::event-storming/event-storming-summary.png[scaledwidth=50%,align="center"]
 
-NOTE: *Why Domain Events*?
+NOTE: *Why domain events*?
 When trying to understand a business process, it is convenient to express significant facts or things that happen in that context.
 It can also be informal and easy for audiences that are uninitiated with this practice.
 This provides an easy to digest visual representation of the domain complexity.
 
-==== Using EventStorming for the LC Issuance Application
+==== Using eventStorming for the LC issuance application
 
 Now that we have a high level understanding of the current business process, thanks to the domain storytelling workshop, let's look at how we can delve deeper using eventstorming.
 The following is an excerpt of the stages from an eventstorming workshop for the same application.

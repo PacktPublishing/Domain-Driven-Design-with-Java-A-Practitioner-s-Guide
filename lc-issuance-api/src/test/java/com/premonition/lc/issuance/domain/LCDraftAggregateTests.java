@@ -1,12 +1,10 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.AttachDocumentCommand;
-import com.premonition.lc.issuance.domain.commands.CreateLCDraftCommand;
-import com.premonition.lc.issuance.domain.commands.DetachDocumentCommand;
-import com.premonition.lc.issuance.domain.commands.IssueLCCommand;
-import com.premonition.lc.issuance.domain.events.DocumentAttachedEvent;
-import com.premonition.lc.issuance.domain.events.DocumentDetachedEvent;
+import com.premonition.lc.issuance.domain.commands.*;
+import com.premonition.lc.issuance.domain.events.DocumentClauseAddedEvent;
+import com.premonition.lc.issuance.domain.events.DocumentClauseRemovedEvent;
 import com.premonition.lc.issuance.domain.events.LCDraftCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCDraftSubmittedEvent;
 import org.axonframework.messaging.interceptors.BeanValidationInterceptor;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 
 import static com.premonition.lc.issuance.domain.Country.INDIA;
 import static com.premonition.lc.issuance.domain.Country.USA;
-import static com.premonition.lc.issuance.domain.Document.Type.CERTIFICATE_OF_ORIGIN;
 import static java.util.UUID.randomUUID;
 import static javax.money.Monetary.getCurrency;
 
@@ -136,27 +133,63 @@ public class LCDraftAggregateTests {
     }
 
     @Test
-    void shouldAllowAttachingDocument() {
-        final Document document = Document.standard(CERTIFICATE_OF_ORIGIN);
+    void shouldAllowAddingDocumentClause() {
+        final DocumentClause documentClause = DocumentClause.CERTIFICATE_OF_ORIGIN;
         fixture.given(new LCDraftCreatedEvent(id))
-                .when(new AttachDocumentCommand(id, document))
-                .expectEvents(new DocumentAttachedEvent(id, document));
+                .when(new AddDocumentClauseCommand(id, documentClause))
+                .expectEvents(new DocumentClauseAddedEvent(id, documentClause));
     }
 
     @Test
-    void shouldAllowDetachingDocument() {
-        final Document document = Document.standard(CERTIFICATE_OF_ORIGIN);
-        fixture.given(new LCDraftCreatedEvent(id), new DocumentAttachedEvent(id, document))
-                .when(new DetachDocumentCommand(id, document))
-                .expectEvents(new DocumentDetachedEvent(id, document));
+    void shouldIgnoreAdditionOfDuplicateDocumentClause() {
+        final DocumentClause documentClause = DocumentClause.CERTIFICATE_OF_ORIGIN;
+        fixture.given(new LCDraftCreatedEvent(id), new DocumentClauseAddedEvent(id, documentClause))
+                .when(new AddDocumentClauseCommand(id, documentClause))
+                .expectNoEvents()
+                .expectSuccessfulHandlerExecution();
     }
 
     @Test
-    void shouldNotDetachDocumentThatWasNotPreviouslyAttached() {
-        final Document document = Document.adhoc("Test");
+    void shouldAllowRemovingDocumentClauseIfAlreadyAdded() {
+        final DocumentClause documentClause = DocumentClause.CERTIFICATE_OF_ORIGIN;
+        fixture.given(new LCDraftCreatedEvent(id), new DocumentClauseAddedEvent(id, documentClause))
+                .when(new RemoveDocumentClauseCommand(id, documentClause))
+                .expectEvents(new DocumentClauseRemovedEvent(id, documentClause));
+    }
+
+    @Test
+    void shouldNotRemoveDocumentClauseThatWasNotPreviouslyAdded() {
+        final DocumentClause documentClause = DocumentClause.adhoc("Test");
         fixture.given(new LCDraftCreatedEvent(id))
-                .when(new DetachDocumentCommand(id, document))
-                .expectException(DocumentNotAttachedException.class)
+                .when(new RemoveDocumentClauseCommand(id, documentClause))
+                .expectException(DocumentClauseNotAddedException.class)
+                .expectNoEvents();
+    }
+
+    @Test
+    void shouldAllowDraftToBeSubmittedWhenCertificateOfOriginClauseIsAdded() {
+        fixture.given(
+                new LCDraftCreatedEvent(id),
+                new DocumentClauseAddedEvent(id, DocumentClause.CERTIFICATE_OF_ORIGIN))
+                .when(new SubmitLCDraftCommand(id))
+                .expectEvents(new LCDraftSubmittedEvent(id));
+    }
+
+    @Test
+    void shouldNotAllowSubmitWithoutACertificateOfOrigin() {
+        fixture.given(new LCDraftCreatedEvent(id))
+                .when(new SubmitLCDraftCommand(id))
+                .expectException(MissingRequiredDocumentException.class)
+                .expectNoEvents();
+    }
+
+    @Test
+    void shouldAllowSubmittingOnlyIfInDraftState() {
+        fixture.given(new LCDraftCreatedEvent(id),
+                new DocumentClauseAddedEvent(id, DocumentClause.CERTIFICATE_OF_ORIGIN),
+                new LCDraftSubmittedEvent(id))
+                .when(new SubmitLCDraftCommand(id))
+                .expectException(DomainException.class)
                 .expectNoEvents();
     }
 }

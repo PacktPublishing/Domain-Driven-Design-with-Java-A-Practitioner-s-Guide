@@ -1,12 +1,10 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.AttachDocumentCommand;
-import com.premonition.lc.issuance.domain.commands.CreateLCDraftCommand;
-import com.premonition.lc.issuance.domain.commands.DetachDocumentCommand;
-import com.premonition.lc.issuance.domain.commands.IssueLCCommand;
-import com.premonition.lc.issuance.domain.events.DocumentAttachedEvent;
-import com.premonition.lc.issuance.domain.events.DocumentDetachedEvent;
+import com.premonition.lc.issuance.domain.commands.*;
+import com.premonition.lc.issuance.domain.events.DocumentClauseAddedEvent;
+import com.premonition.lc.issuance.domain.events.DocumentClauseRemovedEvent;
 import com.premonition.lc.issuance.domain.events.LCDraftCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCDraftSubmittedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -14,6 +12,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.premonition.lc.issuance.domain.LCDraft.State.SUBMITTED;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 public class LCDraft {
@@ -21,7 +20,7 @@ public class LCDraft {
     @AggregateIdentifier
     private LCId id;
     private State state;
-    private Set<Document> documents;
+    private Set<DocumentClause> documentClauses;
 
     @SuppressWarnings("unused")
     private LCDraft() {
@@ -29,7 +28,7 @@ public class LCDraft {
     }
 
     @CommandHandler
-    LCDraft(CreateLCDraftCommand command) {
+    private LCDraft(CreateLCDraftCommand command) {
         validateCountryOfBeneficiary(command.countryOfBeneficiary(), command.countryOfApplicant());
         validateCountryOfAdvisingBank(command.countryOfAdvisingBank(), command.countryOfBeneficiary());
         apply(new LCDraftCreatedEvent(command.getId()));
@@ -48,41 +47,60 @@ public class LCDraft {
     }
 
     @CommandHandler
-    void issue(IssueLCCommand command) {
+    private void issue(IssueLCCommand command) {
         if (state == State.DRAFT) {
             throw new DomainException("Cannot issue LC in draft state!");
         }
     }
 
     @CommandHandler
-    void attach(AttachDocumentCommand command) {
-        apply(new DocumentAttachedEvent(id, command.getDocument()));
+    private void addDocumentClause(AddDocumentClauseCommand command) {
+        if (!documentClauses.contains(command.getDocumentClause())) {
+            apply(new DocumentClauseAddedEvent(id, command.getDocumentClause()));
+        }
     }
 
     @CommandHandler
-    void detach(DetachDocumentCommand command) {
-        if (!documents.contains(command.getDocument())) {
-            throw new DocumentNotAttachedException(command.getDocument());
+    private void removeDocumentClause(RemoveDocumentClauseCommand command) {
+        if (!documentClauses.contains(command.getDocumentClause())) {
+            throw new DocumentClauseNotAddedException();
         }
-        apply(new DocumentDetachedEvent(id, command.getDocument()));
+        apply(new DocumentClauseRemovedEvent(id, command.getDocumentClause()));
+    }
+
+    @CommandHandler
+    private void submit(SubmitLCDraftCommand command) {
+        if (!documentClauses.contains(DocumentClause.CERTIFICATE_OF_ORIGIN)) {
+            throw new MissingRequiredDocumentException("Cannot submit without attaching a certificate of origin document.");
+        }
+        if (state != State.DRAFT) {
+            throw new DomainException("");
+        }
+        apply(new LCDraftSubmittedEvent(command.getId()));
     }
 
     @EventSourcingHandler
     private void on(LCDraftCreatedEvent event) {
         this.id = event.getId();
         this.state = State.DRAFT;
-        this.documents = new HashSet<>();
+        this.documentClauses = new HashSet<>();
     }
 
     @EventSourcingHandler
-    private void on(DocumentAttachedEvent event) {
-        this.documents.add(event.getDocument());
+    private void on(DocumentClauseAddedEvent event) {
+        this.documentClauses.add(event.getDocumentClause());
     }
 
     @EventSourcingHandler
-    private void on(DocumentDetachedEvent event) {
-        this.documents.remove(event.getDocument());
+    private void on(DocumentClauseRemovedEvent event) {
+        this.documentClauses.remove(event.getDocumentClause());
     }
+
+    @EventSourcingHandler
+    private void on(LCDraftSubmittedEvent event) {
+        this.state = SUBMITTED;
+    }
+
 
     public enum State {
         DRAFT, SUBMITTED, ISSUED
