@@ -1,0 +1,30 @@
+{
+  "applicant": {
+    "name": "Super Applicant",
+    "address": {
+      "line1": "123 Awesome St",
+      "city": "Cincinnati",
+      "postalCode": "45249",
+      "country": "USA"
+    }
+  },
+  "beneficiary": {
+    "name": "Super Applicant",
+    "address": {
+      "line1": "123 Awesome St",
+      "city": "Cincinnati",
+      "postalCode": "45249",
+      "country": "USA"
+    }
+  },
+  "issueDate": "2018-10-13",
+  "amount": {
+    "value": 10000,
+    "currency": "USD"
+  },
+  "merchandise": "Amazing product",
+  "advisingBank": {
+    "id": "5bc3bd25-4c87-4137-a639-0c50146381af",
+    "country": "USA"
+  }
+}

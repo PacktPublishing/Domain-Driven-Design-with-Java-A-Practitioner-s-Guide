@@ -6,8 +6,8 @@ ifndef::imagesdir[:imagesdir: ../images]
 [.text-justify]
 == The Rationale for Domain-Driven Design
 
-[quote, Frank Sonnenberg, "Soul Food: Change Your Thinking, Change Your Life"]
-Before acting on any recommendation, know the rationale.
+[quote, Mary Wollstonecraft]
+The being cannot be termed rational or virtuous, who obeys any authority, but that of reason.
 
 === Introduction
 

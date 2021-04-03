@@ -8,6 +8,11 @@ public class BankId extends BaseId {
         super(id);
     }
 
+    @SuppressWarnings("unused")
+    private BankId(String id) {
+        this(UUID.fromString(id));
+    }
+
     public static BankId from(UUID id) {
         return new BankId(id);
     }

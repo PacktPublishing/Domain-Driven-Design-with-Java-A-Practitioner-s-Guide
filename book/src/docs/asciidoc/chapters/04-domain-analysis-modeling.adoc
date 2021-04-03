@@ -9,12 +9,16 @@ In the end, the right questions are those that get you the relevant information.
 
 === Introduction
 
-As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.
-Arriving at a shared understanding and creating a useful domain model, necessitates high degrees of collaboration with domain experts.
-In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
+As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail. Arriving at a shared understanding and creating a useful domain model necessitates high degrees of collaboration with domain experts. In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
 
-Developers and architects will learn how to apply these techniques in real life situations to produce elegant software solutions that mirror the problem domain that needs to be solved.
-Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
+The following topics will be covered in this chapter:
+
+ * Introducing the example application (Letter of Credit)
+ * Enhancing shared understanding
+ * Domain storytelling
+ * EventStorming
+
+This chapter will help developers and architects learn how to apply these techniques in real-life situations to produce elegant software solutions that mirror the problem domain that needs to be solved. Similarly, non-technical domain experts will understand how to communicate their ideas and collaborate effectively with technical team members to accelerate the process of arriving at a shared understanding.
 
 === Technical requirements
 There are no specific technical requirements for this chapter. However, given that it may become necessary to collaborate remotely as opposed to being in the same room with access to a whiteboard, it will be useful to have access to the following:

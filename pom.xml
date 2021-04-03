@@ -54,6 +54,8 @@
         <jruby.version>9.2.13.0</jruby.version>
         <axon-framework.version>4.4.7</axon-framework.version>
         <moneta.version>1.4.2</moneta.version>
+        <commons-io.version>2.8.0</commons-io.version>
+        <jackson-datatype-money.version>1.2.1</jackson-datatype-money.version>
     </properties>
 
     <dependencyManagement>
@@ -75,6 +77,17 @@
                 <version>${moneta.version}</version>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>jackson-datatype-money</artifactId>
+                <version>${jackson-datatype-money.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>
