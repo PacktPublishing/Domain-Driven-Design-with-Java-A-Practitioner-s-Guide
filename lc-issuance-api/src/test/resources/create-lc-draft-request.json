@@ -9,15 +9,15 @@
     }
   },
   "beneficiary": {
-    "name": "Super Applicant",
+    "name": "Super Beneficiary",
     "address": {
-      "line1": "123 Awesome St",
-      "city": "Cincinnati",
-      "postalCode": "45249",
-      "country": "USA"
+      "line1": "123 Brilliant Ave",
+      "city": "Bengaluru",
+      "postalCode": "560048",
+      "country": "INDIA"
     }
   },
-  "issueDate": "2018-10-13",
+  "issueDate": "2022-10-13",
   "amount": {
     "value": 10000,
     "currency": "USD"
@@ -25,6 +25,6 @@
   "merchandise": "Amazing product",
   "advisingBank": {
     "id": "5bc3bd25-4c87-4137-a639-0c50146381af",
-    "country": "USA"
+    "country": "INDIA"
   }
 }

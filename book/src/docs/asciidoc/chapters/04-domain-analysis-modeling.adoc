@@ -3,9 +3,8 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 == Domain Analysis and Modeling
 
-[quote,Steve Blais]
-The real answer to asking the right questions is simple: keep asking.
-In the end, the right questions are those that get you the relevant information.
+[quote,Chinese Proverb]
+He who asks a question remains a fool for five minutes. He who does not ask remains a fool forever.
 
 === Introduction
 
@@ -58,6 +57,8 @@ In the most complex cases, there can be four distinct banks involved for a trans
 
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance.
 In this chapter, and indeed the rest of this book, we will strive to understand, evolve, design and build a software solution to automate this process.
+
+We understand that unless one is an expert dealing with international trade, it is unlikely that one would have an intimate understanding of concepts like Letters of Credit (LCs). In the upcoming section, we will look at demystifying LCs and how to work with them.
 
 === Enhancing shared understanding
 
@@ -125,9 +126,10 @@ Sequence numbers helps capture the sequence of the activities in a story.
 XYZ Bank has a process that allows processing of LCs.
 However, this process is very archaic, paper-based and manually intensive.
 Very few at the bank fully understand the process end-to-end and natural attrition has meant that the process is overly complex without good reason.
-So they are looking to digitize and simplify this process.
-We will employ a DST workshop to capture the current business flow.
-The following is an excerpt of a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
+So they are looking to digitize and simplify this process. DST itself is just a graphical notation which can be done in isolation. However, it is typical to not do this on your own and employ a workshop style with domain experts and software experts working collaboratively.
+
+In this section, we will employ a DST workshop to capture the current business flow.
+The following is an excerpt of such a conversation between *Katie*, __the domain expert__ and *Patrick*, __the software developer__.
 
 *Patrick* : _"Can you give me a high level overview of a typical LC Flow?"_ +
 *Katie* : _"Sure, it all begins with the importer and the exporter entering into a contract for purchase of goods or services."_ +
@@ -140,6 +142,9 @@ What does the conversation cover?"_ +
 *Katie* : _Several things -- nature and quantity of goods, pricing details, payment terms, shipment costs and timelines, insurance, warranty, etc.
 These details may be captured in a purchase order -- which is a simple documentClause elaborating the above._ +
 
+At this time, Patrick draws this part of the interaction between the importer and the exporter. This graphic is depicted in the following diagram:
+
+.Interaction between importer and exporter
 image::domain-storytelling/lc-issue-step01.png[]
 
 *Patrick* : _"Seems straight forward, so where does the bank come into the picture?"_ +
@@ -159,6 +164,7 @@ But to keep it simple, let's assume that the importer has an existing relationsh
 *Katie* : _"Yes.
 The importer provides the details of the transaction by making an *LC application*."_ +
 
+.Introducing the LC and the issuing bank
 image::domain-storytelling/lc-issue-step02.png[]
 
 *Patrick* : _"What does the issuing bank do when they receive this LC application?"_ +
@@ -167,7 +173,8 @@ image::domain-storytelling/lc-issue-step02.png[]
 What happens if everything checks out?" +
 *Katie* : _"The issuing bank approves the LC and notifies the importer."_ +
 
-image::domain-storytelling/lc-issue--step03.png[]
+.Notifying LC approval to the importer
+image::domain-storytelling/lc-issue-step03.png[]
 *Patrick* : _"What happens next?
 Does the issuing bank contact the exporter now?"_ +
 *Katie* : _"Not yet.
@@ -175,6 +182,7 @@ It is not that simple.
 The issuing bank can only deal with a counterpart bank in the exporter's country.
 This bank is called the *advising bank*."_ +
 
+.Introducing the advising bank
 image::domain-storytelling/lc-issue-step04.png[]
 
 *Patrick* : _"What does the advising bank do?"_ +
@@ -183,17 +191,23 @@ image::domain-storytelling/lc-issue-step04.png[]
 *Katie* : _"Yes.
 The issuing bank notifies the importer that the LC has been advised to the exporter."_ +
 
+.Advice notification to the importer
 image::domain-storytelling/lc-issue-step05.png[]
 
 *Patrick* : _"How does the exporter know how to proceed?"_ +
 *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued."_ +
 
+.Dispatching the advice to the exporter
 image::domain-storytelling/lc-issue-step06.png[]
 
 *Patrick* : _"Does the exporter initiate shipping at this time and how do they get paid?"_ +
-*Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- which is called *settlement*.
+ *Katie* : _"Through the advising bank -- they notify the exporter that the LC was issued and this triggers the next steps in the process -- this process of settling the payment is called *settlement*.
 But let's focus on issuance right now.
 We will discuss settlement at a later time."_ +
+
+We have now looked at an excerpt of a typical DST workshop. The DST workshop has served to provide a reasonably good understanding of the high level business flow. Note that we have not referenced any technical artifacts during the process.
+
+To be able to refine this flow and convert it into a form that can be used to design the software solution, we will need to further enhance this view. In the upcoming section, we will use EventStorming as a structured approach to achieve that.
 
 === EventStorming
 
@@ -225,6 +239,8 @@ This is either user initiated or system initiated, in response to a domain event
 * *Hotspot*: Point of contention within the system that is likely confusing and/or puzzling beyond a small subsection of the team.
 
 * *Aggregate*: An object graph whose state changes consistently and atomically.
+
+The depiction of the stickies for our EventStorming workshop is shown here:
 
 .EventStorming legend
 image::event-storming/event-storming-summary.png[scaledwidth=50%,align="center"]
@@ -303,7 +319,7 @@ Eventstorming, on the other hand, uses a chronological ordering of domain events
 
 Domain storytelling can be used as an introductory technique to establish high level understanding of the problem space, while eventstorming can be used to inform detailed design decisions of the solution space.
 
-In the next chapter, we will start implementation of the business logic, model our aggregate along with commands and domain events.
+With this knowledge, we should be able to dive deeper into the technical aspects of solution implementation. In the next chapter, we will start implementation of the business logic, model our aggregate along with commands and domain events.
 
 === Questions
 
@@ -347,7 +363,7 @@ In the next chapter, we will start implementation of the business logic, model o
 
 |EventStorming
 |Allen Holub
-|https://learning.oreilly.com/videos/event-storming/0636920362104/
+|https://holub.com/event-storming/
 
 |===
 

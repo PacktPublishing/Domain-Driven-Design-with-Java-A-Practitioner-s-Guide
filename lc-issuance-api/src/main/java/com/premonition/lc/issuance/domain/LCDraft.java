@@ -8,6 +8,7 @@ import com.premonition.lc.issuance.domain.events.LCDraftSubmittedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.spring.stereotype.Aggregate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 import static com.premonition.lc.issuance.domain.LCDraft.State.SUBMITTED;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+@Aggregate
 public class LCDraft {
 
     @AggregateIdentifier
