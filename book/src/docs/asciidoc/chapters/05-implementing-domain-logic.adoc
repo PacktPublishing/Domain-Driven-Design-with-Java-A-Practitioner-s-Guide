@@ -5,17 +5,96 @@ ifndef::imagesdir[:imagesdir: ../images]
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the Online Order application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
+In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
 
 === Technical Requirements
+* Java 1.8+ (We have used Java 14 to compile sample sources)
+* Maven 3.x
+* Spring Boot 2.4.*
+* JUnit 5.7.x (Included with spring boot)
+* Axon Framework 4.4.7 (DDD and CQRS Framework)
+* Project Lombok (To reduce verbosity)
+* Karate 1.0.1 (API Testing)
+* Moneta 1.4.x (Money and currency reference implementation - JSR 354)
 
-=== Command Handling
+=== Command Query Responsibility Segregation (CQRS)
+In this chapter, we will make use of the Command Query Responsibility Segregation (CQRS) architecture pattern to express the domain logic for our solution. The CQRS pattern strictly separates *write* (those that mutate state) and *read* (those that answer questions) operations.
 
-==== Aggregate design
+==== Recap: What is CQRS
+In traditional applications, a single data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
+
+.Traditional vs. CQRS Architecture
+image::cqrs/traditional-vs-cqrs-architecture.png[]
+
+NOTE: We depict a single read model above for brevity. In reality though, more than one read model may need to be created, depending on the kinds of use cases that need to be supported.
+
+For this to work predictably, the read model(s) need to be kept in sync with the write models (we will examine some of these techniques in detail later.
+
+==== Why CQRS
+The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios. We discuss some of these scenarios below:
+
+* *Volume imbalance between read and writes*: In most systems, read operations often outnumber write operations by significant orders of magnitude. For example, consider the number of times a trader checks stock prices vs. the number of times they actually transact (buy or sell stock trades). It is also usually true that write operations are the ones that make businesses money. Having a single model for both reads and writes in a system with a majority of read operations can overwhelm a system to an extent where write performance can start getting affected.
+
+* *Need for multiple read representations*: When working with relatively complex systems, it is not uncommon to require more than one representation of the same data. For example, when looking at personal health data, one may want to look at a daily, weekly, monthly view. While these views can be computed on the fly from the _raw_ data, each transformation (aggregation, summarization, etc.) adds to the cognitive load on the system. Several times, it is not possible to predict ahead of time, the nature of these requirements. By extension, it is not feasible to design a single canonical model that can provide answers to all these requirements. Creating domain models specifically designed to meet a focused set of requirements can be much easier.
+
+* *Different security requirements*: Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
+
+* *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+
+As a reminder, this is the output produced from our eventstorming session:
 
 image::event-storming/05-read-models.png[]
 
-==== Test-Driving the system
+The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
+
+NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon because it provides a set of conveniences while staying out of the way. There are other frameworks that work comparably, like Lagom Framework (https://www.lagomframework.com/) and Eventuate (https://eventuate.io/).
+
+=== Bootstrapping the application
+
+To get started, let's create a simple spring boot application using the following command:
+[source,bash]
+----
+curl -G https://start.spring.io/starter.zip \
+            -d dependencies=web,data-jpa,lombok,validation,h2,actuator \ # <1>
+            -d name=lc-issuance-api \
+            -d artifactId=lc-issuance-api \
+            -d groupId=com.example.api \
+            -d packaging=jar \
+            -d description='LC Issuance API' \
+            -d package-name=com.example.api \
+            -o lc-issuance-api.zip # <2>
+----
+<1> The list of dependencies separated by a comma
+<2> The name of the archive containing the generated sources
+
+This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice.
+
+Add the following dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
+
+[source,xml]
+----
+        <dependency>
+            <groupId>org.axonframework</groupId>
+            <artifactId>axon-spring-boot-starter</artifactId>
+            <version>4.4.7</version>
+        </dependency>
+----
+Also add the following dependency on the `axon-test` library to enable unit testing of aggregates:
+[source,xml]
+----
+        <dependency>
+            <groupId>org.axonframework</groupId>
+            <artifactId>axon-test</artifactId>
+            <scope>test</scope>
+            <version>4.4.7</version>
+        </dependency>
+----
+
+=== Command handling
+
+==== Aggregate design
+
+==== Test-driving the system
 
 ==== Structural validations
 
@@ -23,7 +102,7 @@ image::event-storming/05-read-models.png[]
 
 ==== State stored vs event sourced aggregates
 
-=== Publishing Events
+=== Publishing events
 
-=== Exposing a REST-based API for Commands
+=== Exposing a REST-based API for commands
 
