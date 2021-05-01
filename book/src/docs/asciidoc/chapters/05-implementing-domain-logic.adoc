@@ -41,45 +41,42 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-As a reminder, this is the output produced from our eventstorming session:
-
-image::event-storming/05-read-models.png[]
-
-The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
-
-NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon because it provides a set of conveniences while staying out of the way. There are other frameworks that work comparably, like Lagom Framework (https://www.lagomframework.com/) and Eventuate (https://eventuate.io/).
+NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon Framework because in our opinion it provides a set of conveniences while staying out of the way. There are other frameworks that work comparably, like Lagom Framework (https://www.lagomframework.com/) and Eventuate (https://eventuate.io/) that are worth exploring as well.
 
 === Bootstrapping the application
 
 To get started, let's create a simple spring boot application using the following command:
 [source,bash]
 ----
-curl -G https://start.spring.io/starter.zip \
-            -d dependencies=web,data-jpa,lombok,validation,h2,actuator \ # <1>
-            -d name=lc-issuance-api \
-            -d artifactId=lc-issuance-api \
-            -d groupId=com.example.api \
-            -d packaging=jar \
-            -d description='LC Issuance API' \
-            -d package-name=com.example.api \
-            -o lc-issuance-api.zip # <2>
+curl -G https://start.spring.io/starter.zip \ # <1>
+       -d dependencies=web,data-jpa,lombok,validation,h2,actuator \ # <2>
+       -d name=lc-issuance-api \
+       -d artifactId=lc-issuance-api \
+       -d groupId=com.example.api \
+       -d packaging=jar \
+       -d description='LC Issuance API' \
+       -d package-name=com.example.api \
+       -o lc-issuance-api.zip # <3>
 ----
-<1> The list of dependencies separated by a comma
-<2> The name of the archive containing the generated sources
+<1> The spring initializr to create the application archive in zip form
+<2> The list of dependencies separated by a comma
+<3> The name of the archive containing the generated sources
 
-This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice.
+NOTE: Alternatively, you can use use the spring initializr directly at https://start.spring.io or the spring boot CLI to generate the application.
 
-Add the following dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
+This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice and add a dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
 
 [source,xml]
 ----
         <dependency>
             <groupId>org.axonframework</groupId>
             <artifactId>axon-spring-boot-starter</artifactId>
-            <version>4.4.7</version>
+            <version>4.4.7</version> <!--1-->
         </dependency>
 ----
-Also add the following dependency on the `axon-test` library to enable unit testing of aggregates:
+<1> You may need to change the version
+
+Also, add the following dependency on the `axon-test` library to enable unit testing of aggregates:
 [source,xml]
 ----
         <dependency>
@@ -90,9 +87,78 @@ Also add the following dependency on the `axon-test` library to enable unit test
         </dependency>
 ----
 
+With the above set up, you should be able to run the application and start implementing the LC issuance functionality.
+
+As a reminder, this is the output produced from our eventstorming session:
+
+image::event-storming/05-read-models.png[]
+
+The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
+
 === Command handling
+From the eventstorming session, we have the following commands:
+
+[.text-center]
+[plantuml,potential-aggregates]
+....
+@startuml
+skinparam monochrome true
+skinparam handwritten true
+cloud Commands {
+    cloud "Start LC Application"
+    cloud "Submit LC Application"
+    cloud "Validate Product"
+    cloud "Validate Applicant"
+    cloud "Approve LC Application"
+    cloud "Decline LC Application"
+    cloud "Issue LC"
+}
+@enduml
+....
+
+Commands are directed to an aggregate. This means that we need to resolve each of these commands to belong to a single aggregate. Let's look at how to group these commands and assign them to aggregates.
 
 ==== Aggregate design
+Let's look at how we can group these commands to identify which aggregate they can belong to. One potential grouping can be as follows:
+
+.First cut attempt at aggregate design
+image::aggregate-design/aggregate-design-01.png[]
+
+It appears that we have four entities:
+
+[.text-center]
+[plantuml,potential-aggregates]
+....
+@startuml
+skinparam monochrome true
+skinparam handwritten true
+cloud "LC Application" {
+}
+cloud Product
+cloud Applicant
+cloud LC {
+}
+@enduml
+....
+
+At first glance, each of these entities may be classified as aggregates in our solution. Here, the `LC Application` feels like a natural choice for aggregate given that this is a system for managing LC applications. However, do the others make sense to be classified as aggregates? The `Product` and `Applicant` are entities, but we need to ask ourselves if we will need to operate on these entities outside of the purview of the `LC Application`. If the answer is a *yes*, then `Product` and `Applicant` may be classified as aggregates. But both `Product` and `Applicant` do not seem to require being operated on without an enveloping `LC Application` within this bounded context.
+
+[.text-center]
+[plantuml,subdomains]
+....
+@startuml
+skinparam monochrome true
+skinparam handwritten true
+cloud "LC Application" {
+  cloud Product
+  cloud Applicant
+}
+cloud LC
+@enduml
+....
+
+
+NOTE: For a more detailed explanation of the differences between aggregates, aggregate roots, entities and value objects, refer to Chapter 2.
 
 ==== Test-driving the system
 

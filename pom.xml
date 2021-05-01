@@ -47,10 +47,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
-        <asciidoctor.maven.plugin.version>2.0.0</asciidoctor.maven.plugin.version>
-        <asciidoctorj.version>2.4.0</asciidoctorj.version>
-        <asciidoctorj.diagram.version>2.0.2</asciidoctorj.diagram.version>
-        <asciidoctorj.pdf.version>1.5.3</asciidoctorj.pdf.version>
+        <asciidoctor.maven.plugin.version>2.1.0</asciidoctor.maven.plugin.version>
+        <asciidoctorj.version>2.5.0</asciidoctorj.version>
+        <asciidoctorj.diagram.version>2.1.2</asciidoctorj.diagram.version>
+        <asciidoctorj.pdf.version>1.5.4</asciidoctorj.pdf.version>
         <jruby.version>9.2.13.0</jruby.version>
         <axon-framework.version>4.4.7</axon-framework.version>
         <moneta.version>1.4.2</moneta.version>
@@ -140,8 +140,8 @@
                             <graphvizdot>/usr/local/bin/dot</graphvizdot>
                             <source-highlighter>coderay</source-highlighter>
                             <coderay-css>style</coderay-css>
+                            <autoReloadInterval>1000</autoReloadInterval>
                         </attributes>
-                        <autoReloadInterval>1000</autoReloadInterval>
                     </configuration>
                     <executions>
                         <execution>
