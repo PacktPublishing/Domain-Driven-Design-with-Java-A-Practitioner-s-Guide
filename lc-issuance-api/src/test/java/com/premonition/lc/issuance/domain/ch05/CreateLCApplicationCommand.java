@@ -1,0 +1,7 @@
+package com.premonition.lc.issuance.domain.ch05;
+
+import lombok.Data;
+
+@Data
+public class CreateLCApplicationCommand {
+}

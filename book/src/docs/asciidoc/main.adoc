@@ -12,48 +12,47 @@ v1.0, 2020-11-02
 :table-caption!:
 :example-caption!:
 :figure-caption!:
-:includedir: chapters
 ifndef::imagesdir[:imagesdir: images]
+ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/premonition/lc/issuance/domain]
 
 [preface]
-include::{includedir}/00-preface.adoc[]
+include::00-preface.adoc[]
 
 = Part 1: Foundations
 
 [partintro]
     While the IT industry prides itself on being at the very bleeding edge of technology, it also oversees a relatively high proportion of projects that fail outright or do not meet their originally intended goals for one reason or another. In Part 1, we will look at reasons for software projects not achieving their intended objectives and how practising Domain-Driven Design (DDD) can significantly help improve the odds of achieving success. We will also do a quick tour of the main concepts that Eric Evans elaborated in his seminal book by the same name and examine why/how it is extremely relevant in today's distributed systems age.
 
-include::{includedir}/01-ddd-rationale.adoc[]
+include::01-ddd-rationale.adoc[]
 
-include::{includedir}/02-ddd-mechanics.adoc[]
+include::02-ddd-mechanics.adoc[]
 
-include::{includedir}/03-does-ddd-fit.adoc[]
+include::03-does-ddd-fit.adoc[]
 
 = Part 2: Implementing DDD in the Real World
 
 [partintro]
 In Part 2, we will implement a real-world application using JVM-based technologies such as Vaadin, Spring Boot, Axon Framework, Cadence, among others.
 
-include::{includedir}/04-domain-analysis-modeling.adoc[]
+include::04-domain-analysis-modeling.adoc[]
 
-include::{includedir}/05-implementing-domain-logic.adoc[]
+include::05-implementing-domain-logic.adoc[]
 
-include::{includedir}/06-implementing-a-task-based-ui.adoc[]
+include::06-implementing-a-task-based-ui.adoc[]
 
-include::{includedir}/07-implementing-queries-projections.adoc[]
+include::07-implementing-queries-projections.adoc[]
 
-include::{includedir}/08-long-running-user-flows.adoc[]
+include::08-long-running-user-flows.adoc[]
 
-include::{includedir}/09-integrating-wth-external-systems.adoc[]
+include::09-integrating-wth-external-systems.adoc[]
 
 = Part 3: Advanced Patterns
 
 [partintro]
 In Part 3, we will extend the application we built in Part 2 to utilize more modern, cloud native technologies. We will look at implementing an ecosystem of microservices and further extend these to be expressed to employ a serverless architecture.
 
-include::{includedir}/10-distributing-into-multiple-components.adoc[]
+include::10-distributing-into-multiple-components.adoc[]
 
-include::{includedir}/11-non-functional-requirements.adoc[]
+include::11-non-functional-requirements.adoc[]
 
-include::{includedir}/12-implementing-serverless.adoc[]
-
+include::12-implementing-serverless.adoc[]

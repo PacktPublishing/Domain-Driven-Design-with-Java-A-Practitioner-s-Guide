@@ -1,4 +1,6 @@
-ifndef::imagesdir[:imagesdir: ../images]
+ifndef::imagesdir[:imagesdir: images]
+ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/premonition/lc/issuance/domain]
+[.text-justify]
 
 == Implementing Domain Logic (20 pages)
 
@@ -104,6 +106,7 @@ From the eventstorming session, we have the following commands:
 @startuml
 skinparam monochrome true
 skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
 cloud Commands {
     cloud "Start LC Application"
     cloud "Submit LC Application"
@@ -115,23 +118,24 @@ cloud Commands {
 }
 @enduml
 ....
-
-Commands are directed to an aggregate. This means that we need to resolve each of these commands to belong to a single aggregate. Let's look at how to group these commands and assign them to aggregates.
+Commands are always directed to an aggregate for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
 
 ==== Aggregate design
-Let's look at how we can group these commands to identify which aggregate they can belong to. One potential grouping can be as follows:
+Looking at the output of the eventstorming session, one potential grouping can be as follows:
 
 .First cut attempt at aggregate design
 image::aggregate-design/aggregate-design-01.png[]
 
-It appears that we have four entities:
+At first glance, it appears that we have four potential entities to handle these commands:
 
+.Potential aggregates at first glance
 [.text-center]
 [plantuml,potential-aggregates]
 ....
 @startuml
 skinparam monochrome true
 skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
 cloud "LC Application" {
 }
 cloud Product
@@ -141,26 +145,52 @@ cloud LC {
 @enduml
 ....
 
-At first glance, each of these entities may be classified as aggregates in our solution. Here, the `LC Application` feels like a natural choice for aggregate given that this is a system for managing LC applications. However, do the others make sense to be classified as aggregates? The `Product` and `Applicant` are entities, but we need to ask ourselves if we will need to operate on these entities outside of the purview of the `LC Application`. If the answer is a *yes*, then `Product` and `Applicant` may be classified as aggregates. But both `Product` and `Applicant` do not seem to require being operated on without an enveloping `LC Application` within this bounded context.
+At first glance, each of these entities may be classified as aggregates in our solution. Here, the `LC Application` feels like a reasonably good choice for aggregate, given that we are building a solution to manage LC applications. However, do the others make sense to be classified as such? The `Product` and `Applicant` look like potential entities, but we need to ask ourselves if we will need to operate on these outside of the purview of the `LC Application`. If the answer is a *yes*, then `Product` and `Applicant` _may_ be classified as aggregates. But both `Product` and `Applicant` do not seem to require being operated on without an enveloping `LC Application` within this bounded context. It feels that way because both product and applicant details are required to be provided as part of the LC application process. At least from what we know of the process thus far, this seems to be true. This means we are left with two potential aggregates -- `LC` and `LC Application`.
 
+.Slightly more refined aggregate structure
 [.text-center]
-[plantuml,subdomains]
+[plantuml,lc-application]
 ....
 @startuml
+skinparam CloudFontName "Gloria Hallelujah"
 skinparam monochrome true
 skinparam handwritten true
-cloud "LC Application" {
+left to right direction
+cloud "LC Application" as App {
   cloud Product
   cloud Applicant
 }
 cloud LC
+App --> LC
 @enduml
 ....
 
+When we look at the output of our eventstorming session, the `LC Application` transitions to become an `LC` much later in the lifecycle. Let's work on the `LC Application` right now, and suspend further analysis on the need for the `LC` aggregate to a later time.
 
 NOTE: For a more detailed explanation of the differences between aggregates, aggregate roots, entities and value objects, refer to Chapter 2.
 
+Let's start writing our first command to see how this manifests itself in code.
+
 ==== Test-driving the system
+While we have a reasonably good conceptual understanding of the system, we are still in the process of refining this understanding. Test-driving the system allows us to exercise our understanding by acting as the first client of the solution that we are producing.
+
+NOTE: This is very well illustrated in the best-selling book -- _Growing Object-Oriented Software, Guided by Tests_ by authors Nat Price and Steve Freeman. This is worth looking at, to gain a deeper understanding of this practice.
+
+So let's start with the first test. This is outlined below:
+
+[source,java]
+.Our first aggregate test
+----
+include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=13..,indent=0,opts=linenums]
+----
+<1> `FixtureConfiguration` is an Axon framework utility to aid testing of aggregate behaviour using a BDD style given-when-then syntax.
+<2> `AggregateTestFixture` is a concrete implementation of `FixtureConfiguration` where you need to register your aggregate class -- `LCApplication` in our case as the candidate to handle commands directed to our solution.
+<3> This is where we instantiate a new instanec of the command object. Command objects are usually similar to data transfer objects, carrying a set of information.
+<4> Since this is the start of the business process, there are no events that have occurred thus far. This is signified by the fact that we do not pass any arguments to the `given` method. In other examples we will discuss later, there will likely be events that have already occurred prior to receiving this command.
+<5> This is where the system receives our command for handling. This command will be routed to our aggregate for handling. We will take a look at how this works in detail shortly.
+<6> Here we are declaring that we expect events matching an exact sequence.
+<7> Here we are expecting an event of type `LCApplicationCreated` to be emitted as a result of successfully handling the command.
+<8> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
 
 ==== Structural validations
 
@@ -171,4 +201,3 @@ NOTE: For a more detailed explanation of the differences between aggregates, agg
 === Publishing events
 
 === Exposing a REST-based API for commands
-
