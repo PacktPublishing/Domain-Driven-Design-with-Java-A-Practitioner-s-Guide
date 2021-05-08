@@ -68,25 +68,25 @@ NOTE: Alternatively, you can use use the spring initializr directly at https://s
 
 This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice and add a dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
 
-[source,xml]
+[source,xml,linenum]
 ----
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-spring-boot-starter</artifactId>
-            <version>4.4.7</version> <!--1-->
-        </dependency>
+    <dependency>
+        <groupId>org.axonframework</groupId>
+        <artifactId>axon-spring-boot-starter</artifactId>
+        <version>${axon-framework.version}</version> <!--1-->
+    </dependency>
 ----
 <1> You may need to change the version
 
 Also, add the following dependency on the `axon-test` library to enable unit testing of aggregates:
-[source,xml]
+[source,xml,linenum]
 ----
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-test</artifactId>
-            <scope>test</scope>
-            <version>4.4.7</version>
-        </dependency>
+    <dependency>
+        <groupId>org.axonframework</groupId>
+        <artifactId>axon-test</artifactId>
+        <scope>test</scope>
+        <version>${axon-framework.version}</version>
+    </dependency>
 ----
 
 With the above set up, you should be able to run the application and start implementing the LC issuance functionality.
@@ -176,21 +176,100 @@ While we have a reasonably good conceptual understanding of the system, we are s
 
 NOTE: This is very well illustrated in the best-selling book -- _Growing Object-Oriented Software, Guided by Tests_ by authors Nat Price and Steve Freeman. This is worth looking at, to gain a deeper understanding of this practice.
 
-So let's start with the first test. This is outlined below:
+So let's start with the first test. To the external world, an event-driven system typically works in a manner depicted below:
 
-[source,java]
-.Our first aggregate test
+.An event-driven system
+image::event-driven-system.png[]
+
+An optional set of events may have occurred in the past. A command is received by the system, which acts as a stimulus. The system will react in one of two ways when it handles a command:
+
+* Emit one or more events
+* Throw an exception
+
+The Axon framework allows us to express tests in this form. This is outlined below:
+
+[source,java,linenum]
 ----
 include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=13..,indent=0,opts=linenums]
 ----
 <1> `FixtureConfiguration` is an Axon framework utility to aid testing of aggregate behaviour using a BDD style given-when-then syntax.
 <2> `AggregateTestFixture` is a concrete implementation of `FixtureConfiguration` where you need to register your aggregate class -- `LCApplication` in our case as the candidate to handle commands directed to our solution.
-<3> This is where we instantiate a new instanec of the command object. Command objects are usually similar to data transfer objects, carrying a set of information.
+<3> This is where we instantiate a new instance of the command object. Command objects are usually similar to data transfer objects, carrying a set of information.
 <4> Since this is the start of the business process, there are no events that have occurred thus far. This is signified by the fact that we do not pass any arguments to the `given` method. In other examples we will discuss later, there will likely be events that have already occurred prior to receiving this command.
 <5> This is where the system receives our command for handling. This command will be routed to our aggregate for handling. We will take a look at how this works in detail shortly.
 <6> Here we are declaring that we expect events matching an exact sequence.
 <7> Here we are expecting an event of type `LCApplicationCreated` to be emitted as a result of successfully handling the command.
 <8> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
+
+==== Command
+The `CreateLCApplicationCommand` in the simplistic example above does not carry any state. Realistically, the command will likely look something like what is depicted below:
+
+[source,java,linenum]
+....
+import lombok.Data;
+
+@Data
+public class CreateLCApplicationCommand {  // <1>
+
+    private LCApplicationId id;            // <2>
+    private ClientId clientId;
+    private Party applicant;               // <3>
+    private Party beneficiary;
+    private AdvisingBank advisingBank;     // <3>
+    private LocalDate issueDate;
+    private MonetaryAmount amount;
+    private String merchandiseDescription;
+
+}
+
+....
+<1> The command class. When naming commands, we typically use an imperative style i.e. they usually begin with a verb denoting the action required. Note that this is a data transfer object. In other words, it is simply a bag of data attributes. Also note how it is devoid of any logic (at least at the moment).
+<2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated vs. client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
+<3> The `Party` and `AdvisingBank` types are complex types to represent those concepts in our solution. Care should be taken to consistently use names that are relevant in the problem (business) domain as opposed to using names that only make sense in the solution (technology) domain. Note the attempt to make use of the _ubiquitous language_ of the domain experts in both cases. This is a practice that we should always be conscious of when naming things in the system.
+
+The astute reader will have noted that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
+
+==== Event
+A simplified representation of a real-world `LCApplicationCreatedEvent` is shown below:
+
+[source,java,linenum]
+....
+import lombok.Data;
+
+@Data
+public class LCApplicationCreatedEvent {   // <1>
+
+    private LCApplicationId id;>
+    private ClientId clientId;
+    private Party applicant;
+    private Party beneficiary;
+    private AdvisingBank advisingBank;
+    private LocalDate issueDate;
+    private MonetaryAmount amount;
+    private String merchandiseDescription;
+
+}
+....
+<1> The event type. When naming events, we typically use names in the past tense to denote things that have already occurred and are to be accepted unconditionally as empirical facts that cannot be changed.
+
+You will likely notice that the structure of the event is currently identical to that of the command. While this is true in this case, it may not always be that way. The amount of information that we choose to disclose in an event is context-dependent. It is important to consult with domain experts when publishing information as part of events. One may choose to withhold certain information in the event payload. For example, consider a `ChangePasswordCommand` which contains the newly changed password. It might be prudent to not include the changed password in the resulting `PasswordChangedEvent`.
+
+We have looked at the command and the resulting event in the test above. Let's look at how this is implemented under the hood by looking at the aggregate implementation.
+
+==== Aggregate
+The aggregate is the place where commands are handled and events are emitted. The good thing about the test that we have written is that it is expressed in a manner that hides the implementation details. But let's look at the implementation to be able to appreciate how we can get our tests to pass and meet the business requirement.
+
+[source,java,linenum]
+----
+include::{sourcedir}/ch05/LCApplication.java[lines=10..,indent=0,opts=linenums]
+----
+<1> The aggregate identifier for the `LCApplication` aggregate. All aggregates are required to declare an identifier and mark it so using the `@AggregateIdentifier` annotation provided by the framework.
+<2> The method that is handling the command needs to be annotated with the `@CommandHandler` annotation. In this case, the command handler happens to be the constructor of the class given that this the first command that can be received by this aggregate. We will see examples of subsequent commands being handled by other methods later in the chapter.
+<3> The `@CommandHandler` annotation marks a method as being a command handler. The exact command that this method can handle needs to be passed as a parameter to the method. Do note that there can only be one command handler in the *entire* system for any given command.
+<4> Here, we are emitting the `LCApplicationCreatedEvent` using the `AggregateLifecycle` utility provided by the framework. In this very simple case, we are emitting an event unconditionally on receipt of the command. In a real-world scenario, it is conceivable that a set of validations will be performed before deciding to either emit one or more events or failing the command with an exception. We will look at more realistic examples later in the chapter.
+<5> The need for the `@EventSourcingHandler` and its role are likely very unclear at this time. We will explain the need for this in detail in an upcoming section of this chapter.
+
+=== Validations
 
 ==== Structural validations
 

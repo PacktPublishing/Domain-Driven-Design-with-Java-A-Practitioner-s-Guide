@@ -5,24 +5,25 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 
-import java.util.UUID;
+import static com.premonition.lc.issuance.domain.ch05.LCApplicationId.randomId;
 
 public class LCApplication {
 
-    @AggregateIdentifier
-    private UUID id;
+    @AggregateIdentifier                                                            // <1>
+    private LCApplicationId id;
 
     @SuppressWarnings("unused")
     private LCApplication() {
         // Required by the framework
     }
 
-    @CommandHandler
-    public LCApplication(CreateLCApplicationCommand command) {
-        AggregateLifecycle.apply(new LCApplicationCreatedEvent(UUID.randomUUID()));
+    @CommandHandler                                                                 // <2>
+    public LCApplication(CreateLCApplicationCommand command) {                      // <3>
+        // TODO: perform validations here
+        AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId()));   // <4>
     }
 
-    @EventSourcingHandler
+    @EventSourcingHandler                                                           // <5>
     private void on(LCApplicationCreatedEvent event) {
         this.id = event.getId();
     }
