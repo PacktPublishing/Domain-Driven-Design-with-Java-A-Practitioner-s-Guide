@@ -155,13 +155,12 @@ At first glance, each of these entities may be classified as aggregates in our s
 skinparam CloudFontName "Gloria Hallelujah"
 skinparam monochrome true
 skinparam handwritten true
-left to right direction
 cloud "LC Application" as App {
   cloud Product
   cloud Applicant
 }
 cloud LC
-App --> LC
+
 @enduml
 ....
 
@@ -181,7 +180,7 @@ So let's start with the first test. To the external world, an event-driven syste
 .An event-driven system
 image::event-driven-system.png[]
 
-An optional set of events may have occurred in the past. A command is received by the system, which acts as a stimulus. The system will react in one of two ways when it handles a command:
+An optional set of events may have occurred in the past. A command is received by the system (initiated manually by a user or automatically by a part of the system), which acts as a stimulus. The system will react in one of two ways when it handles a command:
 
 * Emit one or more events
 * Throw an exception
@@ -268,6 +267,8 @@ include::{sourcedir}/ch05/LCApplication.java[lines=10..,indent=0,opts=linenums]
 <3> The `@CommandHandler` annotation marks a method as being a command handler. The exact command that this method can handle needs to be passed as a parameter to the method. Do note that there can only be one command handler in the *entire* system for any given command.
 <4> Here, we are emitting the `LCApplicationCreatedEvent` using the `AggregateLifecycle` utility provided by the framework. In this very simple case, we are emitting an event unconditionally on receipt of the command. In a real-world scenario, it is conceivable that a set of validations will be performed before deciding to either emit one or more events or failing the command with an exception. We will look at more realistic examples later in the chapter.
 <5> The need for the `@EventSourcingHandler` and its role are likely very unclear at this time. We will explain the need for this in detail in an upcoming section of this chapter.
+
+This was a whirlwind introduction to a simple event-driven system. In subsequent sections and chapters, we will delve deeper into the mechanics of how all of this wired together. Let's now look at how and where we can plug in validations into the system in the upcoming section.
 
 === Validations
 
