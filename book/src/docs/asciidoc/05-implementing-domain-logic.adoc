@@ -7,7 +7,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
+In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework].We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates.We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
 
 === Technical Requirements
 * Java 1.8+ (We have used Java 14 to compile sample sources)
@@ -271,12 +271,12 @@ include::{sourcedir}/ch05/LCApplication.java[lines=12..31,indent=0]
 This was a whirlwind introduction to a simple event-driven system. In subsequent sections and chapters, we will delve deeper into the mechanics of how all of this wired together. Let's now look at how and where we can plug in validations into the system in the upcoming section.
 
 === Policy enforcements (validations)
-When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
+When processing commands, we need to enforce policies or rules.Policies come in two broad categories:
 
 * Structural rules -- those that enforce that the syntax of the dispatched command is valid.
 * Domain rules -- those that enforce that business rules are adhered to.
 
-It may also be prudent to perform these validations in different layers of the system. And it is also common for some or all of these policy enforcements to be repeated in more than one layer of the system. However, the important thing to note is that before a command is successfully handled, all these policy enforcements are uniformly applied. Let's look at some examples of these in the upcoming section.
+It may also be prudent to perform these validations in different layers of the system.And it is also common for some or all of these policy enforcements to be repeated in more than one layer of the system.However, the important thing to note is that before a command is successfully handled, all these policy enforcements are uniformly applied.Let's look at some examples of these in the upcoming section.
 
 ==== Structural validations
 Currently, to create an LC application, one is required to dispatch a `CreateLCApplicationCommand`. While the command dictates a structure, none of it is enforced at the moment. Let's correct that.
@@ -335,9 +335,9 @@ public class CreateLCApplicationCommand {
 Most structural validations can be accomplished using the built-in validator annotations. It is also possible to create custom validators for individual fields or to validate the entire object (for e.g. to validate inter-dependent attributes). For more details on how to do this, please refer to the bean validation specification at https://beanvalidation.org/2.0/ and the reference implementation at http://hibernate.org/validator/.
 
 ==== Business rule enforcements
-Structural validations can be accomplished using information that is already available in the command. However, there is another class of validations that requires information that is not present in the incoming command itself. This kind of information can be present in one of two places -- within the aggregate that we are operating on or outside of the aggregate itself, but made available within the bounded context.
+Structural validations can be accomplished using information that is already available in the command.However, there is another class of validations that requires information that is not present in the incoming command itself.This kind of information can be present in one of two places -- within the aggregate that we are operating on or outside of the aggregate itself, but made available within the bounded context.
 
-Let's look at an example of a validation that requires state present within the aggregate. Consider the example of submitting an LC. While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted. This means that we can only submit an LC once. This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
+Let's look at an example of a validation that requires state present within the aggregate.Consider the example of submitting an LC.While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted.This means that we can only submit an LC once.This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
 
 image::aggregate-state-validation.png[]
 
@@ -373,21 +373,22 @@ class LCApplication {
 ....
 <1> Note how we are using the state attribute from the `LCApplication` aggregate to perform the validation.
 
-Let's also look at an example of a validation where information needed to perform the validation is not part of either the command or the aggregate. Country regulations prohibit transacting with a set of other countries -- called the sanctioned countries. Changes to this list of countries may be affected by external factors. In that sense, it does not make sense to pass this list of sanctioned countries as part of the command payload. Neither does it make sense to maintain it as part of the aggregate state. In such a case, the validation can be performed in a manner shown below:
+Let's also look at an example of a validation where information needed to perform the validation is not part of either the command or the aggregate.Country regulations prohibit transacting with a set of other countries -- called the sanctioned countries.Changes to this list of countries may be affected by external factors.In that sense, it does not make sense to pass this list of sanctioned countries as part of the command payload.Neither does it make sense to maintain it as part of the aggregate state.In such a case, the validation can be performed in a manner shown below:
 
 [source,java,linenum]
 ....
 include::{sourcedir}/ch05/CreateLCApplicationCommandHandler.java[lines=7..,indent=0]
 ....
-<1> We are using the `Repository` interface provided by the Axon framework, and not the one provided by the spring framework's data library.
-<2> The set of sanctioned countries is injected externally. The actual means of maintaining this list is out of scope for the purposes of this book.
-<3> As a good practice, we want to perform business validations as close to the aggregate as possible. The actual validation is show in the snippet below.
+<1> We are using the `Repository` interface provided by the Axon framework to load the aggregate, and not the one provided by the spring framework's data library.In the <<_persisting_aggregates>> section, we will look at why this is relevant.
+<2> The set of sanctioned countries is injected externally.The actual means of maintaining this list is out of scope for the purposes of this book.
+<3> As a good practice, we want to perform business validations as close to the aggregate as possible.The actual validation is show in the snippet below.
 
 [source,java,linenum]
 ....
 include::{sourcedir}/ch05/LCApplication.java[lines=33..38,indent=0,opts=linenums]
 ....
 
+[#_persisting_aggregates]
 === Persisting aggregates
 
 ==== State stored vs event sourced aggregates
