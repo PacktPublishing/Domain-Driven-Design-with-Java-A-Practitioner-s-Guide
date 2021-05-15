@@ -1,11 +1,13 @@
 package com.premonition.lc.issuance.domain.ch05;
 
+import com.premonition.lc.issuance.domain.Country;
+import com.premonition.lc.issuance.domain.DomainException;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 
-import static com.premonition.lc.issuance.domain.ch05.LCApplicationId.randomId;
+import java.util.Set;
 
 public class LCApplication {
 
@@ -26,5 +28,12 @@ public class LCApplication {
     @EventSourcingHandler                                                           // <5>
     private void on(LCApplicationCreatedEvent event) {
         this.id = event.getId();
+    }
+
+    public LCApplication(CreateLCApplicationCommand command, Set<Country> sanctioned) {
+        if (sanctioned.contains(command.getBeneficiaryCountry())) {
+            throw new DomainException("Import from this country is currently prohibited!");
+        }
+        AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId()));
     }
 }
