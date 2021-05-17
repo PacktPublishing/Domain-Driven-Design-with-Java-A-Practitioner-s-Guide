@@ -21,13 +21,39 @@ public class LCApplicationAggregateTests {
 
     @Test
     void shouldPublishLCApplicationCreated() {
-        CreateLCApplicationCommand command = new CreateLCApplicationCommand();    // <3>
+        fixture.given()                                                           // <3>
 
-        fixture.given()                                                           // <4>
-                .when(command)                                                    // <5>
-                .expectEventsMatching(exactSequenceOf(                            // <6>
-                        messageWithPayload(any(LCApplicationCreatedEvent.class)), // <7>
-                        andNoMore()                                               // <8>
+                .when(new CreateLCApplicationCommand())                           // <4>
+
+                .expectEventsMatching(exactSequenceOf(                            // <5>
+                        messageWithPayload(any(LCApplicationCreatedEvent.class)), // <6>
+                        andNoMore()                                               // <7>
                 ));
+    }
+
+    @Test
+    void shouldNotAllowSubmitOnAnAlreadySubmittedLC() {
+        final LCApplicationId applicationId = LCApplicationId.randomId();
+
+        fixture.given(
+                new LCApplicationCreatedEvent(applicationId),           // <1>
+                new LCApplicationSubmittedEvent(applicationId))         // <1>
+
+                .when(new SubmitLCApplicationCommand(applicationId))    // <2>
+
+                .expectException(AlreadySubmittedException.class)       // <3>
+                .expectNoEvents();                                      // <4>
+    }
+
+    @Test
+    void shouldAllowSubmitOnlyInDraftState() {
+        final LCApplicationId applicationId = LCApplicationId.randomId();
+
+        fixture.given(
+                new LCApplicationCreatedEvent(applicationId))                  // <1>
+
+                .when(new SubmitLCApplicationCommand(applicationId))           // <2>
+
+                .expectEvents(new LCApplicationSubmittedEvent(applicationId)); // <3>
     }
 }

@@ -7,8 +7,8 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.modelling.command.Repository;
 
 public class CreateLCApplicationCommandHandler {
-    private final Repository<LCApplication> repository;                                // <1>
-    private final Set<Country> sanctionedCountries;                                    // <2>
+    private final Repository<LCApplication> repository;
+    private final Set<Country> sanctionedCountries;
 
     public CreateLCApplicationCommandHandler(Repository<LCApplication> repository,
                                              Set<Country> sanctionedCountries) {
@@ -19,6 +19,6 @@ public class CreateLCApplicationCommandHandler {
     @CommandHandler
     public void handle(CreateLCApplicationCommand command) throws Exception {
         // Validations can be performed here as well
-        repository.newInstance(() -> new LCApplication(command, sanctionedCountries)); // <3>
+        repository.newInstance(() -> new LCApplication(command, sanctionedCountries));
     }
 }

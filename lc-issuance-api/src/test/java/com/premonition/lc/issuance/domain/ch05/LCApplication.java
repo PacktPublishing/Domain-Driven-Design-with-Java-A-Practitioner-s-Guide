@@ -9,10 +9,13 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 
 import java.util.Set;
 
+import static org.axonframework.modelling.command.AggregateLifecycle.apply;
+
 public class LCApplication {
 
     @AggregateIdentifier                                                            // <1>
     private LCApplicationId id;
+    private State state;
 
     @SuppressWarnings("unused")
     private LCApplication() {
@@ -28,12 +31,30 @@ public class LCApplication {
     @EventSourcingHandler                                                           // <5>
     private void on(LCApplicationCreatedEvent event) {
         this.id = event.getId();
+        this.state = State.DRAFT;
     }
 
     public LCApplication(CreateLCApplicationCommand command, Set<Country> sanctioned) {
         if (sanctioned.contains(command.getBeneficiaryCountry())) {
-            throw new DomainException("Import from this country is currently prohibited!");
+            throw new CannotTradeWithSanctionedCountryException();
         }
-        AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId()));
+        apply(new LCApplicationCreatedEvent(command.getId()));
+    }
+
+    enum State {
+        DRAFT, SUBMITTED, ISSUED
+    }
+
+    @CommandHandler
+    public void submit(SubmitLCApplicationCommand command) {
+        if (this.state != State.DRAFT) {                                     // <1>
+            throw new AlreadySubmittedException("LC is already submitted!"); // <1>
+        }
+        apply(new LCApplicationSubmittedEvent(id));
+    }
+
+    @EventSourcingHandler
+    private void on(LCApplicationSubmittedEvent event) {
+        this.state = State.SUBMITTED;
     }
 }

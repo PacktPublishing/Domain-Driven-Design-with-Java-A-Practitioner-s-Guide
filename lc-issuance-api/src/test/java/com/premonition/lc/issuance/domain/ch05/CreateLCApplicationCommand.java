@@ -6,12 +6,14 @@ import lombok.Data;
 @Data
 public class CreateLCApplicationCommand {
     private LCApplicationId id;
+    private Country beneficiaryCountry;
 
     public CreateLCApplicationCommand() {
         this.id = LCApplicationId.randomId();
     }
 
-    public Country getBeneficiaryCountry() {
-        return null;
+    public CreateLCApplicationCommand(LCApplicationId id, Country beneficiaryCountry) {
+        this.id = id;
+        this.beneficiaryCountry = beneficiaryCountry;
     }
 }

@@ -189,16 +189,16 @@ The Axon framework allows us to express tests in this form. This is outlined bel
 
 [source,java,linenum]
 ----
-include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=13..,indent=0,opts=linenums]
+include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=13..32]
+}
 ----
 <1> `FixtureConfiguration` is an Axon framework utility to aid testing of aggregate behaviour using a BDD style given-when-then syntax.
 <2> `AggregateTestFixture` is a concrete implementation of `FixtureConfiguration` where you need to register your aggregate class -- `LCApplication` in our case as the candidate to handle commands directed to our solution.
-<3> This is where we instantiate a new instance of the command object. Command objects are usually similar to data transfer objects, carrying a set of information.
-<4> Since this is the start of the business process, there are no events that have occurred thus far. This is signified by the fact that we do not pass any arguments to the `given` method. In other examples we will discuss later, there will likely be events that have already occurred prior to receiving this command.
-<5> This is where the system receives our command for handling. This command will be routed to our aggregate for handling. We will take a look at how this works in detail shortly.
-<6> Here we are declaring that we expect events matching an exact sequence.
-<7> Here we are expecting an event of type `LCApplicationCreated` to be emitted as a result of successfully handling the command.
-<8> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
+<3> Since this is the start of the business process, there are no events that have occurred thus far. This is signified by the fact that we do not pass any arguments to the `given` method. In other examples we will discuss later, there will likely be events that have already occurred prior to receiving this command.
+<4> This is where we instantiate a new instance of the command object. Command objects are usually similar to data transfer objects, carrying a set of information. This command will be routed to our aggregate for handling. We will take a look at how this works in detail shortly.
+<5> Here we are declaring that we expect events matching an exact sequence.
+<6> Here we are expecting an event of type `LCApplicationCreated` to be emitted as a result of successfully handling the command.
+<7> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
 
 ==== Command
 The `CreateLCApplicationCommand` in the simplistic example above does not carry any state. Realistically, the command will likely look something like what is depicted below:
@@ -260,7 +260,9 @@ The aggregate is the place where commands are handled and events are emitted. Th
 
 [source,java,linenum]
 ----
-include::{sourcedir}/ch05/LCApplication.java[lines=12..31,indent=0]
+include::{sourcedir}/ch05/LCApplication.java[lines=12..32]
+    }
+}
 ----
 <1> The aggregate identifier for the `LCApplication` aggregate. All aggregates are required to declare an identifier and mark it so using the `@AggregateIdentifier` annotation provided by the framework.
 <2> The method that is handling the command needs to be annotated with the `@CommandHandler` annotation. In this case, the command handler happens to be the constructor of the class given that this the first command that can be received by this aggregate. We will see examples of subsequent commands being handled by other methods later in the chapter.
@@ -268,10 +270,16 @@ include::{sourcedir}/ch05/LCApplication.java[lines=12..31,indent=0]
 <4> Here, we are emitting the `LCApplicationCreatedEvent` using the `AggregateLifecycle` utility provided by the framework. In this very simple case, we are emitting an event unconditionally on receipt of the command. In a real-world scenario, it is conceivable that a set of validations will be performed before deciding to either emit one or more events or failing the command with an exception. We will look at more realistic examples later in the chapter.
 <5> The need for the `@EventSourcingHandler` and its role are likely very unclear at this time. We will explain the need for this in detail in an upcoming section of this chapter.
 
-This was a whirlwind introduction to a simple event-driven system. In subsequent sections and chapters, we will delve deeper into the mechanics of how all of this wired together. Let's now look at how and where we can plug in validations into the system in the upcoming section.
+This was a whirlwind introduction to a simple event-driven system. We still need to understand the role of the
+`@EventSourcingHandler`. To understand that, we will need to appreciate how aggregate persistence works and the implications it has on our overall design.
+
+[#_persisting_aggregates]
+=== Persisting aggregates
+
+==== State stored vs event sourced aggregates
 
 === Policy enforcements (validations)
-When processing commands, we need to enforce policies or rules.Policies come in two broad categories:
+When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
 
 * Structural rules -- those that enforce that the syntax of the dispatched command is valid.
 * Domain rules -- those that enforce that business rules are adhered to.
@@ -337,61 +345,120 @@ Most structural validations can be accomplished using the built-in validator ann
 ==== Business rule enforcements
 Structural validations can be accomplished using information that is already available in the command.However, there is another class of validations that requires information that is not present in the incoming command itself.This kind of information can be present in one of two places -- within the aggregate that we are operating on or outside of the aggregate itself, but made available within the bounded context.
 
-Let's look at an example of a validation that requires state present within the aggregate.Consider the example of submitting an LC.While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted.This means that we can only submit an LC once.This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
+Let's look at an example of a validation that requires state present within the aggregate. Consider the example of submitting an LC.While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted.This means that we can only submit an LC once.This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
 
 image::aggregate-state-validation.png[]
 
-The `SubmitLCApplicationCommand` is shown below:
+Let's begin with a test to express our intent:
+[source,java,linenum]
+....
+include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=48..58,indent=0]
+....
+<1> Given that the `LCApplicationCreatedEvent` has already occurred -- in other words, the LC application is already created.
+<2> When we try to submit the application by issuing the `SubmitLCApplicationCommand`.
+<3> We expect the `LCApplicationSubmittedEvent` to be emitted.
+
+The corresponding implementation will look something like below:
 
 [source,java,linenum]
 ....
-    @Data
-    public class SubmitLCApplicationCommand {
-        private final LCId id;
+include::{sourcedir}/ch05/LCApplication.java[lines=48..49,indent=0]
+include::{sourcedir}/ch05/LCApplication.java[lines=53..54,indent=0]
+....
 
-        public SubmitLCApplicationCommand(LCId id) {
-            this.id = id;
-        }
+The implementation above will allow us to submit an LC application more than once. However, we want to restrict users to be able to submit only once. To be able to do that, we need to remember that the LC application has already been submitted. We can do that in the `@EventSourcingHandler` of the corresponding events as shown below:
+
+[source,java,linenum]
+....
+@EventSourcingHandler
+include::{sourcedir}/ch05/LCApplication.java[lines=32..35,indent=0]
+
+include::{sourcedir}/ch05/LCApplication.java[lines=56..59,indent=0]
+....
+
+While we have remembered that the application has changed to be in `SUBMITTED` state, we are still not preventing more than one submit attempt. We can fix that by writing a test as shown below:
+
+[source,java,linenum]
+....
+include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=34..46,indent=0]
+....
+<1> The `LCApplicationCreatedEvent` and `LCApplicationSubmittedEvent` have already happened.
+<2> We now dispatch a `SubmitLCApplicationCommand` to the system.
+<3> We expect an `AlreadySubmittedException` to be thrown.
+<4> We also expect no events to be emitted.
+
+The implementation of the command handler to make this work is shown below:
+
+[source,java,linenum]
+....
+include::{sourcedir}/ch05/LCApplication.java[lines=48..55,indent=0]
+....
+<1> Note how we are using the state attribute from the `LCApplication` aggregate to perform the validation. If the application is not in `DRAFT` state, we fail with the `AlreadySubmittedException` domain exception.
+
+Let's also look at an example where information needed to perform the validation is not part of either the command or the aggregate. Let's consider the scenario where country regulations prohibit transacting with a set of so called _sanctioned_ countries. Changes to this list of countries may be affected by external factors. It does not make sense to pass this list of sanctioned countries as part of the command payload. Neither does it make sense to maintain it as part of the aggregate state. In such a case, we may want to consider making use of a command handler that is outside the confines of the aggregate class. Thus far, we have only seen examples of `@CommandHandler` methods within the aggregate. But the `@CommandHandler` annotation can appear on any other class external to the aggregate. However, in such a case, we need to load the aggregate ourselves. The Axon framework provides a `org.axonframework.modelling.command.Repository` interface to allow us to do that as shown below:
+
+[source,java,linenum]
+....
+import org.axonframework.modelling.command.Repository;
+
+class MyCustomCommandHandler {
+
+    private final Repository<LCApplication> repository; // <1>
+
+    MyCustomCommandHandler(Repository<LCApplication> repository) {
+        this.repository = repository;  // <1>
     }
-....
 
-Let's also look at the command handler to implement the validation:
-
-[source,java,linenum]
-....
-class LCApplication {
-    private State state;
-    // ...
     @CommandHandler
-    private void submit(SubmitLCApplicationCommand command) {
-        if (this.state != State.DRAFT) { // <1>
-            throw new DomainException("LC is already submitted!");
-        }
-        apply(new LCApplicationSubmittedEvent(command.getId()));
+    public void handle(SomeCommand command) {
+        Aggregate<LCApplication> application = repository.load(command.getAggregateId());  // <2>
+        // Command handling code
+    }
+
+    @CommandHandler
+    public void handle(AnotherCommand command) {
+        Aggregate<LCApplication> application = repository.load(command.getAggregateId());
+        // Command handling code
     }
 }
 ....
-<1> Note how we are using the state attribute from the `LCApplication` aggregate to perform the validation.
+<1> We are injecting the Axon `Repository` to allow us to load aggregates
+<2> We are using the `Repository` to load aggregates and work with them.
 
-Let's also look at an example of a validation where information needed to perform the validation is not part of either the command or the aggregate.Country regulations prohibit transacting with a set of other countries -- called the sanctioned countries.Changes to this list of countries may be affected by external factors.In that sense, it does not make sense to pass this list of sanctioned countries as part of the command payload.Neither does it make sense to maintain it as part of the aggregate state.In such a case, the validation can be performed in a manner shown below:
+Coming back to the sanctioned countries example, let's look at the test implementation:
+[source,java,linenum]
+....
+include::{sourcedir}/ch05/CreateLCApplicationCommandHandlerTests.java[lines=21..34,indent=0]
+}
+....
+<1> We are creating a new aggregate fixture like usual
+<2> We are using the fixture to obtain an instance of the Axon `Repository`
+<3> We instantiate the custom command handler passing in the `Repository` instance. Also note how we inject the collection of sanctioned countries into the handler using simple dependency injection. In real life, this set of sanctioned countries will likely be obtained from external configuration.
+<4> We finally need to register the command handler with the fixture, so that it can route commands to this handler.
+
+The tests for this look fairly straightforward:
+
+[source,java,linenum]
+....
+include::{sourcedir}/ch05/CreateLCApplicationCommandHandlerTests.java[lines=32..45,indent=0]
+....
+The implementation of the command handler is shown below:
 
 [source,java,linenum]
 ....
 include::{sourcedir}/ch05/CreateLCApplicationCommandHandler.java[lines=7..,indent=0]
 ....
-<1> We are using the `Repository` interface provided by the Axon framework to load the aggregate, and not the one provided by the spring framework's data library.In the <<_persisting_aggregates>> section, we will look at why this is relevant.
-<2> The set of sanctioned countries is injected externally.The actual means of maintaining this list is out of scope for the purposes of this book.
-<3> As a good practice, we want to perform business validations as close to the aggregate as possible.The actual validation is show in the snippet below.
 
+Finally, the aggregate implementation along with the validation is shown below:
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/LCApplication.java[lines=33..38,indent=0,opts=linenums]
+class LCApplication {
+// ...
+include::{sourcedir}/ch05/LCApplication.java[lines=37..42]
+
+// ...
+}
 ....
-
-[#_persisting_aggregates]
-=== Persisting aggregates
-
-==== State stored vs event sourced aggregates
 
 === Publishing events
 
