@@ -343,9 +343,72 @@ Irrespective of whether we choose to use a relational database or a more modern 
 ==== Event sourced aggregates
 Developers have also been relying on logs for a variety of diagnostic purposes for a very long time. Similarly, relational databases have been employing commit logs to store information durably almost since their inception. However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
 
-NOTE: A log is an extremely simple, append-only ordered sequence of records
+NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.
+[.text-center]
+[ditaa,log-records]
+
+....
+First                                        Next Record
+  |                                              |
+  |                                              |
+  v                                              v
++---+---+---+---+---+---+---+---+---+----+----+----+
++ 1 | 2 + 3 | 4 + 5 | 6 + 7 | 8 + 9 | 10 + 11 | 12 +
++---+---+---+---+---+---+---+---+---+----+----+-=--+
+
+....
+Writing to a log as compared to a more complex data structure like a table is a relatively simple and fast operation and can handle extremely high volumes of data while providing predictable performance. Indeed, a modern event streaming platform like Kafka makes use of this pattern to scale to support extremely high volumes. We do feel that this can be applied to act as a persistence store when processing commands in mainstream systems because this has benefits beyond the technical advantages listed above. Consider the example of an online order flow below:
+
+[cols="2,3,3"]
+|===
+|User Action |Traditional Store |Event Store
+
+|Add milk to cart
+|Order 123: Milk in cart
+|E1: Milk added to cart
+
+|Add white bread to cart
+|Order 123: Milk, White bread in cart
+|E1: Milk added to cart +
+E2: White bread added to cart
+
+|Add milk to cart
+|Order 123: Milk(2), White bread in cart
+|E1: Milk added to cart +
+E2: White bread added to cart +
+E3: Milk added to cart
+
+|Remove White bread
+|Order 123: Milk(2) in cart
+|E1: Milk added to cart +
+E2: White bread added to cart +
+E3: Milk added to cart +
+E4: White bread removed from cart
+
+|Add Wheat bread
+|Order 123: Milk(2), Wheat bread in cart
+|E1: Milk added to cart +
+E2: White bread added to cart +
+E3: Milk added to cart +
+E4: White bread removed from cart +
+E5: Wheat bread added to cart
+
+|Confirm checkout
+|Order 123: Ordered Milk(2), Wheat bread
+|E1: Milk added to cart +
+E2: White bread added to cart +
+E3: Milk added to cart +
+E4: White bread removed from cart +
+E5: Wheat bread added to cart +
+E6: Order 123 confirmed
+|===
+
+As you can see, in the event store, we continue to have full visibility of all user actions performed. This allows us to reason about these behaviors more holistically. In the traditional store, we lost the information that the user replaced white with wheat bread. While this does not impact the order itself, we lose the opportunity to gather insights from this user behavior. We recognize that this information can be captured in other ways using specialized analytical solutions, however, the event log mechanism provides a natural way to do this without requiring any additional effort, thereby reducing the complexity of the system being built. It also acts as an audit log providing full history of all events that have occurred thus far. This fits well with the essence of domain-driven design where we are constantly exploring ways in which to reduce complexity.
+
+However, there are downsides to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, we need to know what exact items are in the cart before allowing the order to be placed. If there are a large number of events, this can be a time-consuming operation directly proportional to the number of past events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in a subsequent chapter.
 
 ==== Which persistence mechanism should we choose?
+
 
 === Policy enforcements (validations)
 When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
