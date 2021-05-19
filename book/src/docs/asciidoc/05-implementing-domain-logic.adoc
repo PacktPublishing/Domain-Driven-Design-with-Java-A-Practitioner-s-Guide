@@ -104,7 +104,6 @@ From the eventstorming session, we have the following commands:
 [plantuml,potential-aggregates]
 ....
 @startuml
-skinparam monochrome true
 skinparam handwritten true
 skinparam CloudFontName "Gloria Hallelujah"
 cloud Commands {
@@ -133,15 +132,12 @@ At first glance, it appears that we have four potential entities to handle these
 [plantuml,potential-aggregates]
 ....
 @startuml
-skinparam monochrome true
 skinparam handwritten true
 skinparam CloudFontName "Gloria Hallelujah"
-cloud "LC Application" {
-}
+cloud "LC Application"
 cloud Product
 cloud Applicant
-cloud LC {
-}
+cloud LC
 @enduml
 ....
 
@@ -153,7 +149,6 @@ At first glance, each of these entities may be classified as aggregates in our s
 ....
 @startuml
 skinparam CloudFontName "Gloria Hallelujah"
-skinparam monochrome true
 skinparam handwritten true
 cloud "LC Application" as App {
   cloud Product
@@ -178,6 +173,7 @@ NOTE: This is very well illustrated in the best-selling book -- _Growing Object-
 So let's start with the first test. To the external world, an event-driven system typically works in a manner depicted below:
 
 .An event-driven system
+[.text-center]
 image::event-driven-system.png[]
 
 An optional set of events may have occurred in the past. A command is received by the system (initiated manually by a user or automatically by a part of the system), which acts as a stimulus. The system will react in one of two ways when it handles a command:
@@ -275,8 +271,81 @@ This was a whirlwind introduction to a simple event-driven system. We still need
 
 [#_persisting_aggregates]
 === Persisting aggregates
+When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc. So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
+1. State stored
+2. Event sourced
 
-==== State stored vs event sourced aggregates
+Let's examine each of these techniques in more detail below:
+
+==== State stored aggregates
+Saving current values of entities is by far the most popular way to persist state -- thanks to the immense popularity of relational databases and object-relational mapping (ORM) tools like Hibernate. And there is good reason for this ubiquity. Until recently, a majority of enterprise systems used relational databases almost as a default to create business solutions, with ORMs arguably providing a very convenient mechanism to interact with relational databases and their object representations. For example, for our `LCApplication`, it is conceivable that we could use a relational database with a structure that would look something like below:
+
+.Typical entity relationship model
+[.text-center]
+[plantuml,relational-structure]
+....
+@startuml
+skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
+skinparam linetype ortho
+entity applicant {
+    * id: number <<generated>>
+    --
+    * name
+    * address
+}
+entity lc_application {
+    * id: number <<generated>>
+    --
+    * amount: number
+    * status: text
+    merchandise_description
+    * application_date
+    * applicant_id: number <<FK>>
+    * issuing_bank_id: number <<FK>>
+    * advising_bank_id: number <<FK>>
+}
+entity document_clause {
+  * id: number <<generated>>
+  --
+  description
+  * lc_application_id: number <<FK>>
+}
+entity beneficiary {
+  * id: number <<generated>>
+  --
+  name: text
+  address: text
+}
+entity advising_bank {
+  * id: number <<generated>>
+  --
+  * name: text
+  * address: text
+  * swift_id: number
+}
+entity issuing_bank {
+  * id: number <<generated>>
+  --
+  * name: text
+  * address: text
+  * swift_id: number
+}
+applicant ||--o{ lc_application
+lc_application ||--|{ document_clause
+lc_application }o--|| beneficiary
+lc_application }o--|| advising_bank
+lc_application }o--|| issuing_bank
+@enduml
+....
+Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity. When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_. This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information. We will look at this in more detail below.
+
+==== Event sourced aggregates
+Developers have also been relying on logs for a variety of diagnostic purposes for a very long time. Similarly, relational databases have been employing commit logs to store information durably almost since their inception. However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
+
+NOTE: A log is an extremely simple, append-only ordered sequence of records
+
+==== Which persistence mechanism should we choose?
 
 === Policy enforcements (validations)
 When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
