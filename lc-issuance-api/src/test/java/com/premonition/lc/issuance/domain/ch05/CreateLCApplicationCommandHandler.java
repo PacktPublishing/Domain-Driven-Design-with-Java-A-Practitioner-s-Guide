@@ -5,7 +5,9 @@ import com.premonition.lc.issuance.domain.Country;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.modelling.command.Repository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreateLCApplicationCommandHandler {
     private final Repository<LCApplication> repository;
     private final Set<Country> sanctionedCountries;

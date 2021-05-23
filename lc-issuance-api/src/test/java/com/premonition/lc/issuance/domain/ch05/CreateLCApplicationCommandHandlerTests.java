@@ -1,7 +1,6 @@
 package com.premonition.lc.issuance.domain.ch05;
 
 import com.premonition.lc.issuance.domain.Country;
-import com.premonition.lc.issuance.domain.DomainException;
 import org.axonframework.modelling.command.Repository;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;

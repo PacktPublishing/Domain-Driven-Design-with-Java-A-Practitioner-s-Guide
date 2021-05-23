@@ -7,12 +7,12 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework].We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates.We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
+In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
 
 === Technical Requirements
-* Java 1.8+ (We have used Java 14 to compile sample sources)
+* JDK 1.8+ (We have used Java 14 to compile sample sources)
 * Maven 3.x
-* Spring Boot 2.4.*
+* Spring Boot 2.4.x
 * JUnit 5.7.x (Included with spring boot)
 * Axon Framework 4.4.7 (DDD and CQRS Framework)
 * Project Lombok (To reduce verbosity)
@@ -23,16 +23,16 @@ In the section on <<command-query-responsibility-segregation-cqrs>>, we describe
 In this chapter, we will make use of the Command Query Responsibility Segregation (CQRS) architecture pattern to express the domain logic for our solution. The CQRS pattern strictly separates *write* (those that mutate state) and *read* (those that answer questions) operations.
 
 ==== Recap: What is CQRS
-In traditional applications, a single data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
+In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
 
 .Traditional vs. CQRS Architecture
 image::cqrs/traditional-vs-cqrs-architecture.png[]
 
-NOTE: We depict a single read model above for brevity. In reality though, more than one read model may need to be created, depending on the kinds of use cases that need to be supported.
+NOTE: We depict multiple read models above because it is possible (but not necessary) to create more than one read model, depending on the kinds of query use cases that need to be supported.
 
-For this to work predictably, the read model(s) need to be kept in sync with the write models (we will examine some of these techniques in detail later.
+For this to work predictably, the read model(s) need to be kept in sync with the write models (we will examine some of the techniques to do that in detail later.
 
-==== Why CQRS
+==== Why CQRS?
 The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios. We discuss some of these scenarios below:
 
 * *Volume imbalance between read and writes*: In most systems, read operations often outnumber write operations by significant orders of magnitude. For example, consider the number of times a trader checks stock prices vs. the number of times they actually transact (buy or sell stock trades). It is also usually true that write operations are the ones that make businesses money. Having a single model for both reads and writes in a system with a majority of read operations can overwhelm a system to an extent where write performance can start getting affected.
@@ -43,7 +43,7 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon Framework because in our opinion it provides a set of conveniences while staying out of the way. There are other frameworks that work comparably, like Lagom Framework (https://www.lagomframework.com/) and Eventuate (https://eventuate.io/) that are worth exploring as well.
+NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon Framework because in our opinion it provides a set of conveniences to do so while staying out of the way. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
 
 === Bootstrapping the application
 
@@ -98,7 +98,7 @@ image::event-storming/05-read-models.png[]
 The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
 
 === Command handling
-From the eventstorming session, we have the following commands:
+From the eventstorming session, we have the following commands to start with:
 
 [.text-center]
 [plantuml,potential-aggregates]
@@ -185,7 +185,26 @@ The Axon framework allows us to express tests in this form. This is outlined bel
 
 [source,java,linenum]
 ----
-include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=13..32]
+public class LCApplicationAggregateTests {
+
+    private FixtureConfiguration<LCApplication> fixture;                          // <1>
+
+    @BeforeEach
+    void setUp() {
+        fixture = new AggregateTestFixture<>(LCApplication.class);                // <2>
+    }
+
+    @Test
+    void shouldPublishLCApplicationCreated() {
+        fixture.given()                                                           // <3>
+
+                .when(new CreateLCApplicationCommand())                           // <4>
+
+                .expectEventsMatching(exactSequenceOf(                            // <5>
+                        messageWithPayload(any(LCApplicationCreatedEvent.class)), // <6>
+                        andNoMore()                                               // <7>
+                ));
+    }
 }
 ----
 <1> `FixtureConfiguration` is an Axon framework utility to aid testing of aggregate behaviour using a BDD style given-when-then syntax.
@@ -256,7 +275,25 @@ The aggregate is the place where commands are handled and events are emitted. Th
 
 [source,java,linenum]
 ----
-include::{sourcedir}/ch05/LCApplication.java[lines=12..32]
+public class LCApplication {
+
+    @AggregateIdentifier                                                            // <1>
+    private LCApplicationId id;
+
+    @SuppressWarnings("unused")
+    private LCApplication() {
+        // Required by the framework
+    }
+
+    @CommandHandler                                                                 // <2>
+    public LCApplication(CreateLCApplicationCommand command) {                      // <3>
+        // TODO: perform validations here
+        AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId()));   // <4>
+    }
+
+    @EventSourcingHandler                                                           // <5>
+    private void on(LCApplicationCreatedEvent event) {
+        this.id = event.getId();
     }
 }
 ----
@@ -365,39 +402,35 @@ Writing to a log as compared to a more complex data structure like a table is a 
 
 |Add milk to cart
 |Order 123: Milk in cart
-|E1: Milk added to cart
+|E1: Cart#123 created +
+E2: Milk added to cart
 
 |Add white bread to cart
 |Order 123: Milk, White bread in cart
-|E1: Milk added to cart +
-E2: White bread added to cart
+|E1: Cart#123 created +
+E2: Milk added to cart +
+E3: White bread added to cart
 
-|Add milk to cart
-|Order 123: Milk(2), White bread in cart
-|E1: Milk added to cart +
-E2: White bread added to cart +
-E3: Milk added to cart
-
-|Remove White bread
-|Order 123: Milk(2) in cart
-|E1: Milk added to cart +
-E2: White bread added to cart +
-E3: Milk added to cart +
+|Remove White bread from cart
+|Order 123: Milk in cart
+|E1: Cart#123 created +
+E2: Milk added to cart +
+E3: White bread added to cart +
 E4: White bread removed from cart
 
-|Add Wheat bread
-|Order 123: Milk(2), Wheat bread in cart
-|E1: Milk added to cart +
-E2: White bread added to cart +
-E3: Milk added to cart +
+|Add Wheat bread to cart
+|Order 123: Milk, Wheat bread in cart
+|E1: Cart#123 created +
+E2: Milk added to cart +
+E3: White bread added to cart +
 E4: White bread removed from cart +
 E5: Wheat bread added to cart
 
-|Confirm checkout
-|Order 123: Ordered Milk(2), Wheat bread
-|E1: Milk added to cart +
-E2: White bread added to cart +
-E3: Milk added to cart +
+|Confirm cart checkout
+|Order 123: Ordered Milk, Wheat bread
+|E1: Cart#123 created +
+E2: Milk added to cart +
+E3: White bread added to cart +
 E4: White bread removed from cart +
 E5: Wheat bread added to cart +
 E6: Order 123 confirmed
@@ -405,10 +438,150 @@ E6: Order 123 confirmed
 
 As you can see, in the event store, we continue to have full visibility of all user actions performed. This allows us to reason about these behaviors more holistically. In the traditional store, we lost the information that the user replaced white with wheat bread. While this does not impact the order itself, we lose the opportunity to gather insights from this user behavior. We recognize that this information can be captured in other ways using specialized analytical solutions, however, the event log mechanism provides a natural way to do this without requiring any additional effort, thereby reducing the complexity of the system being built. It also acts as an audit log providing full history of all events that have occurred thus far. This fits well with the essence of domain-driven design where we are constantly exploring ways in which to reduce complexity.
 
-However, there are downsides to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, we need to know what exact items are in the cart before allowing the order to be placed. If there are a large number of events, this can be a time-consuming operation directly proportional to the number of past events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in a subsequent chapter.
+However, there are implications to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in exact order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, just having the ordered set of elapsed events will not suffice. We still need to compute the exact items that are in the cart before allowing the order to be placed. This _event replay_ to restore aggregate state (at least those attributes that are required to validate said command) is necessary before processing that command. For example, we need to know which items are in the cart currently before processing the `RemoveItemFromCartCommand`. This is illustrated in the table below:
+
+[cols="5,3,4,5"]
+|===
+|Elapsed Events|Aggregate State|Command |Event(s) Emitted
+
+|--
+|--
+|Add item: milk
+|E1: Cart#_123_ created +
+E2: Milk added
+
+|E1: Cart#123 created +
+E2: Milk added
+|*Cart Items*: +
+&nbsp;&nbsp;&nbsp;&nbsp;Milk
+|Add item: white bread
+|E2: White bread added
+
+
+|E1: Cart#123 created +
+E2: Milk added +
+E3: White bread added
+|*Cart Items*: +
+&nbsp;&nbsp;&nbsp;&nbsp;Milk, +
+&nbsp;&nbsp;&nbsp;&nbsp;White Bread
+|Remove item: white bread
+|E3: White bread removed
+
+|E1: Cart#123 created +
+E2: Milk added +
+E3: White bread added +
+E4: White bread removed
+|*Cart Items*: +
+&nbsp;&nbsp;&nbsp;&nbsp;Milk
+|Add item: wheat bread
+|E4: Wheat bread added
+
+|E1: Cart#123 created +
+E2: Milk added +
+E3: White bread added +
+E4: White bread removed +
+E5: Wheat bread added
+|*Cart Items*: +
+&nbsp;&nbsp;&nbsp;&nbsp;Milk +
+&nbsp;&nbsp;&nbsp;&nbsp;Wheat bread
+|Confirm checkout for Cart#123
+|E5: Order created!
+
+|===
+The code
+[source,java,linenum]
+----
+public class Cart {
+
+    private boolean isNew;
+    private CartItems items;
+    //..
+
+    private Cart() {                                                    // <1>
+        // Required by the framework
+    }
+
+    @CommandHandler
+    public void addItem(AddItemToCartCommand command) {
+        // Business validations here
+        if (this.isNew) {
+            apply(new CartCreatedEvent(command.getId()));
+        }
+        apply(new ItemAddedEvent(id, command.getItem()));
+    }
+
+    @CommandHandler
+    public void removeItem(RemoveItemFromCartCommand command) {
+        // Business validations here
+        apply(new ItemRemovedEvent(id, commmand.getItem()));
+    }
+
+    @CommandHandler
+    public void checkout(ConfirmCheckoutCommand command) {
+        // Business validations here
+        apply(new OrderCreatedEvent(this.items));
+    }
+
+    @EventSourcingHandler                                               // <2>
+    private void on(CartCreatedEvent event) {
+        this.id = event.getCartId();
+        this.items = new CartItems();
+        this.isNew = true;
+    }
+
+    @EventSourcingHandler                                               // <2>
+    private void on(ItemAddedEvent event) {
+        this.items.add(event.getItem());
+        this.isNew = false;
+    }
+
+    @EventSourcingHandler                                               // <2>
+    private void on(ItemRemovedEvent event) {
+        this.items.remove(event.getItem());
+    }
+
+    @EventSourcingHandler                                               // <2>
+    private void on(CheckoutConfirmedEvent event) {
+        // ..
+    }
+}
+----
+<1> Before processing any command, the aggregate loading process commences by first invoking the no-args constructor. For this reason, we need the no-args constructor to be *empty* i.e. it should *not* have any code that restores state. State restoration *must* happen only in those methods that trigger an event replay. In the case of the Axon framework, this translates to methods embellished with the `@EventSourcingHandler` annotation.
+<2> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.
+
+When working with event sourced aggregates, it is very important to be disciplined about the following *rules*:
+[cols="2,1,1,1"]
+|===
+|Type of Method|State Restoration|Business Logic|Event Emission
+
+|Command Handler
+|No
+|Yes
+|Yes
+
+|Event Sourcing Handler
+|Yes
+|No
+|No
+|===
+
+If there are a large number of events, aggregate loading can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in a subsequent chapter.
 
 ==== Which persistence mechanism should we choose?
+Now that we have a reasonably good understanding of the two types of aggregate persistence mechanisms, it begs the question of which one we should choose. We list a few benefits of using event sourcing below:
 
+* We get to use the events as a *natural audit log* in high compliance scenarios.
+* It provides the ability to perform *more insightful analytics* on the basis of the fine-grained events data.
+* It arguably produces more flexible designs when we work with an system based on *immutable events* -- because the complexity of the persistence model is capped. Also, there is no need to deal with complex ORM impedance mismatch problems.
+* The domain model is much more *loosely coupled* with the persistence model -- enabling it to evolve mostly independently from the persistence model.
+* Enables going back in time to be able to create *adhoc views and reports* without having to deal with upfront complexity.
+
+On the flip side, these are some challenges that you might have to consider when implementing an event sourced solution:
+
+* Event sourcing requires a *paradigm shift*. Which means that development and business teams will have to spend time and effort understanding how it works.
+* The persistence model does not store state directly. This means that adhoc querying directly on the persistence model can be a lot more challenging. This can be alleviated by materializing new views, however there is added complexity in doing that. Also, this tends to work best when implemented in conjunction with CQRS which also requires applications to pay more closer attention to strong vs eventual consistency concerns.
+
+Our experiences indicate that event sourced systems bring a lot of benefits in modern event-driven systems. However, you will need to be cognizant of the considerations presented above in the context of your own ecosystems when making persistence choices.
 
 === Policy enforcements (validations)
 When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
@@ -484,38 +657,71 @@ image::aggregate-state-validation.png[]
 Let's begin with a test to express our intent:
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=48..58,indent=0]
+class LCApplicationAggregateTests {
+    //..
+    @Test
+    void shouldAllowSubmitOnlyInDraftState() {
+        final LCApplicationId applicationId = LCApplicationId.randomId();
+
+        fixture.given(new LCApplicationCreatedEvent(applicationId))            // <1>
+                .when(new SubmitLCApplicationCommand(applicationId))           // <2>
+                .expectEvents(new LCApplicationSubmittedEvent(applicationId)); // <3>
+    }
+}
 ....
 <1> Given that the `LCApplicationCreatedEvent` has already occurred -- in other words, the LC application is already created.
-<2> When we try to submit the application by issuing the `SubmitLCApplicationCommand`.
+<2> When we try to submit the application by issuing the `SubmitLCApplicationCommand` for the same application.
 <3> We expect the `LCApplicationSubmittedEvent` to be emitted.
 
 The corresponding implementation will look something like below:
 
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/LCApplication.java[lines=48..49,indent=0]
-include::{sourcedir}/ch05/LCApplication.java[lines=53..54,indent=0]
+class LCApplication {
+    // ..
+    @CommandHandler
+    public void submit(SubmitLCApplicationCommand command) {
+        apply(new LCApplicationSubmittedEvent(id));
+    }
+}
 ....
 
-The implementation above will allow us to submit an LC application more than once. However, we want to restrict users to be able to submit only once. To be able to do that, we need to remember that the LC application has already been submitted. We can do that in the `@EventSourcingHandler` of the corresponding events as shown below:
+The implementation above allows us to submit an LC application unconditionally -- more than once. However, we want to restrict users to be able to submit only once. To be able to do that, we need to remember that the LC application has already been submitted. We can do that in the `@EventSourcingHandler` of the corresponding events as shown below:
 
 [source,java,linenum]
 ....
-@EventSourcingHandler
-include::{sourcedir}/ch05/LCApplication.java[lines=32..35,indent=0]
-
-include::{sourcedir}/ch05/LCApplication.java[lines=56..59,indent=0]
+class LCApplication {
+    // ..
+    @EventSourcingHandler
+    private void on(LCApplicationSubmittedEvent event) {
+        this.state = State.SUBMITTED; // <1>
+    }
+}
 ....
+<1> When the `LCApplicationSubmittedEvent` is replayed, we set the state of the `LCApplication` to `SUBMITTED`.
 
 While we have remembered that the application has changed to be in `SUBMITTED` state, we are still not preventing more than one submit attempt. We can fix that by writing a test as shown below:
 
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/LCApplicationAggregateTests.java[lines=34..46,indent=0]
+class LCApplicationAggregateTests {
+    @Test
+    void shouldNotAllowSubmitOnAnAlreadySubmittedLC() {
+        final LCApplicationId applicationId = LCApplicationId.randomId();
+
+        fixture.given(
+                new LCApplicationCreatedEvent(applicationId),           // <1>
+                new LCApplicationSubmittedEvent(applicationId))         // <1>
+
+                .when(new SubmitLCApplicationCommand(applicationId))    // <2>
+
+                .expectException(AlreadySubmittedException.class)       // <3>
+                .expectNoEvents();                                      // <4>
+    }
+}
 ....
-<1> The `LCApplicationCreatedEvent` and `LCApplicationSubmittedEvent` have already happened.
-<2> We now dispatch a `SubmitLCApplicationCommand` to the system.
+<1> The `LCApplicationCreatedEvent` and `LCApplicationSubmittedEvent` have already happened -- which means that the `LCApplication` has been submitted once.
+<2> We now dispatch another `SubmitLCApplicationCommand` to the system.
 <3> We expect an `AlreadySubmittedException` to be thrown.
 <4> We also expect no events to be emitted.
 
@@ -523,11 +729,20 @@ The implementation of the command handler to make this work is shown below:
 
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/LCApplication.java[lines=48..55,indent=0]
+class LCApplication {
+    // ..
+    @CommandHandler
+    public void submit(SubmitLCApplicationCommand command) {
+        if (this.state != State.DRAFT) {                                     // <1>
+            throw new AlreadySubmittedException("LC is already submitted!");
+        }
+        apply(new LCApplicationSubmittedEvent(id));
+    }
+}
 ....
 <1> Note how we are using the state attribute from the `LCApplication` aggregate to perform the validation. If the application is not in `DRAFT` state, we fail with the `AlreadySubmittedException` domain exception.
 
-Let's also look at an example where information needed to perform the validation is not part of either the command or the aggregate. Let's consider the scenario where country regulations prohibit transacting with a set of so called _sanctioned_ countries. Changes to this list of countries may be affected by external factors. It does not make sense to pass this list of sanctioned countries as part of the command payload. Neither does it make sense to maintain it as part of the aggregate state. In such a case, we may want to consider making use of a command handler that is outside the confines of the aggregate class. Thus far, we have only seen examples of `@CommandHandler` methods within the aggregate. But the `@CommandHandler` annotation can appear on any other class external to the aggregate. However, in such a case, we need to load the aggregate ourselves. The Axon framework provides a `org.axonframework.modelling.command.Repository` interface to allow us to do that as shown below:
+Let's also look at an example where information needed to perform the validation is not part of either the command or the aggregate. Let's consider the scenario where country regulations prohibit transacting with a set of so called _sanctioned_ countries. Changes to this list of countries may be affected by external factors. Hence it does not make sense to pass this list of sanctioned countries as part of the command payload. Neither does it make sense to maintain it as part of every single aggregate's state -- given that it can change (albeit very infrequently). In such a case, we may want to consider making use of a command handler that is outside the confines of the aggregate class. Thus far, we have only seen examples of `@CommandHandler` methods within the aggregate. But the `@CommandHandler` annotation can appear on any other class external to the aggregate. However, in such a case, we need to load the aggregate ourselves. The Axon framework provides a `org.axonframework.modelling.command.Repository` interface to allow us to do that. It is important to note that this `Repository` is distinct from spring framework's interface that is part of the spring data libraries. An example of how this works is shown below:
 
 [source,java,linenum]
 ....
@@ -554,32 +769,100 @@ class MyCustomCommandHandler {
     }
 }
 ....
-<1> We are injecting the Axon `Repository` to allow us to load aggregates
-<2> We are using the `Repository` to load aggregates and work with them.
+<1> We are injecting the Axon `Repository` to allow us to load aggregates. This ws not required previously because the `@CommandHandler` annotation appeared on aggregate methods directly.
+<2> We are using the `Repository` to load aggregates and work with them. The `Repository` interface supports other convenience methods to work with aggregates. Please refer to the Axon framework documentation for more usage examples.
 
-Coming back to the sanctioned countries example, let's look at the test implementation:
+Coming back to the sanctioned countries example, let's look at how we need to set up the test slightly differently:
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/CreateLCApplicationCommandHandlerTests.java[lines=21..34,indent=0]
+public class CreateLCApplicationCommandHandlerTests {
+    private FixtureConfiguration<LCApplication> fixture;
+
+    @BeforeEach
+    void setUp() {
+        final Set<Country> sanctioned = Set.of(SOKOVIA);
+        fixture = new AggregateTestFixture<>(LCApplication.class);              // <1>
+
+        final Repository<LCApplication> repository = fixture.getRepository();   // <2>
+
+        CreateLCApplicationCommandHandler handler =
+                new CreateLCApplicationCommandHandler(repository, sanctioned);  // <3>
+        fixture.registerAnnotatedCommandHandler(handler);                       // <4>
+    }
 }
 ....
-<1> We are creating a new aggregate fixture like usual
+<1> We are creating a new aggregate fixture as usual
 <2> We are using the fixture to obtain an instance of the Axon `Repository`
 <3> We instantiate the custom command handler passing in the `Repository` instance. Also note how we inject the collection of sanctioned countries into the handler using simple dependency injection. In real life, this set of sanctioned countries will likely be obtained from external configuration.
-<4> We finally need to register the command handler with the fixture, so that it can route commands to this handler.
+<4> We finally need to register the command handler with the fixture, so that it can route commands to this handler as well.
 
 The tests for this look fairly straightforward:
 
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/CreateLCApplicationCommandHandlerTests.java[lines=32..45,indent=0]
+class CreateLCApplicationCommandHandlerTests {
+    // ..
+
+    @BeforeEach
+    void setUp() {
+    final Set<Country> sanctioned = Set.of(SOKOVIA);                            // <1>
+        fixture = new AggregateTestFixture<>(LCApplication.class);
+
+        final Repository<LCApplication> repository = fixture.getRepository();
+
+        CreateLCApplicationCommandHandler handler =
+                new CreateLCApplicationCommandHandler(repository, sanctioned);  // <2>
+        fixture.registerAnnotatedCommandHandler(handler);
+    }
+
+    @Test
+    void shouldFailIfBeneficiaryCountryIsSanctioned() {
+        fixture.given()
+                .when(new CreateLCApplicationCommand(randomId(), SOKOVIA))      // <3>
+                .expectNoEvents()
+                .expectException(CannotTradeWithSanctionedCountryException.class);
+    }
+
+    @Test
+    void shouldCreateIfCountryIsNotSanctioned() {
+        final LCApplicationId applicationId = randomId();
+        fixture.given()
+                .when(new CreateLCApplicationCommand(applicationId, WAKANDA))   // <4>
+                .expectEvents(new LCApplicationCreatedEvent(applicationId));
+    }
+}
 ....
+<1> For the purposes of the test, we mark the country `SOKOVIA` as a _sanctioned_ country. In a more realistic scenario, this will likely come from some form external configuration (e.g. a lookup table or form of external configuration). However, this is appropriate for our unit test.
+<2> We then inject this set of _sanctioned countries_ into the command handler.
+<3> When the `LCApplication` is created for the sanctioned country, we expect no events to be emitted and furthermore, the `CannotTradeWithSanctionedCountryException` exception to be thrown.
+<4> Finally, when the beneficiary belongs to a non-sanctioned country, we emit the `LCApplicationCreatedEvent` to be emitted.
+
 The implementation of the command handler is shown below:
 
 [source,java,linenum]
 ....
-include::{sourcedir}/ch05/CreateLCApplicationCommandHandler.java[lines=7..,indent=0]
+import org.springframework.stereotype.Service;
+
+@Service // <1>
+public class CreateLCApplicationCommandHandler {
+    private final Repository<LCApplication> repository;
+    private final Set<Country> sanctionedCountries;
+
+    public CreateLCApplicationCommandHandler(Repository<LCApplication> repository,
+                                             Set<Country> sanctionedCountries) {
+        this.repository = repository;
+        this.sanctionedCountries = sanctionedCountries;
+    }
+
+    @CommandHandler
+    public void handle(CreateLCApplicationCommand command) {
+        // Validations can be performed here as well <2>
+        repository.newInstance(() -> new LCApplication(command, sanctionedCountries)); // <3>
+    }
+}
 ....
+<1> We mark the class as a `@Service` to mark it as a component devoid of encapsulated state and enable auto-discovery when using annotation-based configuration or classpath scanning. As such, it can be used to perform any "plumbing" activities
+<2> Do note that the validation for the beneficiary's country being sanctioned could have been performed on line 13 as well. Some would argue that this would be ideal because we could avoid a potentially unnecessary invocation of the Axon `Repository` method if we did that. However, we prefer encapsulating business validations within the confines of the aggregate as much as possible.
 
 Finally, the aggregate implementation along with the validation is shown below:
 [source,java,linenum]
@@ -591,7 +874,5 @@ include::{sourcedir}/ch05/LCApplication.java[lines=37..42]
 // ...
 }
 ....
-
-=== Publishing events
 
 === Exposing a REST-based API for commands

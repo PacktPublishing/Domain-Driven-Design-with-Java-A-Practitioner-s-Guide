@@ -1,5 +1,6 @@
 package com.premonition.lc.issuance.domain.ch05;
 
+import com.premonition.lc.issuance.domain.AdvisingBank;
 import com.premonition.lc.issuance.domain.Country;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -15,6 +16,7 @@ public class LCApplication {
     @AggregateIdentifier                                                            // <1>
     private LCApplicationId id;
     private State state;
+    private AdvisingBank advisingBank;
 
     @SuppressWarnings("unused")
     private LCApplication() {
@@ -31,6 +33,7 @@ public class LCApplication {
     private void on(LCApplicationCreatedEvent event) {
         this.id = event.getId();
         this.state = State.DRAFT;
+        this.advisingBank = event.getAdvisingBank();
     }
 
     public LCApplication(CreateLCApplicationCommand command, Set<Country> sanctioned) {
@@ -55,5 +58,18 @@ public class LCApplication {
     @EventSourcingHandler
     private void on(LCApplicationSubmittedEvent event) {
         this.state = State.SUBMITTED;
+    }
+
+    @CommandHandler
+    public void changeAdvisingBank(ChangeAdvisingBankCommand command) {
+        if (!command.getAdvisingBank().equals(this.advisingBank)) {
+
+            apply(new AdvisingBankChangedEvent(id, command.getAdvisingBank()));
+        }
+    }
+
+    @EventSourcingHandler
+    private void on(AdvisingBankChangedEvent event) {
+        this.advisingBank = event.getAdvisingBank();
     }
 }

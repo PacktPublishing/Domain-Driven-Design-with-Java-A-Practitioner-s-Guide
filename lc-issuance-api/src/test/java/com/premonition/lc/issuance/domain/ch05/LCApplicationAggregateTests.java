@@ -1,5 +1,8 @@
 package com.premonition.lc.issuance.domain.ch05;
 
+import com.premonition.lc.issuance.domain.AdvisingBank;
+import com.premonition.lc.issuance.domain.BankId;
+import com.premonition.lc.issuance.domain.Country;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,11 +52,24 @@ public class LCApplicationAggregateTests {
     void shouldAllowSubmitOnlyInDraftState() {
         final LCApplicationId applicationId = LCApplicationId.randomId();
 
-        fixture.given(
-                new LCApplicationCreatedEvent(applicationId))                  // <1>
-
+        fixture.given(new LCApplicationCreatedEvent(applicationId))            // <1>
                 .when(new SubmitLCApplicationCommand(applicationId))           // <2>
-
                 .expectEvents(new LCApplicationSubmittedEvent(applicationId)); // <3>
+    }
+
+    @Test
+    void shouldAllowChangingAdvisingBank() {
+        final LCApplicationId applicationId = LCApplicationId.randomId();
+
+        final AdvisingBank oldAdvisingBank = AdvisingBank.builder()
+                .id(BankId.randomId())
+                .country(Country.SOKOVIA).build();
+        final AdvisingBank newAdvisingBank = AdvisingBank.builder()
+                .id(BankId.randomId())
+                .country(Country.WAKANDA).build();
+
+        fixture.given(new LCApplicationCreatedEvent(applicationId, oldAdvisingBank))
+                .when(new ChangeAdvisingBankCommand(applicationId, newAdvisingBank))
+                .expectEvents(new AdvisingBankChangedEvent(applicationId, newAdvisingBank));
     }
 }

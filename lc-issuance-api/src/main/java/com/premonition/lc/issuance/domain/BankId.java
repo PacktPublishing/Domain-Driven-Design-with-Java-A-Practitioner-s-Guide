@@ -16,4 +16,8 @@ public class BankId extends BaseId {
     public static BankId from(UUID id) {
         return new BankId(id);
     }
+
+    public static BankId randomId() {
+        return from(UUID.randomUUID());
+    }
 }
