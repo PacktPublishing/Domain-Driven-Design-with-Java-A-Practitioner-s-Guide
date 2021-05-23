@@ -2,7 +2,7 @@ ifndef::imagesdir[:imagesdir: images]
 ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/premonition/lc/issuance/domain]
 [.text-justify]
 
-== Implementing Domain Logic (20 pages)
+== Implementing Domain Logic
 
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
@@ -864,18 +864,57 @@ public class CreateLCApplicationCommandHandler {
     }
 }
 ....
-<1> We mark the class as a `@Service` to mark it as a component devoid of encapsulated state and enable auto-discovery when using annotation-based configuration or classpath scanning. As such, it can be used to perform any "plumbing" activities
-<2> Do note that the validation for the beneficiary's country being sanctioned could have been performed on line 13 as well. Some would argue that this would be ideal because we could avoid a potentially unnecessary invocation of the Axon `Repository` method if we did that. However, we prefer encapsulating business validations within the confines of the aggregate as much as possible.
+<1> We mark the class as a `@Service` to mark it as a component devoid of encapsulated state and enable auto-discovery when using annotation-based configuration or classpath scanning. As such, it can be used to perform any "plumbing" activities.
+
+<2> Do note that the validation for the beneficiary's country being sanctioned could have been performed on line 18 as well. Some would argue that this would be ideal because we could avoid a potentially unnecessary invocation of the Axon `Repository` method if we did that. However, we prefer encapsulating business validations within the confines of the aggregate as much as possible -- so that we don't suffer from the problem of creating an https://www.martinfowler.com/bliki/AnemicDomainModel.html[anemic domain model]footnote:[https://www.martinfowler.com/bliki/AnemicDomainModel.html].
 
 Finally, the aggregate implementation along with the validation is shown below:
 [source,java,linenum]
 ....
 class LCApplication {
 // ...
-include::{sourcedir}/ch05/LCApplication.java[lines=37..42]
-
-// ...
+    public LCApplication(CreateLCApplicationCommand command, Set<Country> sanctioned) {
+        if (sanctioned.contains(command.getBeneficiaryCountry())) { // <1>
+            throw new CannotTradeWithSanctionedCountryException();
+        }
+        apply(new LCApplicationCreatedEvent(command.getId()));
+    }
 }
 ....
+<1> The validation itself is fairly straightforward. We throw a `CannotTradeWithSanctionedCountryException` when the validation fails.
 
-=== Exposing a REST-based API for commands
+=== Summary
+In this chapter, we used the outputs of the eventstorming session and used it as a primary aid to create a domain model for our bounded context. We looked at how to implement this using the command query responsibility segregation (CQRS) architecture pattern. We looked at persistence options and the implications of using event sourced vs state stored aggregates. Finally, we rounded off by looking at a variety of ways in which to perform business validations. We looked at all this through a set of code examples using Spring boot and the Axon framework.
+
+With this knowledge, we should be able to implement robust, well encapsulated, event-driven domain models. In the next chapter, we will look at implementing a user interface for these domain capabilities and examine a few options such as CRUD-based vs task-based UIs.
+
+=== Further Reading
+
+[cols="3,3,6"]
+|===
+|Title |Author |Location
+
+|CQRS
+|Martin Fowler
+|https://martinfowler.com/bliki/CQRS.html
+
+|Bootiful CQRS and Event Sourcing with Axon Framework
+|SpringDeveloper and Allard Buijze
+|https://www.youtube.com/watch?v=7e5euKxHhTE
+
+|The Log: What every software engineer should know about real-time data's unifying abstraction
+|Jay Kreps
+|https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying
+
+|Event Sourcing
+|Martin Fowler
+|https://martinfowler.com/eaaDev/EventSourcing.html
+
+|Using a DDD Approach for Validating Business Rules
+|Fabian Lopez
+|https://www.infoq.com/articles/ddd-business-rules/
+
+|Anemic Domain Model
+|Martin Fowler
+|https://www.martinfowler.com/bliki/AnemicDomainModel.html
+|===

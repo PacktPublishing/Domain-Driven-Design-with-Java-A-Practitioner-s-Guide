@@ -6,6 +6,8 @@ The essence of DDD is a lot about capturing the business process and user intent
 
 === Technical Requirements
 
+=== Invoking commands
+
 === Task-based vs. CRUD-based UIs
 
 === Implementing the Place Order Screen
