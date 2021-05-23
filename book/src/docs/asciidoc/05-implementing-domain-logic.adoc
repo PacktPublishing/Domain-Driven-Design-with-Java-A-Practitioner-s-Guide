@@ -488,7 +488,8 @@ E5: Wheat bread added
 |E5: Order created!
 
 |===
-The code
+The corresponding source code for the whole scenario is illustrated below:
+
 [source,java,linenum]
 ----
 public class Cart {
@@ -497,7 +498,7 @@ public class Cart {
     private CartItems items;
     //..
 
-    private Cart() {                                                    // <1>
+    private Cart() {                                             // <1>
         // Required by the framework
     }
 
@@ -505,9 +506,9 @@ public class Cart {
     public void addItem(AddItemToCartCommand command) {
         // Business validations here
         if (this.isNew) {
-            apply(new CartCreatedEvent(command.getId()));
+            apply(new CartCreatedEvent(command.getId()));        // <2>
         }
-        apply(new ItemAddedEvent(id, command.getItem()));
+        apply(new ItemAddedEvent(id, command.getItem()));        // <2>
     }
 
     @CommandHandler
@@ -522,44 +523,45 @@ public class Cart {
         apply(new OrderCreatedEvent(this.items));
     }
 
-    @EventSourcingHandler                                               // <2>
+    @EventSourcingHandler                                        // <3>
     private void on(CartCreatedEvent event) {
         this.id = event.getCartId();
         this.items = new CartItems();
         this.isNew = true;
     }
 
-    @EventSourcingHandler                                               // <2>
+    @EventSourcingHandler                                        // <3>
     private void on(ItemAddedEvent event) {
         this.items.add(event.getItem());
         this.isNew = false;
     }
 
-    @EventSourcingHandler                                               // <2>
+    @EventSourcingHandler                                        // <3>
     private void on(ItemRemovedEvent event) {
         this.items.remove(event.getItem());
     }
 
-    @EventSourcingHandler                                               // <2>
+    @EventSourcingHandler                                        // <3>
     private void on(CheckoutConfirmedEvent event) {
         // ..
     }
 }
 ----
 <1> Before processing any command, the aggregate loading process commences by first invoking the no-args constructor. For this reason, we need the no-args constructor to be *empty* i.e. it should *not* have any code that restores state. State restoration *must* happen only in those methods that trigger an event replay. In the case of the Axon framework, this translates to methods embellished with the `@EventSourcingHandler` annotation.
-<2> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.
+<2> It is important to note that it is possible (but not necessary) to emit *more than one event* after processing a command. This is illustrated in the first instance of the `AddItemCommand` above where we emit a `CartCreatedEvent` and an `ItemAddedEvent`.
+<3> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.
 
-When working with event sourced aggregates, it is very important to be disciplined about the following *rules*:
+When working with event sourced aggregates, it is very important to be disciplined about the kind of code that one can write:
 [cols="2,1,1,1"]
 |===
 |Type of Method|State Restoration|Business Logic|Event Emission
 
-|Command Handler
+|`@CommandHandler`
 |No
 |Yes
 |Yes
 
-|Event Sourcing Handler
+|`@EventSourcingHandler`
 |Yes
 |No
 |No
@@ -579,7 +581,8 @@ Now that we have a reasonably good understanding of the two types of aggregate p
 On the flip side, these are some challenges that you might have to consider when implementing an event sourced solution:
 
 * Event sourcing requires a *paradigm shift*. Which means that development and business teams will have to spend time and effort understanding how it works.
-* The persistence model does not store state directly. This means that adhoc querying directly on the persistence model can be a lot more challenging. This can be alleviated by materializing new views, however there is added complexity in doing that. Also, this tends to work best when implemented in conjunction with CQRS which also requires applications to pay more closer attention to strong vs eventual consistency concerns.
+* The persistence model does not store state directly. This means that *adhoc querying* directly on the persistence model can be a lot more *challenging*. This can be alleviated by materializing new views, however there is added complexity in doing that.
+* Event sourcing usually tends to work very well when implemented in conjunction with *CQRS* which arguably may add more complexity to the application. It also requires applications to pay closer attention to strong vs *eventual consistency* concerns.
 
 Our experiences indicate that event sourced systems bring a lot of benefits in modern event-driven systems. However, you will need to be cognizant of the considerations presented above in the context of your own ecosystems when making persistence choices.
 
