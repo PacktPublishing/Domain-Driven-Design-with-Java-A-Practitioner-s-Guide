@@ -453,7 +453,7 @@ E2: Milk added
 |E1: Cart#123 created +
 E2: Milk added
 |*Cart Items*: +
-&nbsp;&nbsp;&nbsp;&nbsp;Milk
+Milk
 |Add item: white bread
 |E2: White bread added
 
@@ -462,8 +462,8 @@ E2: Milk added
 E2: Milk added +
 E3: White bread added
 |*Cart Items*: +
-&nbsp;&nbsp;&nbsp;&nbsp;Milk, +
-&nbsp;&nbsp;&nbsp;&nbsp;White Bread
+Milk, +
+White Bread
 |Remove item: white bread
 |E3: White bread removed
 
@@ -472,7 +472,7 @@ E2: Milk added +
 E3: White bread added +
 E4: White bread removed
 |*Cart Items*: +
-&nbsp;&nbsp;&nbsp;&nbsp;Milk
+Milk
 |Add item: wheat bread
 |E4: Wheat bread added
 
@@ -482,8 +482,8 @@ E3: White bread added +
 E4: White bread removed +
 E5: Wheat bread added
 |*Cart Items*: +
-&nbsp;&nbsp;&nbsp;&nbsp;Milk +
-&nbsp;&nbsp;&nbsp;&nbsp;Wheat bread
+Milk +
+Wheat bread
 |Confirm checkout for Cart#123
 |E5: Order created!
 
