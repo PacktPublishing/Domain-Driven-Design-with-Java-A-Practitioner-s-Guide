@@ -4,6 +4,8 @@ The best view comes after the hardest climb.
 
 In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the query side (read models) can be used to create one or more representations of the underlying data. In this chapter, we will dive deeper into how we can construct read optimized representations of the data by listening to domain events. We will also look at persistence options for these read models and exposing these in the form of an HTTP API.
 
+=== Consuming events
+
 === Persisting Distinct Query Models
 
 === Exposing a REST-based API for Queries

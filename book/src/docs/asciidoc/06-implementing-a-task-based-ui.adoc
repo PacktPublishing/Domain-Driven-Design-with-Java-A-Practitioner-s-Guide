@@ -6,10 +6,11 @@ The essence of DDD is a lot about capturing the business process and user intent
 
 === Technical Requirements
 
+=== Bootstrapping the UI
+
 === Invoking commands
 
 === Task-based vs. CRUD-based UIs
 
-=== Implementing the Place Order Screen
+=== Implementing the Submit LC Screen
 
-=== Implementing the Contract Test

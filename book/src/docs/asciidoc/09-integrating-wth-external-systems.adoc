@@ -6,6 +6,8 @@ Thus far, we have used DDD to implement a robust core for our application. Howev
 
 === Technical Requirements
 
+=== Implementing consumer-driven contracts
+
 === Exposing a REST-based API
 Currently, we have a set of commands and an ability to handle them. However, there isn't an entry point to invoke these commands externally. Let's expose these via a RESTful interface.
 
