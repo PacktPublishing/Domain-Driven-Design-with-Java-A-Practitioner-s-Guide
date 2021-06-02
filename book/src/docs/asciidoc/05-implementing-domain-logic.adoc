@@ -7,7 +7,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the section on <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates. We will round off by looking at publishing state changes to the outside world in the form of domain events and exposing a HTTP API for commands.
+In the <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates.
 
 === Technical Requirements
 * JDK 1.8+ (We have used Java 14 to compile sample sources)
@@ -97,7 +97,7 @@ image::event-storming/05-read-models.png[]
 
 The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
 
-=== Command handling
+=== Handling commands
 From the eventstorming session, we have the following commands to start with:
 
 [.text-center]
@@ -216,7 +216,7 @@ public class LCApplicationAggregateTests {
 <7> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
 
 ==== Command
-The `CreateLCApplicationCommand` in the simplistic example above does not carry any state. Realistically, the command will likely look something like what is depicted below:
+The `CreateLCApplicationCommand` in the previous simplistic example does not carry any state. Realistically, the command will likely look something like what is depicted as follows:
 
 [source,java,linenum]
 ....
@@ -238,13 +238,13 @@ public class CreateLCApplicationCommand {  // <1>
 
 ....
 <1> The command class. When naming commands, we typically use an imperative style i.e. they usually begin with a verb denoting the action required. Note that this is a data transfer object. In other words, it is simply a bag of data attributes. Also note how it is devoid of any logic (at least at the moment).
-<2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated vs. client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
+<2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated versus client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
 <3> The `Party` and `AdvisingBank` types are complex types to represent those concepts in our solution. Care should be taken to consistently use names that are relevant in the problem (business) domain as opposed to using names that only make sense in the solution (technology) domain. Note the attempt to make use of the _ubiquitous language_ of the domain experts in both cases. This is a practice that we should always be conscious of when naming things in the system.
 
 The astute reader will have noted that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
 
 ==== Event
-A simplified representation of a real-world `LCApplicationCreatedEvent` is shown below:
+A simplified representation of a real-world `LCApplicationCreatedEvent` is shown here:
 
 [source,java,linenum]
 ....
@@ -268,7 +268,7 @@ public class LCApplicationCreatedEvent {   // <1>
 
 You will likely notice that the structure of the event is currently identical to that of the command. While this is true in this case, it may not always be that way. The amount of information that we choose to disclose in an event is context-dependent. It is important to consult with domain experts when publishing information as part of events. One may choose to withhold certain information in the event payload. For example, consider a `ChangePasswordCommand` which contains the newly changed password. It might be prudent to not include the changed password in the resulting `PasswordChangedEvent`.
 
-We have looked at the command and the resulting event in the test above. Let's look at how this is implemented under the hood by looking at the aggregate implementation.
+We have looked at the command and the resulting event in the previous test. Let's look at how this is implemented under the hood by looking at the aggregate implementation.
 
 ==== Aggregate
 The aggregate is the place where commands are handled and events are emitted. The good thing about the test that we have written is that it is expressed in a manner that hides the implementation details. But let's look at the implementation to be able to appreciate how we can get our tests to pass and meet the business requirement.
@@ -438,7 +438,7 @@ E6: Order 123 confirmed
 
 As you can see, in the event store, we continue to have full visibility of all user actions performed. This allows us to reason about these behaviors more holistically. In the traditional store, we lost the information that the user replaced white with wheat bread. While this does not impact the order itself, we lose the opportunity to gather insights from this user behavior. We recognize that this information can be captured in other ways using specialized analytical solutions, however, the event log mechanism provides a natural way to do this without requiring any additional effort, thereby reducing the complexity of the system being built. It also acts as an audit log providing full history of all events that have occurred thus far. This fits well with the essence of domain-driven design where we are constantly exploring ways in which to reduce complexity.
 
-However, there are implications to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in exact order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, just having the ordered set of elapsed events will not suffice. We still need to compute the exact items that are in the cart before allowing the order to be placed. This _event replay_ to restore aggregate state (at least those attributes that are required to validate said command) is necessary before processing that command. For example, we need to know which items are in the cart currently before processing the `RemoveItemFromCartCommand`. This is illustrated in the table below:
+However, there are implications to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in exact order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, just having the ordered set of elapsed events will not suffice. We still need to compute the exact items that are in the cart before allowing the order to be placed. This _event replay_ to restore aggregate state (at least those attributes that are required to validate said command) is necessary before processing that command. For example, we need to know which items are in the cart currently before processing the `RemoveItemFromCartCommand`. This is illustrated in the following table:
 
 [cols="5,3,4,5"]
 |===
@@ -488,7 +488,7 @@ Wheat bread
 |E5: Order created!
 
 |===
-The corresponding source code for the whole scenario is illustrated below:
+The corresponding source code for the whole scenario is illustrated in the following code snippet:
 
 [source,java,linenum]
 ----
@@ -548,7 +548,7 @@ public class Cart {
 }
 ----
 <1> Before processing any command, the aggregate loading process commences by first invoking the no-args constructor. For this reason, we need the no-args constructor to be *empty* i.e. it should *not* have any code that restores state. State restoration *must* happen only in those methods that trigger an event replay. In the case of the Axon framework, this translates to methods embellished with the `@EventSourcingHandler` annotation.
-<2> It is important to note that it is possible (but not necessary) to emit *more than one event* after processing a command. This is illustrated in the first instance of the `AddItemCommand` above where we emit a `CartCreatedEvent` and an `ItemAddedEvent`.
+<2> It is important to note that it is possible (but not necessary) to emit *more than one event* after processing a command. This is illustrated in the first instance of the `AddItemCommand` in the previous code where we emit `CartCreatedEvent` and `ItemAddedEvent`.
 <3> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.
 
 When working with event sourced aggregates, it is very important to be disciplined about the kind of code that one can write:
@@ -597,7 +597,7 @@ It may also be prudent to perform these validations in different layers of the s
 ==== Structural validations
 Currently, to create an LC application, one is required to dispatch a `CreateLCApplicationCommand`. While the command dictates a structure, none of it is enforced at the moment. Let's correct that.
 
-To be able to enable validations declaratively, we will make use of the JSR-303 bean validation libraries. We can add that easily using the `spring-boot-starter-validation` dependency to our `pom.xml` file as shown below:
+To be able to enable validations declaratively, we will make use of the JSR-303 bean validation libraries. We can add that easily using the `spring-boot-starter-validation` dependency to our `pom.xml` file as shown here:
 
 [source,xml,linenum]
 ....
@@ -648,10 +648,10 @@ public class CreateLCApplicationCommand {
 }
 
 ....
-Most structural validations can be accomplished using the built-in validator annotations. It is also possible to create custom validators for individual fields or to validate the entire object (for e.g. to validate inter-dependent attributes). For more details on how to do this, please refer to the bean validation specification at https://beanvalidation.org/2.0/ and the reference implementation at http://hibernate.org/validator/.
+Most structural validations can be accomplished using the built-in validator annotations. It is also possible to create custom validators for individual fields or to validate the entire object (for example, to validate inter-dependent attributes). For more details on how to do this, please refer to the bean validation specification at https://beanvalidation.org/2.0/ and the reference implementation at http://hibernate.org/validator/.
 
 ==== Business rule enforcements
-Structural validations can be accomplished using information that is already available in the command.However, there is another class of validations that requires information that is not present in the incoming command itself.This kind of information can be present in one of two places -- within the aggregate that we are operating on or outside of the aggregate itself, but made available within the bounded context.
+Structural validations can be accomplished using information that is already available in the command.However, there is another class of validations that requires information that is not present in the incoming command itself.This kind of information can be present in one of two places: within the aggregate that we are operating on or outside of the aggregate itself, but made available within the bounded context.
 
 Let's look at an example of a validation that requires state present within the aggregate. Consider the example of submitting an LC.While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted.This means that we can only submit an LC once.This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
 
@@ -676,7 +676,7 @@ class LCApplicationAggregateTests {
 <2> When we try to submit the application by issuing the `SubmitLCApplicationCommand` for the same application.
 <3> We expect the `LCApplicationSubmittedEvent` to be emitted.
 
-The corresponding implementation will look something like below:
+The corresponding implementation will look something like:
 
 [source,java,linenum]
 ....
@@ -868,7 +868,7 @@ public class CreateLCApplicationCommandHandler {
 
 <2> Do note that the validation for the beneficiary's country being sanctioned could have been performed on line 18 as well. Some would argue that this would be ideal because we could avoid a potentially unnecessary invocation of the Axon `Repository` method if we did that. However, we prefer encapsulating business validations within the confines of the aggregate as much as possible -- so that we don't suffer from the problem of creating an https://www.martinfowler.com/bliki/AnemicDomainModel.html[anemic domain model]footnote:[https://www.martinfowler.com/bliki/AnemicDomainModel.html].
 
-Finally, the aggregate implementation along with the validation is shown below:
+Finally, the aggregate implementation along with the validation is shown here:
 [source,java,linenum]
 ....
 class LCApplication {
