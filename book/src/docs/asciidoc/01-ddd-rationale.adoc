@@ -54,7 +54,7 @@ With all of these criteria being applied to assess project success, a large perc
 ==== Inaccurate requirements
 PMI's __Pulse of the Profession__ report from 2017 highlights a very starking fact -- a vast majority of projects fail due to inaccurate or misinterpreted requirements. It follows that it is impossible to build something that clients can use, are happy with and makes them more effective at their jobs if the wrong thing gets built -- even much less for the project to be built on time, and under budget.
 
-IT teams, especially in large organizations are staffed with mono-skilled roles such as UX designer, developer, tester, architect, business analyst, project manager, product owner, business sponsor, etc.In a lot of cases, these people are parts of distinct organization units/departments -- each with its own set of priorities and motivations. To make matters even worse, the geographical separation between these people only keeps increasing.The need to keep costs The current COVID-19 ecosystem does not help matters either.
+IT teams, especially in large organizations are staffed with mono-skilled roles such as UX designer, developer, tester, architect, business analyst, project manager, product owner, business sponsor, etc.In a lot of cases, these people are parts of distinct organization units/departments -- each with its own set of priorities and motivations. To make matters even worse, the geographical separation between these people only keeps increasing. The need to keep costs down and the current COVID-19 ecosystem does not help matters either.
 
 .Silo mentality and the loss of information fidelity
 image::silo-mentality.png[scaledwidth=75%]

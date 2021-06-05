@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<Pane fx:controller="com.premonition.lc.issuance.ui.views.CreateLCView"
+      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <Button fx:id="createButton" defaultButton="true" layoutX="436.0" layoutY="318.0" mnemonicParsing="false" text="Create"
+            textAlignment="CENTER" onAction="#create">
+        <font>
+            <Font size="36.0"/>
+        </font>
+    </Button>
+    <TextField fx:id="nameField" layoutX="132.0" layoutY="166.0" promptText="Enter a name for your LC">
+        <font>
+            <Font size="36.0"/>
+        </font>
+    </TextField>
+    <Label layoutX="26.0" layoutY="178.0" text="Name: ">
+        <font>
+            <Font size="36.0"/>
+        </font>
+    </Label>
+</Pane>

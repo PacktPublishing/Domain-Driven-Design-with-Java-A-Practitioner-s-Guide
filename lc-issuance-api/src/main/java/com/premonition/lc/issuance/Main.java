@@ -1,15 +1,15 @@
 package com.premonition.lc.issuance;
 
-import org.springframework.boot.SpringApplication;
+import javafx.application.Application;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.zalando.jackson.datatype.money.MoneyModule;
 
 @SpringBootApplication
-public class ApiApplication {
+public class Main {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiApplication.class, args);
+        Application.launch(LCIssuanceUI.class, args);
     }
 
     @Bean
