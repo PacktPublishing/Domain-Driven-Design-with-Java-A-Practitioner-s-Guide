@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.premonition.lc.issuance.ui.views.LCDetailsView">
+    <center>
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <Tab text="Basics">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab text="Beneficiary">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab text="Advising Bank">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab text="Merchandise">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab text="Documents">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab text="Conditions">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+        </TabPane>
+    </center>
+    <top>
+        <Label fx:id="nameLabel" prefHeight="44.0" prefWidth="603.0"
+               textAlignment="CENTER"
+               BorderPane.alignment="CENTER">
+            <font>
+                <Font size="36.0"/>
+            </font>
+        </Label>
+    </top>
+    <bottom>
+        <Pane prefHeight="84.0" prefWidth="611.0" BorderPane.alignment="CENTER">
+            <Button layoutX="496.0" layoutY="7.0" mnemonicParsing="false" text="Exit">
+                <font>
+                    <Font size="36.0"/>
+                </font>
+            </Button>
+            <Button layoutX="325.0" layoutY="7.0" mnemonicParsing="false" text="Submit">
+                <font>
+                    <Font size="36.0"/>
+                </font>
+            </Button>
+            <Button layoutX="190.0" layoutY="7.0" mnemonicParsing="false" text="Next">
+                <font>
+                    <Font size="36.0"/>
+                </font>
+            </Button>
+            <Button layoutY="7.0" mnemonicParsing="false" text="Previous">
+                <font>
+                    <Font size="36.0"/>
+                </font>
+            </Button>
+        </Pane>
+    </bottom>
+</BorderPane>
