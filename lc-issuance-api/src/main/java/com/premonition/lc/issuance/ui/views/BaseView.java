@@ -35,13 +35,13 @@ public abstract class BaseView<T extends BaseUIEvent> implements Initializable, 
         showView(event);
     }
 
-    protected void beforeShow(T event) {
+    protected void setupViewModel(T event) {
     }
 
     @SneakyThrows
     private void showView(T event) {
         final Parent view = load();
-        beforeShow(event);
+        setupViewModel(event);
         showStage(view);
     }
 

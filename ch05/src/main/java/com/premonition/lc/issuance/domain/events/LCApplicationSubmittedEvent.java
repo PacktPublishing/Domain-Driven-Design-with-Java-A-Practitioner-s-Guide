@@ -1,4 +1,6 @@
-package com.premonition.lc.issuance.domain.ch05;
+package com.premonition.lc.issuance.domain.events;
+
+import com.premonition.lc.issuance.domain.LCApplicationId;
 
 public class LCApplicationSubmittedEvent {
     private final LCApplicationId applicationId;

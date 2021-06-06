@@ -1,7 +1,11 @@
-package com.premonition.lc.issuance.domain.ch05;
+package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.AdvisingBank;
-import com.premonition.lc.issuance.domain.Country;
+import com.premonition.lc.issuance.domain.commands.ChangeAdvisingBankCommand;
+import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
+import com.premonition.lc.issuance.domain.commands.SubmitLCApplicationCommand;
+import com.premonition.lc.issuance.domain.events.AdvisingBankChangedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationSubmittedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -29,13 +33,6 @@ public class LCApplication {
         AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId()));   // <4>
     }
 
-    @EventSourcingHandler                                                           // <5>
-    private void on(LCApplicationCreatedEvent event) {
-        this.id = event.getId();
-        this.state = State.DRAFT;
-        this.advisingBank = event.getAdvisingBank();
-    }
-
     public LCApplication(CreateLCApplicationCommand command, Set<Country> sanctioned) {
         if (sanctioned.contains(command.getBeneficiaryCountry())) {
             throw new CannotTradeWithSanctionedCountryException();
@@ -43,8 +40,11 @@ public class LCApplication {
         apply(new LCApplicationCreatedEvent(command.getId()));
     }
 
-    enum State {
-        DRAFT, SUBMITTED, ISSUED
+    @EventSourcingHandler                                                           // <5>
+    private void on(LCApplicationCreatedEvent event) {
+        this.id = event.getId();
+        this.state = State.DRAFT;
+        this.advisingBank = event.getAdvisingBank();
     }
 
     @CommandHandler
@@ -71,5 +71,9 @@ public class LCApplication {
     @EventSourcingHandler
     private void on(AdvisingBankChangedEvent event) {
         this.advisingBank = event.getAdvisingBank();
+    }
+
+    enum State {
+        DRAFT, SUBMITTED, ISSUED
     }
 }

@@ -1,8 +1,11 @@
-package com.premonition.lc.issuance.domain.ch05;
+package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.AdvisingBank;
-import com.premonition.lc.issuance.domain.BankId;
-import com.premonition.lc.issuance.domain.Country;
+import com.premonition.lc.issuance.domain.commands.ChangeAdvisingBankCommand;
+import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
+import com.premonition.lc.issuance.domain.commands.SubmitLCApplicationCommand;
+import com.premonition.lc.issuance.domain.events.AdvisingBankChangedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationSubmittedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,22 +18,22 @@ import static org.hamcrest.Matchers.any;
 
 public class LCApplicationAggregateTests {
 
-    private FixtureConfiguration<LCApplication> fixture;                          // <1>
+    private FixtureConfiguration<LCApplication> fixture;
 
     @BeforeEach
     void setUp() {
-        fixture = new AggregateTestFixture<>(LCApplication.class);                // <2>
+        fixture = new AggregateTestFixture<>(LCApplication.class);
     }
 
     @Test
     void shouldPublishLCApplicationCreated() {
-        fixture.given()                                                           // <3>
+        fixture.given()
 
-                .when(new CreateLCApplicationCommand())                           // <4>
+                .when(new CreateLCApplicationCommand())
 
-                .expectEventsMatching(exactSequenceOf(                            // <5>
-                        messageWithPayload(any(LCApplicationCreatedEvent.class)), // <6>
-                        andNoMore()                                               // <7>
+                .expectEventsMatching(exactSequenceOf(
+                        messageWithPayload(any(LCApplicationCreatedEvent.class)),
+                        andNoMore()
                 ));
     }
 
@@ -39,22 +42,22 @@ public class LCApplicationAggregateTests {
         final LCApplicationId applicationId = LCApplicationId.randomId();
 
         fixture.given(
-                new LCApplicationCreatedEvent(applicationId),           // <1>
-                new LCApplicationSubmittedEvent(applicationId))         // <1>
+                new LCApplicationCreatedEvent(applicationId),
+                new LCApplicationSubmittedEvent(applicationId))
 
-                .when(new SubmitLCApplicationCommand(applicationId))    // <2>
+                .when(new SubmitLCApplicationCommand(applicationId))
 
-                .expectException(AlreadySubmittedException.class)       // <3>
-                .expectNoEvents();                                      // <4>
+                .expectException(AlreadySubmittedException.class)
+                .expectNoEvents();
     }
 
     @Test
     void shouldAllowSubmitOnlyInDraftState() {
         final LCApplicationId applicationId = LCApplicationId.randomId();
 
-        fixture.given(new LCApplicationCreatedEvent(applicationId))            // <1>
-                .when(new SubmitLCApplicationCommand(applicationId))           // <2>
-                .expectEvents(new LCApplicationSubmittedEvent(applicationId)); // <3>
+        fixture.given(new LCApplicationCreatedEvent(applicationId))
+                .when(new SubmitLCApplicationCommand(applicationId))
+                .expectEvents(new LCApplicationSubmittedEvent(applicationId));
     }
 
     @Test

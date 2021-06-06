@@ -1,6 +1,6 @@
 package com.premonition.lc.issuance;
 
-import com.premonition.lc.issuance.ui.events.LaunchMainViewEvent;
+import com.premonition.lc.issuance.ui.events.UIReadyEvent;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -30,7 +30,7 @@ public class LCIssuanceUI extends Application {
 
     @Override
     public void start(Stage stage) {
-        this.context.publishEvent(new LaunchMainViewEvent(stage));
+        this.context.publishEvent(new UIReadyEvent(stage));
     }
 
     @Override

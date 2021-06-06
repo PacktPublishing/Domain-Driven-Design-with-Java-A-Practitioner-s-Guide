@@ -1,7 +1,7 @@
 package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.ui.events.LCCreatedEvent;
-import com.premonition.lc.issuance.ui.events.LaunchCreateLCViewEvent;
+import com.premonition.lc.issuance.ui.events.CreateLCRequestedEvent;
 import com.premonition.lc.issuance.ui.viewmodels.SimpleLCViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 @Component
 @Log4j2
-public class CreateLCView extends BaseView<LaunchCreateLCViewEvent> {
+public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
 
     private final SimpleLCViewModel viewModel;
 

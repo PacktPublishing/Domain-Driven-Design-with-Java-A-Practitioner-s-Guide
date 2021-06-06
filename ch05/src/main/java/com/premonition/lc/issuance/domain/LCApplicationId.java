@@ -1,4 +1,4 @@
-package com.premonition.lc.issuance.domain.ch05;
+package com.premonition.lc.issuance.domain;
 
 import lombok.Data;
 

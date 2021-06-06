@@ -1,6 +1,7 @@
-package com.premonition.lc.issuance.domain.ch05;
+package com.premonition.lc.issuance.domain.commands;
 
 import com.premonition.lc.issuance.domain.AdvisingBank;
+import com.premonition.lc.issuance.domain.LCApplicationId;
 import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 

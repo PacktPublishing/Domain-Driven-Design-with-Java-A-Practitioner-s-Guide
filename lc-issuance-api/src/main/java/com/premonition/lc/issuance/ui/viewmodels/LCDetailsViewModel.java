@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class LCDetailsViewModel {
-    private StringProperty name;
+    private final StringProperty name;
 
     public LCDetailsViewModel() {
         name = new SimpleStringProperty(this, "name", "");

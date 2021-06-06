@@ -34,7 +34,7 @@ public class LCDetailsView extends BaseView<LCCreatedEvent> {
     }
 
     @Override
-    protected void beforeShow(LCCreatedEvent event) {
+    protected void setupViewModel(LCCreatedEvent event) {
         viewModel.setName(event.getName());
     }
 }

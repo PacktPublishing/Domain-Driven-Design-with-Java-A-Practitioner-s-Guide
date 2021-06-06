@@ -1,6 +1,4 @@
-package com.premonition.lc.issuance.domain.ch05;
-
-import com.premonition.lc.issuance.domain.DomainException;
+package com.premonition.lc.issuance.domain;
 
 public class CannotTradeWithSanctionedCountryException extends DomainException {
     public CannotTradeWithSanctionedCountryException() {
