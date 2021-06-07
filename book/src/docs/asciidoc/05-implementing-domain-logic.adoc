@@ -97,7 +97,7 @@ image::event-storming/05-read-models.png[]
 
 The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
 
-=== Handling commands
+=== Identifying Commands
 From the eventstorming session, we have the following commands to start with:
 
 [.text-center]
@@ -119,7 +119,7 @@ cloud Commands {
 ....
 Commands are always directed to an aggregate for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
 
-==== Aggregate design
+==== Identifying Aggregates
 Looking at the output of the eventstorming session, one potential grouping can be as follows:
 
 .First cut attempt at aggregate design
@@ -215,7 +215,7 @@ public class LCApplicationAggregateTests {
 <6> Here we are expecting an event of type `LCApplicationCreated` to be emitted as a result of successfully handling the command.
 <7> We are finally saying that we do not expect any more events -- which means that we expect exactly one event to be emitted.
 
-==== Command
+==== Implementing the command
 The `CreateLCApplicationCommand` in the previous simplistic example does not carry any state. Realistically, the command will likely look something like what is depicted as follows:
 
 [source,java,linenum]
@@ -241,9 +241,11 @@ public class CreateLCApplicationCommand {  // <1>
 <2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated versus client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
 <3> The `Party` and `AdvisingBank` types are complex types to represent those concepts in our solution. Care should be taken to consistently use names that are relevant in the problem (business) domain as opposed to using names that only make sense in the solution (technology) domain. Note the attempt to make use of the _ubiquitous language_ of the domain experts in both cases. This is a practice that we should always be conscious of when naming things in the system.
 
-The astute reader will have noted that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
+It is worth noting that the merchandiseDescription is left as a primitive String type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
 
-==== Event
+Now let’s look at what the event we will emit as a result of successfully processing the command will look like.
+
+==== Implementing the event
 A simplified representation of a real-world `LCApplicationCreatedEvent` is shown here:
 
 [source,java,linenum]
@@ -270,7 +272,7 @@ You will likely notice that the structure of the event is currently identical to
 
 We have looked at the command and the resulting event in the previous test. Let's look at how this is implemented under the hood by looking at the aggregate implementation.
 
-==== Aggregate
+==== Designing the aggregate
 The aggregate is the place where commands are handled and events are emitted. The good thing about the test that we have written is that it is expressed in a manner that hides the implementation details. But let's look at the implementation to be able to appreciate how we can get our tests to pass and meet the business requirement.
 
 [source,java,linenum]
@@ -309,6 +311,7 @@ This was a whirlwind introduction to a simple event-driven system. We still need
 [#_persisting_aggregates]
 === Persisting aggregates
 When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc. So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
+
 1. State stored
 2. Event sourced
 
@@ -883,10 +886,20 @@ class LCApplication {
 ....
 <1> The validation itself is fairly straightforward. We throw a `CannotTradeWithSanctionedCountryException` when the validation fails.
 
+With the above examples, we were able to look at ways to implement the policy enforcements encapsulated within the boundaries the aggregate.
+
 === Summary
 In this chapter, we used the outputs of the eventstorming session and used it as a primary aid to create a domain model for our bounded context. We looked at how to implement this using the command query responsibility segregation (CQRS) architecture pattern. We looked at persistence options and the implications of using event sourced vs state stored aggregates. Finally, we rounded off by looking at a variety of ways in which to perform business validations. We looked at all this through a set of code examples using Spring boot and the Axon framework.
 
 With this knowledge, we should be able to implement robust, well encapsulated, event-driven domain models. In the next chapter, we will look at implementing a user interface for these domain capabilities and examine a few options such as CRUD-based vs task-based UIs.
+
+=== Questions
+
+1. Can you examine the eventstorming session artifact you had attempted in the last chapter, and identify the possible aggregates that would be required?
+
+2. In your problem domain, can you determine the right approach for persisting aggregates? What are the reasons for choosing one approach over the other?
+
+3. Based on your current understanding, would you apply CQRS architecture pattern? And how would you justify the choice to your team ?
 
 === Further Reading
 
