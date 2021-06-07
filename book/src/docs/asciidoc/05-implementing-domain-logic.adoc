@@ -39,6 +39,7 @@ NOTE: We depict multiple read models above because it is possible (but not neces
 
 For this to work predictably, the read model(s) need to be kept in sync with the write models (we will examine some of the techniques to do that in detail later.
 
+[#_why_cqrs]
 ==== Why CQRS?
 The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios. We discuss some of these scenarios below:
 
@@ -126,6 +127,7 @@ cloud Commands {
 ....
 Commands are always directed to an aggregate for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
 
+[#_identifying_aggregates]
 ==== Identifying Aggregates
 Looking at the output of the eventstorming session, one potential grouping can be as follows:
 
@@ -893,8 +895,7 @@ class LCApplication {
 ....
 <1> The validation itself is fairly straightforward. We throw a `CannotTradeWithSanctionedCountryException` when the validation fails.
 
-In this section, we looked at different ways in which we can perform validations
-With the above examples, we were able to look at ways to implement the policy enforcements encapsulated within the boundaries the aggregate.
+With the above examples, we looked at different ways to implement the policy enforcements encapsulated within the boundaries the aggregate.
 
 === Summary
 In this chapter, we used the outputs of the eventstorming session and used it as a primary aid to create a domain model for our bounded context. We looked at how to implement this using the command query responsibility segregation (CQRS) architecture pattern. We looked at persistence options and the implications of using event sourced vs state stored aggregates. Finally, we rounded off by looking at a variety of ways in which to perform business validations. We looked at all this through a set of code examples using Spring boot and the Axon framework.
@@ -903,11 +904,11 @@ With this knowledge, we should be able to implement robust, well encapsulated, e
 
 === Questions
 
-1. Can you examine the eventstorming session artifact you had attempted in the last chapter, and identify the possible aggregates that would be required?
+1. Can you examine the eventstorming session artifact from the last chapter, and identify the possible aggregates that would be required?
 
 2. In your problem domain, can you determine the right approach for persisting aggregates? What are the reasons for choosing one approach over the other?
 
-3. Based on your current understanding, would you apply CQRS architecture pattern? And how would you justify the choice to your team ?
+3. Based on your current understanding, would you apply CQRS architecture pattern in your solution? And how would you justify the choice to your team ?
 
 === Further Reading
 
@@ -939,3 +940,9 @@ With this knowledge, we should be able to implement robust, well encapsulated, e
 |Martin Fowler
 |https://www.martinfowler.com/bliki/AnemicDomainModel.html
 |===
+
+=== Answers
+
+1. Refer to section <<_identifying_aggregates>>
+2. Refer to section <<_persisting_aggregates>>, note down the pros and cons of state stored and event sourced approach, and discuss the reasons for your choice with your teammates.
+3. Refer to section <<_why_cqrs>> to list down the advantages of the approach versus the traditional approach.  Share the reasoning with your teammates.
