@@ -7,7 +7,15 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the <<command-query-responsibility-segregation-cqrs>>, we described how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using https://spring.io/projects/spring-boot[Spring Boot]footnote:[https://spring.io/projects/spring-boot] and https://axoniq.io/product-overview/axon-framework[Axon Framework]footnote:[https://axoniq.io/product-overview/axon-framework]. We will also look at how to implement structural and business validations using https://beanvalidation.org/[JSR-303 Bean Validations]footnote:[https://beanvalidation.org/]. and persistence options by contrasting between state-stored vs event-sourced aggregates.
+In the Command Query Responsibility Segregation (CQRS) section, we  describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates. The list of topics to be covered is as follows:
+
+* Identifying aggregates
+* Handling commands and emitting events
+* Test-driving the application
+* Persisting aggregates
+* Performing validations
+
+By the end of this chapter, you would have learnt how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical Requirements
 * JDK 1.8+ (We have used Java 14 to compile sample sources)
@@ -16,7 +24,6 @@ In the <<command-query-responsibility-segregation-cqrs>>, we described how DDD a
 * JUnit 5.7.x (Included with spring boot)
 * Axon Framework 4.4.7 (DDD and CQRS Framework)
 * Project Lombok (To reduce verbosity)
-* Karate 1.0.1 (API Testing)
 * Moneta 1.4.x (Money and currency reference implementation - JSR 354)
 
 === Command Query Responsibility Segregation (CQRS)
@@ -48,7 +55,7 @@ NOTE: Implementing CQRS does not require the use of any framework. However, in t
 === Bootstrapping the application
 
 To get started, let's create a simple spring boot application using the following command:
-[source,bash]
+[source,bash,linenum]
 ----
 curl -G https://start.spring.io/starter.zip \ # <1>
        -d dependencies=web,data-jpa,lombok,validation,h2,actuator \ # <2>
@@ -101,7 +108,7 @@ The blue stickies in this diagram represent commands. Let's look at how to imple
 From the eventstorming session, we have the following commands to start with:
 
 [.text-center]
-[plantuml,potential-aggregates]
+[plantuml,potential-commands]
 ....
 @startuml
 skinparam handwritten true
@@ -241,12 +248,12 @@ public class CreateLCApplicationCommand {  // <1>
 <2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated versus client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
 <3> The `Party` and `AdvisingBank` types are complex types to represent those concepts in our solution. Care should be taken to consistently use names that are relevant in the problem (business) domain as opposed to using names that only make sense in the solution (technology) domain. Note the attempt to make use of the _ubiquitous language_ of the domain experts in both cases. This is a practice that we should always be conscious of when naming things in the system.
 
-It is worth noting that the merchandiseDescription is left as a primitive String type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
+It is worth noting that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
 
 Now let’s look at what the event we will emit as a result of successfully processing the command will look like.
 
 ==== Implementing the event
-A simplified representation of a real-world `LCApplicationCreatedEvent` is shown here:
+In an event-driven system, mutating system state by successfully processing a command usually results in a domain event being emitted to signal the state mutation to the rest of the system. A simplified representation of a real-world `LCApplicationCreatedEvent` is shown here:
 
 [source,java,linenum]
 ....
@@ -886,6 +893,7 @@ class LCApplication {
 ....
 <1> The validation itself is fairly straightforward. We throw a `CannotTradeWithSanctionedCountryException` when the validation fails.
 
+In this section, we looked at different ways in which we can perform validations
 With the above examples, we were able to look at ways to implement the policy enforcements encapsulated within the boundaries the aggregate.
 
 === Summary
