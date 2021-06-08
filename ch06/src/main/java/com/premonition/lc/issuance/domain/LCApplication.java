@@ -10,11 +10,13 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
+import org.axonframework.spring.stereotype.Aggregate;
 
 import java.util.Set;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+@Aggregate
 public class LCApplication {
 
     @AggregateIdentifier                                                            // <1>
