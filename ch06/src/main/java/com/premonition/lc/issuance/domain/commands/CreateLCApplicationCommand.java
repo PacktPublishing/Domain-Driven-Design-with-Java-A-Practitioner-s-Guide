@@ -7,14 +7,10 @@ import lombok.Data;
 @Data
 public class CreateLCApplicationCommand {
     private LCApplicationId id;
-    private Country beneficiaryCountry;
+    private String clientReference;
 
-    public CreateLCApplicationCommand() {
+    public CreateLCApplicationCommand(String clientReference) {
         this.id = LCApplicationId.randomId();
-    }
-
-    public CreateLCApplicationCommand(LCApplicationId id, Country beneficiaryCountry) {
-        this.id = id;
-        this.beneficiaryCountry = beneficiaryCountry;
+        this.clientReference = clientReference;
     }
 }

@@ -29,7 +29,7 @@ public class LCApplicationAggregateTests {
     void shouldPublishLCApplicationCreated() {
         fixture.given()
 
-                .when(new CreateLCApplicationCommand())
+                .when(new CreateLCApplicationCommand("My Test"))
 
                 .expectEventsMatching(exactSequenceOf(
                         messageWithPayload(any(LCApplicationCreatedEvent.class)),

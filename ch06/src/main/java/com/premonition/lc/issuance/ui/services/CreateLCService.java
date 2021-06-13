@@ -21,9 +21,9 @@ public class CreateLCService {
         this.gateway = gateway;
     }
 
-    public LCApplicationId createLC(String name) {
-        final LCApplicationId id = LCApplicationId.randomId();
-        gateway.sendAndWait(new CreateLCApplicationCommand(id, Country.USA));
+    public LCApplicationId createLC(String clientReference) {
+        final LCApplicationId id = gateway.sendAndWait(new CreateLCApplicationCommand(clientReference));
+        log.info("Created LC with id: {}", id);
         return id;
     }
 }
