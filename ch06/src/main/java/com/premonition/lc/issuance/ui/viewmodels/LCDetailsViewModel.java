@@ -4,21 +4,28 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class LCDetailsViewModel {
-    private final StringProperty name;
+    private final StringProperty clientReference;
+
+    private final LCBasicsViewModel basics;
 
     public LCDetailsViewModel() {
-        name = new SimpleStringProperty(this, "name", "");
+        clientReference = new SimpleStringProperty(this, "name", "");
+        basics = new LCBasicsViewModel();
     }
 
-    public String getName() {
-        return name.get();
+    public String getClientReference() {
+        return clientReference.get();
     }
 
-    public StringProperty nameProperty() {
-        return name;
+    public StringProperty clientReferenceProperty() {
+        return clientReference;
     }
 
-    public void setName(String name) {
-        this.name.set(name);
+    public void setClientReference(String clientReference) {
+        this.clientReference.set(clientReference);
+    }
+
+    public LCBasicsViewModel getBasics() {
+        return basics;
     }
 }
