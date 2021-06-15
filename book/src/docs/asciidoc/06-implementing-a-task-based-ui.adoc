@@ -8,9 +8,11 @@ The essence of DDD is a lot about capturing the business process and user intent
 
 === Bootstrapping the UI
 
-=== Invoking commands
+=== MVC vs. MVP vs. MVVM
 
 === Task-based vs. CRUD-based UIs
+
+=== Invoking commands
 
 === Implementing the Submit LC Screen
 

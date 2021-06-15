@@ -8,12 +8,12 @@ import java.util.Currency;
 
 public class LCBasicsViewModel {
     private final DoubleProperty amount;
+    private final SimpleObjectProperty<Currency> currency;
     private final ObjectProperty<LocalDate> expiryDate;
     private final BooleanProperty transferable;
     private final BooleanProperty revocable;
     private final ObjectProperty<TenorType> tenorType;
     private final IntegerProperty tenorDays;
-    private final SimpleObjectProperty<Currency> currency;
 
     public LCBasicsViewModel() {
         amount = new SimpleDoubleProperty();

@@ -4,7 +4,7 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.events.CreateLCRequestedEvent;
 import com.premonition.lc.issuance.ui.events.LCCreatedEvent;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
-import com.premonition.lc.issuance.ui.viewmodels.SimpleLCViewModel;
+import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,28 +24,29 @@ import java.util.ResourceBundle;
 @Log4j2
 public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
 
-    private final SimpleLCViewModel viewModel;
+    private final CreateLCViewModel viewModel;
     private final CreateLCService service;
 
     @FXML
-    private TextField nameField;
+    private TextField clientReference;
     @FXML
     private Button createButton;
 
     public CreateLCView(@Value("classpath:/ui/create_lc_view.fxml") Resource ui,
+                        @Value("${application.client.reference.min.length:4}") int minLength,
                         ApplicationContext context, CreateLCService service) {
         super(context, ui);
         this.service = service;
-        this.viewModel = new SimpleLCViewModel();
+        this.viewModel = new CreateLCViewModel(minLength);
     }
 
     public void create(ActionEvent event) {
-        log.info("Created a new LC with name: '" + nameField.getText() + "'");
+        log.info("Created a new LC with name: '" + clientReference.getText() + "'");
         final Task<LCApplicationId> task = new Task<>() {
 
             @Override
             protected LCApplicationId call() {
-                return service.createLC(viewModel.getName());
+                return viewModel.createLC(service);
             }
 
             @Override
@@ -54,7 +55,7 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
                 final LCApplicationId id = getValue();
                 new Alert(Alert.AlertType.INFORMATION, "Successfully created a new LC with id: " + id)
                         .showAndWait();
-                getContext().publishEvent(new LCCreatedEvent(getStage(), id.toString()));
+                getContext().publishEvent(new LCCreatedEvent(getStage(), viewModel.getClientReference()));
             }
 
             @Override
@@ -69,6 +70,6 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         createButton.disableProperty().bind(viewModel.createDisabledProperty());
-        nameField.textProperty().bindBidirectional(viewModel.nameProperty());
+        clientReference.textProperty().bindBidirectional(viewModel.clientReferenceProperty());
     }
 }

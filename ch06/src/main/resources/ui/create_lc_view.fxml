@@ -16,7 +16,7 @@
             <Font size="36.0"/>
         </font>
     </Button>
-    <TextField fx:id="nameField" layoutX="132.0" layoutY="166.0" promptText="Enter a name for your LC">
+    <TextField fx:id="clientReference" layoutX="132.0" layoutY="166.0" promptText="Enter a name for your LC">
         <font>
             <Font size="36.0"/>
         </font>

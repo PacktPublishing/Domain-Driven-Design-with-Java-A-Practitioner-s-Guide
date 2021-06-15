@@ -1,6 +1,5 @@
 package com.premonition.lc.issuance.domain.commands;
 
-import com.premonition.lc.issuance.domain.Country;
 import com.premonition.lc.issuance.domain.LCApplicationId;
 import lombok.Data;
 
