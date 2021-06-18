@@ -19,7 +19,9 @@
 		<commons-io.version>2.8.0</commons-io.version>
 		<jackson-datatype-money.version>1.2.1</jackson-datatype-money.version>
 		<moneta.version>1.4.2</moneta.version>
-		<javafx.version>${java.version}</javafx.version>
+		<javafx.version>16</javafx.version>
+		<testfx-junit5.version>4.0.16-alpha</testfx-junit5.version>
+		<openjfx-monocle.version>jdk-12.0.1+2</openjfx-monocle.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -106,6 +108,17 @@
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
 			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit5</artifactId>
+			<scope>test</scope>
+			<version>${testfx-junit5.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>openjfx-monocle</artifactId>
+			<version>${openjfx-monocle.version}</version>
 		</dependency>
 	</dependencies>
 

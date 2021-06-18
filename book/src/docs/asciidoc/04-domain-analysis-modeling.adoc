@@ -243,7 +243,7 @@ This is either user initiated or system initiated, in response to a domain event
 The depiction of the stickies for our EventStorming workshop is shown here:
 
 .EventStorming legend
-image::event-storming/event-storming-summary.png[scaledwidth=50%,align="center"]
+image::event-storming/00-event-storming-summary.png[scaledwidth=50%,align="center"]
 
 NOTE: *Why domain events*?
 When trying to understand a business process, it is convenient to express significant facts or things that happen in that context.
