@@ -1,14 +1,16 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.ui.services.CreateLCService;
 import com.premonition.lc.issuance.utilities.UITest;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.testfx.api.FxRobot;
@@ -20,6 +22,9 @@ import static org.testfx.api.FxAssert.verifyThat;
 
 @UITest
 public class CreateLCViewTests {
+
+    @MockBean
+    private CreateLCService service;
 
     @Autowired
     private ApplicationContext context;
@@ -33,15 +38,6 @@ public class CreateLCViewTests {
         loader.setControllerFactory(context::getBean);
         stage.setScene(new Scene(loader.load()));
         stage.show();
-    }
-
-    @BeforeAll
-    static void beforeAll() {
-        System.setProperty("testfx.robot", "glass");
-        System.setProperty("java.awt.headless", "true");
-        System.setProperty("testfx.headless", "true");
-        System.setProperty("prism.order", "sw");
-        System.setProperty("prism.verbose", "sw");
     }
 
     @Test
@@ -60,5 +56,15 @@ public class CreateLCViewTests {
 
         verifyThat(createButton, LabeledMatchers.hasText("Create"));
         verifyThat(createButton, NodeMatchers.isEnabled());
+    }
+
+//    @Test
+    void shouldInvokeServiceOnButtonPress(FxRobot robot) {
+        final String createButton = ".button";
+        final String clientReference = "Test";
+        robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
+
+        robot.clickOn(".button");
+        Mockito.verify(service).createLC(clientReference);
     }
 }

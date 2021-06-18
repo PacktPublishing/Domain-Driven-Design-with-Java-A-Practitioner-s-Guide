@@ -14,4 +14,5 @@ import java.lang.annotation.*;
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ExtendWith({SpringExtension.class, SafeApplicationExtension.class})
 public @interface UITest {
+    boolean headless() default true;
 }
