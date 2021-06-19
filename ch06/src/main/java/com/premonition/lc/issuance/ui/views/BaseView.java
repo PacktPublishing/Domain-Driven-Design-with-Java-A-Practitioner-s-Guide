@@ -39,7 +39,8 @@ public abstract class BaseView<T extends BaseUIEvent> implements Initializable, 
     }
 
     @SneakyThrows
-    private void showView(T event) {
+    public void showView(T event) {
+        this.stage = event.getStage();
         final Parent view = load();
         setupViewModel(event);
         showStage(view);

@@ -31,13 +31,16 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
     private TextField clientReference;
     @FXML
     private Button createButton;
+    private LCDetailsView lcDetailsView;
 
     public CreateLCView(@Value("classpath:/ui/create_lc_view.fxml") Resource ui,
                         @Value("${application.client.reference.min.length:4}") int minLength,
-                        ApplicationContext context, CreateLCService service) {
+                        ApplicationContext context, CreateLCService service,
+                        LCDetailsView lcDetailsView) {
         super(context, ui);
         this.service = service;
         this.viewModel = new CreateLCViewModel(minLength);
+        this.lcDetailsView = lcDetailsView;
     }
 
     public void create(ActionEvent event) {
@@ -55,7 +58,7 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
                 final LCApplicationId id = getValue();
                 new Alert(Alert.AlertType.INFORMATION, "Successfully created a new LC with id: " + id)
                         .showAndWait();
-                getContext().publishEvent(new LCCreatedEvent(getStage(), viewModel.getClientReference()));
+                lcDetailsView.showView(new LCCreatedEvent(getStage(), viewModel.getClientReference()));
             }
 
             @Override

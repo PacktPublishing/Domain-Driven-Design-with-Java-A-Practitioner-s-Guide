@@ -2,6 +2,7 @@ package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import com.premonition.lc.issuance.utilities.UITest;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -14,9 +15,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.testfx.api.FxRobot;
+import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.Start;
+import org.testfx.framework.junit5.Stop;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
+
+import java.util.concurrent.TimeoutException;
 
 import static org.testfx.api.FxAssert.verifyThat;
 
@@ -58,13 +63,14 @@ public class CreateLCViewTests {
         verifyThat(createButton, NodeMatchers.isEnabled());
     }
 
-//    @Test
+    @Test
     void shouldInvokeServiceOnButtonPress(FxRobot robot) {
-        final String createButton = ".button";
         final String clientReference = "Test";
         robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
 
         robot.clickOn(".button");
-        Mockito.verify(service).createLC(clientReference);
+        Platform.runLater( ()-> {
+            Mockito.verify(service).createLC(clientReference);
+        });
     }
 }
