@@ -2,7 +2,6 @@ package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.domain.Currencies;
 import com.premonition.lc.issuance.domain.TenorType;
-import com.premonition.lc.issuance.ui.events.LCCreatedEvent;
 import com.premonition.lc.issuance.ui.viewmodels.LCDetailsViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,7 +19,7 @@ import java.util.*;
 
 @Component
 @Log4j2
-public class LCDetailsView extends BaseView<LCCreatedEvent> {
+public class LCDetailsView extends BaseView<LCDetailsViewModel> {
 
     private final LCDetailsViewModel viewModel;
     public Spinner<Double> amount;
@@ -58,8 +57,4 @@ public class LCDetailsView extends BaseView<LCCreatedEvent> {
         tenorDays.setValueFactory(new IntegerSpinnerValueFactory(10, 100, 10, 1));
     }
 
-    @Override
-    protected void setupViewModel(LCCreatedEvent event) {
-        viewModel.setClientReference(event.getName());
-    }
 }

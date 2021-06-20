@@ -1,11 +1,7 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.ChangeAdvisingBankCommand;
 import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
-import com.premonition.lc.issuance.domain.commands.SubmitLCApplicationCommand;
-import com.premonition.lc.issuance.domain.events.AdvisingBankChangedEvent;
 import com.premonition.lc.issuance.domain.events.LCApplicationCreatedEvent;
-import com.premonition.lc.issuance.domain.events.LCApplicationSubmittedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,44 +31,5 @@ public class LCApplicationAggregateTests {
                         messageWithPayload(any(LCApplicationCreatedEvent.class)),
                         andNoMore()
                 ));
-    }
-
-    @Test
-    void shouldNotAllowSubmitOnAnAlreadySubmittedLC() {
-        final LCApplicationId applicationId = LCApplicationId.randomId();
-
-        fixture.given(
-                new LCApplicationCreatedEvent(applicationId),
-                new LCApplicationSubmittedEvent(applicationId))
-
-                .when(new SubmitLCApplicationCommand(applicationId))
-
-                .expectException(AlreadySubmittedException.class)
-                .expectNoEvents();
-    }
-
-    @Test
-    void shouldAllowSubmitOnlyInDraftState() {
-        final LCApplicationId applicationId = LCApplicationId.randomId();
-
-        fixture.given(new LCApplicationCreatedEvent(applicationId))
-                .when(new SubmitLCApplicationCommand(applicationId))
-                .expectEvents(new LCApplicationSubmittedEvent(applicationId));
-    }
-
-    @Test
-    void shouldAllowChangingAdvisingBank() {
-        final LCApplicationId applicationId = LCApplicationId.randomId();
-
-        final AdvisingBank oldAdvisingBank = AdvisingBank.builder()
-                .id(BankId.randomId())
-                .country(Country.SOKOVIA).build();
-        final AdvisingBank newAdvisingBank = AdvisingBank.builder()
-                .id(BankId.randomId())
-                .country(Country.WAKANDA).build();
-
-        fixture.given(new LCApplicationCreatedEvent(applicationId, oldAdvisingBank))
-                .when(new ChangeAdvisingBankCommand(applicationId, newAdvisingBank))
-                .expectEvents(new AdvisingBankChangedEvent(applicationId, newAdvisingBank));
     }
 }

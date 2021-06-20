@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class CreateLCViewModel {
+public class CreateLCViewModel implements ViewModel {
     private final StringProperty clientReference;
     private final BooleanProperty createDisabled;
 

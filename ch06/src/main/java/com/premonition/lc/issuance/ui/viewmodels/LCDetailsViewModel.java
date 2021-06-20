@@ -3,14 +3,18 @@ package com.premonition.lc.issuance.ui.viewmodels;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class LCDetailsViewModel {
+public class LCDetailsViewModel implements ViewModel {
     private final StringProperty clientReference;
 
     private final LCBasicsViewModel basics;
 
-    public LCDetailsViewModel() {
-        clientReference = new SimpleStringProperty(this, "name", "");
+    public LCDetailsViewModel(String clientReference) {
+        this.clientReference = new SimpleStringProperty(this, "name", clientReference);
         basics = new LCBasicsViewModel();
+    }
+
+    public LCDetailsViewModel() {
+        this("");
     }
 
     public String getClientReference() {

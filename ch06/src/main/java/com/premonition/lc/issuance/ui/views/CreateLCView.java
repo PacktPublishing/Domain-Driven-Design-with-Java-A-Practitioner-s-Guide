@@ -1,10 +1,9 @@
 package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
-import com.premonition.lc.issuance.ui.events.CreateLCRequestedEvent;
-import com.premonition.lc.issuance.ui.events.LCCreatedEvent;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
+import com.premonition.lc.issuance.ui.viewmodels.LCDetailsViewModel;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +21,7 @@ import java.util.ResourceBundle;
 
 @Component
 @Log4j2
-public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
+public class CreateLCView extends BaseView<CreateLCViewModel> {
 
     private final CreateLCViewModel viewModel;
     private final CreateLCService service;
@@ -31,7 +30,7 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
     private TextField clientReference;
     @FXML
     private Button createButton;
-    private LCDetailsView lcDetailsView;
+    private final LCDetailsView lcDetailsView;
 
     public CreateLCView(@Value("classpath:/ui/create_lc_view.fxml") Resource ui,
                         @Value("${application.client.reference.min.length:4}") int minLength,
@@ -58,7 +57,7 @@ public class CreateLCView extends BaseView<CreateLCRequestedEvent> {
                 final LCApplicationId id = getValue();
                 new Alert(Alert.AlertType.INFORMATION, "Successfully created a new LC with id: " + id)
                         .showAndWait();
-                lcDetailsView.showView(new LCCreatedEvent(getStage(), viewModel.getClientReference()));
+                lcDetailsView.show(getStage(), new LCDetailsViewModel(clientReference.getText()));
             }
 
             @Override
