@@ -33,7 +33,7 @@ public class LCDetailsView extends BaseView<LCDetailsViewModel> {
     @FXML
     private Label clientReference;
 
-    public LCDetailsView(@Value("classpath:/ui/lc_details.fxml") Resource ui,
+    public LCDetailsView(@Value("classpath:/com/premonition/lc/issuance/ui/lc_details.fxml") Resource ui,
                          ApplicationContext context) {
         super(context, ui);
         this.viewModel = new LCDetailsViewModel();

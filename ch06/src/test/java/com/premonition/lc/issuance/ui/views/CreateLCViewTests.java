@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class CreateLCViewTests {
     @Autowired
     private ApplicationContext context;
 
-    @Value("classpath:/ui/create_lc_view.fxml")
+    @Value("classpath:/com/premonition/lc/issuance/ui/create_lc_view.fxml")
     private Resource ui;
 
     @Start

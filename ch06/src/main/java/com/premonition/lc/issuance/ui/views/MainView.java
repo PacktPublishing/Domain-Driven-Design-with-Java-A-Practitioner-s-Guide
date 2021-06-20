@@ -1,24 +1,28 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.ui.viewmodels.MainViewModel;
+import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MainView extends BaseView {
+public class MainView implements FxmlView<MainViewModel> {
 
-    private final CreateLCView createLCView;
+    @InjectViewModel
+    private MainViewModel viewModel;
 
-    public MainView(ApplicationContext context,
-                    @Value("classpath:/ui/main_menu.fxml") Resource ui,
-                    CreateLCView createLCView) {
-        super(context, ui);
-        this.createLCView = createLCView;
+    public void initialize() {
     }
 
-    public void launchCreate(ActionEvent event) {
-        createLCView.show(getStage());
+    public void create(ActionEvent event) {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        viewModel.create(stage);
     }
+
 }

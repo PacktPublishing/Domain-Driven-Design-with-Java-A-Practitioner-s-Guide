@@ -9,7 +9,7 @@ import org.zalando.jackson.datatype.money.MoneyModule;
 public class Main {
 
     public static void main(String[] args) {
-        Application.launch(LCIssuanceUI.class, args);
+//        Application.launch(LCIssuanceUI.class, args);
     }
 
     @Bean

@@ -7,10 +7,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class CreateLCViewModel implements ViewModel {
+public class CreateLCViewModel implements ViewModel, de.saxsys.mvvmfx.ViewModel {
     private final StringProperty clientReference;
     private final BooleanProperty createDisabled;
 
+    public CreateLCViewModel() {
+        this.clientReference=null;
+        this.createDisabled = null;
+    }
     public CreateLCViewModel(int minClientReferenceLength) {
         this("", minClientReferenceLength);
     }
