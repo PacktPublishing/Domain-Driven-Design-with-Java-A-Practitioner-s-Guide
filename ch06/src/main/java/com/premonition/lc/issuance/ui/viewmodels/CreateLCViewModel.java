@@ -6,15 +6,22 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class CreateLCViewModel implements ViewModel, de.saxsys.mvvmfx.ViewModel {
     private final StringProperty clientReference;
     private final BooleanProperty createDisabled;
 
+    @Value("${application.client.reference.min.length:4}")
+    private int minLength =4;
+
     public CreateLCViewModel() {
-        this.clientReference=null;
-        this.createDisabled = null;
+        this.clientReference = new SimpleStringProperty(this, "clientReference", "");
+        this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
+        this.createDisabled.bind(this.clientReference.length().lessThan(minLength));
     }
+
     public CreateLCViewModel(int minClientReferenceLength) {
         this("", minClientReferenceLength);
     }

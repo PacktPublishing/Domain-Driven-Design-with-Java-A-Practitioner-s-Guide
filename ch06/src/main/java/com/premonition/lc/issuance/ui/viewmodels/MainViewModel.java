@@ -10,9 +10,7 @@ import javafx.stage.Stage;
 public class MainViewModel implements ViewModel {
     public void create(Stage stage) {
         stage.setTitle("LC Issuance");
-
         final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class).load().getView();
-
         stage.setScene(new Scene(parent));
         stage.show();
     }

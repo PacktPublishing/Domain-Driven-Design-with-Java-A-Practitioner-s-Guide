@@ -63,7 +63,7 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
         new Thread(task).start();
     }
 
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         createButton.disableProperty().bind(viewModel.createDisabledProperty());
         clientReference.textProperty().bindBidirectional(viewModel.clientReferenceProperty());
     }
