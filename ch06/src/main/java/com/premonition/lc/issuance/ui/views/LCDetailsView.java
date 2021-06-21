@@ -10,14 +10,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Currency;
+import java.util.ResourceBundle;
 
 @Component
 @Log4j2
@@ -37,7 +35,7 @@ public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
     @FXML
     private Label clientReference;
 
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         tenorType.getItems().addAll(TenorType.values());
         currency.getItems().addAll(Currencies.tradeable());
         clientReference.textProperty().bind(viewModel.clientReferenceProperty());

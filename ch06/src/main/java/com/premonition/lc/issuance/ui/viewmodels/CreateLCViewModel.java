@@ -50,6 +50,7 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
             protected void action() {
                 lcApplicationId = createLC(service);
                 lcScope.setLcApplicationId(lcApplicationId);
+                lcScope.setClientReference(clientReference.get());
             }
         });
     }
@@ -92,4 +93,7 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
         return createLCCommand;
     }
 
+    public LCScope getLCScope() {
+        return lcScope;
+    }
 }
