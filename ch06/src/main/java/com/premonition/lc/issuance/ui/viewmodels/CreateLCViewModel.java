@@ -4,6 +4,7 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.Command;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@ScopeProvider(LCScope.class)
 public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     private final int clientReferenceMinLength;
@@ -36,9 +38,10 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
                              CreateLCService service) {
         this.clientReferenceMinLength = clientReferenceMinLength;
         this.service = service;
+        this.init();
     }
 
-    public void initialize() {
+    public void init() {
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
         this.createDisabled.bind(this.clientReference.length().lessThan(clientReferenceMinLength));

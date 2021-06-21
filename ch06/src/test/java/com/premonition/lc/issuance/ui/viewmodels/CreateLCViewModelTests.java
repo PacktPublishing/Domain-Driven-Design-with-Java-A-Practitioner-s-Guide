@@ -23,7 +23,6 @@ class CreateLCViewModelTests {
     @BeforeEach
     void before() {
         viewModel = new CreateLCViewModel(4, service);
-        viewModel.initialize();
     }
     @Test
     void shouldNotEnableCreateIfClientReferenceLesserThanMinimumLength() {
