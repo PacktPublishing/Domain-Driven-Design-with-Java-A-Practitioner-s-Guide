@@ -1,12 +1,12 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -28,14 +28,9 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
     @InjectViewModel
     private CreateLCViewModel viewModel;
 
-    public CreateLCView() {
-    }
-
     public void create(ActionEvent event) {
         viewModel.getCreateLCCommand().execute();
-        new Alert(Alert.AlertType.INFORMATION, "Successfully created a new LC with id: " + viewModel.getLcApplicationId())
-                .showAndWait();
-        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        Stage stage = UIUtils.getStage(event);
         showLCDetailsView(stage);
     }
 

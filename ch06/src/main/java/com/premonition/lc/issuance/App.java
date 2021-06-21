@@ -19,7 +19,7 @@ public class App extends MvvmfxSpringApplication {
     }
 
     @Override
-    public void startMvvmfx(Stage stage) throws Exception {
+    public void startMvvmfx(Stage stage) {
         stage.setTitle("LC Issuance");
 
         final Parent parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
