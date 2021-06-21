@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.zalando.jackson.datatype.money.MoneyModule;
 
 @SpringBootApplication
 public class App extends MvvmfxSpringApplication {
@@ -25,4 +27,10 @@ public class App extends MvvmfxSpringApplication {
         stage.setScene(new Scene(parent));
         stage.show();
     }
+
+    @Bean
+    MoneyModule moneyModule() {
+        return new MoneyModule().withAmountFieldName("value");
+    }
+
 }

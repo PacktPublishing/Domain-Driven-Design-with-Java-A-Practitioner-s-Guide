@@ -160,7 +160,7 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>0.0.6</version>
 				<configuration>
-					<mainClass>com.premonition.lc.issuance.Main</mainClass>
+					<mainClass>com.premonition.lc.issuance.App</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
