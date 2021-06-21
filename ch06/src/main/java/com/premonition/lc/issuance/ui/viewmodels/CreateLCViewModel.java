@@ -11,6 +11,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
     private StringProperty clientReference;
     private BooleanProperty createDisabled;
 
+    @Autowired
     private CreateLCService service;
     private Command createLCCommand;
     private LCApplicationId lcApplicationId;
