@@ -6,7 +6,6 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Data
-@Component
 public class LCScope implements Scope {
     private LCApplicationId lcApplicationId;
     private String clientReference;

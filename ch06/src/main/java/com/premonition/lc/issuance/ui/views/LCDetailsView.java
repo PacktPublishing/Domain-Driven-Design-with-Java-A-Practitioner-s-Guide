@@ -12,10 +12,8 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Currency;
-import java.util.ResourceBundle;
 
 @Component
 @Log4j2
@@ -24,14 +22,20 @@ public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
     @InjectViewModel
     private LCDetailsViewModel viewModel;
 
-    public Spinner<Double> amount;
-    public ComboBox<Currency> currency;
-    public DatePicker expiryDate;
-    public CheckBox revocable;
-    public CheckBox transferable;
-    public ComboBox<TenorType> tenorType;
-    public Spinner<Integer> tenorDays;
-
+    @FXML
+    private Spinner<Double> amount;
+    @FXML
+    private ComboBox<Currency> currency;
+    @FXML
+    private DatePicker expiryDate;
+    @FXML
+    private CheckBox revocable;
+    @FXML
+    private CheckBox transferable;
+    @FXML
+    private ComboBox<TenorType> tenorType;
+    @FXML
+    private Spinner<Integer> tenorDays;
     @FXML
     private Label clientReference;
 

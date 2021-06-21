@@ -2,6 +2,7 @@ package com.premonition.lc.issuance.ui.viewmodels;
 
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,7 +24,9 @@ class CreateLCViewModelTests {
     @BeforeEach
     void before() {
         viewModel = new CreateLCViewModel(4, service);
+        viewModel.setUserScope(new UserScope("admin"));
     }
+
     @Test
     void shouldNotEnableCreateIfClientReferenceLesserThanMinimumLength() {
         viewModel.setClientReference("123");
@@ -49,7 +52,7 @@ class CreateLCViewModelTests {
 
         viewModel.createLC(service);
 
-        verify(service).createLC(clientReference);
+        verify(service).createLC("admin", clientReference);
     }
 
     @Test

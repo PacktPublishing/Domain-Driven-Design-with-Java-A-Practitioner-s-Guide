@@ -1,9 +1,12 @@
 package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.ui.scopes.LCScope;
+import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.MainViewModel;
+import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -18,15 +21,13 @@ public class MainView implements FxmlView<MainViewModel> {
     @InjectViewModel
     private MainViewModel viewModel;
 
-    public void initialize() {
-    }
-
     public void create(ActionEvent event) {
-        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        Stage stage = UIUtils.getStage(event);
         stage.setTitle("LC Issuance");
         final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class)
-                .providedScopes(new LCScope())
-                .load().getView();
+                .providedScopes(viewModel.getUserScope())
+                .load()
+                .getView();
         stage.setScene(new Scene(parent));
         stage.show();
     }

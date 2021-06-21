@@ -1,7 +1,9 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
+import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import com.premonition.lc.issuance.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import javafx.application.Platform;
@@ -40,7 +42,9 @@ public class CreateLCViewTests {
 
     @Start
     public void start(Stage stage) {
-        final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class).viewModel(context.getBean(CreateLCViewModel.class)).load().getView();
+        final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class)
+                .providedScopes(new UserScope("admin"))
+                .viewModel(context.getBean(CreateLCViewModel.class)).load().getView();
         stage.setScene(new Scene(parent));
         stage.show();
     }
@@ -68,7 +72,7 @@ public class CreateLCViewTests {
         robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
         robot.clickOn(".button");
         Platform.runLater(() -> {
-            Mockito.verify(service).createLC(clientReference);
+            Mockito.verify(service).createLC("admin", clientReference);
         });
     }
 }

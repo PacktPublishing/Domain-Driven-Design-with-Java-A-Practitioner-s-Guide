@@ -25,7 +25,7 @@ public class LCApplicationAggregateTests {
     void shouldPublishLCApplicationCreated() {
         fixture.given()
 
-                .when(new CreateLCApplicationCommand("My Test"))
+                .when(new CreateLCApplicationCommand("admin", "My Test"))
 
                 .expectEventsMatching(exactSequenceOf(
                         messageWithPayload(any(LCApplicationCreatedEvent.class)),

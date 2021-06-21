@@ -5,11 +5,13 @@ import lombok.Data;
 
 @Data
 public class CreateLCApplicationCommand {
-    private LCApplicationId id;
-    private String clientReference;
+    private final String applicantId;
+    private final LCApplicationId id;
+    private final String clientReference;
 
-    public CreateLCApplicationCommand(String clientReference) {
+    public CreateLCApplicationCommand(String applicantId, String clientReference) {
         this.id = LCApplicationId.randomId();
+        this.applicantId = applicantId;
         this.clientReference = clientReference;
     }
 }

@@ -4,7 +4,6 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.Command;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
@@ -12,32 +11,32 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@ScopeProvider(LCScope.class)
 public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
+
+    private final CreateLCService service;
 
     private final int clientReferenceMinLength;
 
     @InjectScope
-    private LCScope lcScope;
+    private UserScope userScope;
+
+    private final LCScope lcScope;
 
     private StringProperty clientReference;
     private BooleanProperty createDisabled;
 
-    @Autowired
-    private CreateLCService service;
     private Command createLCCommand;
     private LCApplicationId lcApplicationId;
 
-    public CreateLCViewModel(
-                             @Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
+    public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              CreateLCService service) {
         this.clientReferenceMinLength = clientReferenceMinLength;
         this.service = service;
+        this.lcScope = new LCScope();
         this.init();
     }
 
@@ -49,8 +48,6 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
             @Override
             protected void action() {
                 lcApplicationId = createLC(service);
-                lcScope.setLcApplicationId(lcApplicationId);
-                lcScope.setClientReference(clientReference.get());
             }
         });
     }
@@ -84,8 +81,10 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     public LCApplicationId createLC(CreateLCService service) {
         if (!getCreateDisabled()) {
-            return service.createLC(this.getClientReference());
+            return service.createLC(userScope.getLoggedInUserId(), this.getClientReference());
         }
+        lcScope.setLcApplicationId(lcApplicationId);
+        lcScope.setClientReference(clientReference.get());
         throw new IllegalStateException("Trying to save an invalid LC?");
     }
 
@@ -95,5 +94,9 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     public LCScope getLCScope() {
         return lcScope;
+    }
+
+    void setUserScope(UserScope userScope) {
+        this.userScope = userScope;
     }
 }
