@@ -1,5 +1,6 @@
 package com.premonition.lc.issuance.ui.viewmodels;
 
+import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

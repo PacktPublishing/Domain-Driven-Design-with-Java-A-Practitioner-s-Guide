@@ -3,6 +3,8 @@ package com.premonition.lc.issuance.ui.views;
 import com.premonition.lc.issuance.domain.Currencies;
 import com.premonition.lc.issuance.domain.TenorType;
 import com.premonition.lc.issuance.ui.viewmodels.LCDetailsViewModel;
+import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
@@ -19,9 +21,11 @@ import java.util.*;
 
 @Component
 @Log4j2
-public class LCDetailsView extends BaseView<LCDetailsViewModel> {
+public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
 
-    private final LCDetailsViewModel viewModel;
+    @InjectViewModel
+    private LCDetailsViewModel viewModel;
+
     public Spinner<Double> amount;
     public ComboBox<Currency> currency;
     public DatePicker expiryDate;
@@ -33,13 +37,6 @@ public class LCDetailsView extends BaseView<LCDetailsViewModel> {
     @FXML
     private Label clientReference;
 
-    public LCDetailsView(@Value("classpath:/com/premonition/lc/issuance/ui/lc_details.fxml") Resource ui,
-                         ApplicationContext context) {
-        super(context, ui);
-        this.viewModel = new LCDetailsViewModel();
-    }
-
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
         tenorType.getItems().addAll(TenorType.values());
         currency.getItems().addAll(Currencies.tradeable());

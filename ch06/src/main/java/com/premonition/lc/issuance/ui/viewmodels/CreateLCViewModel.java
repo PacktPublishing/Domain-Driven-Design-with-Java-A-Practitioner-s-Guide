@@ -1,7 +1,9 @@
 package com.premonition.lc.issuance.ui.viewmodels;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
+import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
+import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.Command;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
@@ -9,7 +11,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +19,15 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     private final int clientReferenceMinLength;
 
+    @InjectScope
+    private LCScope lcScope;
+
     private StringProperty clientReference;
     private BooleanProperty createDisabled;
 
     private CreateLCService service;
     private Command createLCCommand;
+    private LCApplicationId lcApplicationId;
 
     public CreateLCViewModel(
                              @Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
@@ -38,13 +43,15 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
         createLCCommand = new DelegateCommand(() -> new Action() {
             @Override
             protected void action() {
-                LCApplicationId id = createLC(service);
-                new Alert(Alert.AlertType.INFORMATION, "Successfully created a new LC with id: " + id)
-                        .showAndWait();
+                lcApplicationId = createLC(service);
+                lcScope.setLcApplicationId(lcApplicationId);
             }
         });
     }
 
+    public LCApplicationId getLcApplicationId() {
+        return lcApplicationId;
+    }
     public String getClientReference() {
         return clientReference.get();
     }
@@ -79,4 +86,5 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
     public Command getCreateLCCommand() {
         return createLCCommand;
     }
+
 }
