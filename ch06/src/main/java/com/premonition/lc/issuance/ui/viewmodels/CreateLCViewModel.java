@@ -14,12 +14,12 @@ import javafx.beans.property.StringProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     private final CreateLCService service;
-
-    private final int clientReferenceMinLength;
 
     @InjectScope
     private UserScope userScope;
@@ -34,20 +34,15 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              CreateLCService service) {
-        this.clientReferenceMinLength = clientReferenceMinLength;
         this.service = service;
         this.lcScope = new LCScope();
-        this.init();
-    }
-
-    public void init() {
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
         this.createDisabled.bind(this.clientReference.length().lessThan(clientReferenceMinLength));
         createLCCommand = new DelegateCommand(() -> new Action() {
             @Override
             protected void action() {
-                lcApplicationId = createLC(service);
+                lcApplicationId = createLC(CreateLCViewModel.this.service);
             }
         });
     }
