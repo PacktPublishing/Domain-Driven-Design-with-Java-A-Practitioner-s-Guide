@@ -6,7 +6,9 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MainViewModel implements ViewModel {
     public void create(Stage stage) {
         stage.setTitle("LC Issuance");
