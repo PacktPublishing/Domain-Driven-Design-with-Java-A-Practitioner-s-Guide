@@ -29,13 +29,13 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
     private CreateLCViewModel viewModel;
 
     public void create(ActionEvent event) {
-        viewModel.getCreateLCCommand().execute();
+        viewModel.createLC();
         Stage stage = UIUtils.getStage(event);
         showLCDetailsView(stage);
     }
 
     private void showLCDetailsView(Stage stage) {
-        stage.setTitle("LC : " + viewModel.getLcApplicationId());
+        stage.setTitle("LC : " + viewModel.getLCScope().getLcApplicationId());
         final Parent parent = FluentViewLoader.fxmlView(LCDetailsView.class)
                 .providedScopes(viewModel.getLCScope())
                 .load().getView();

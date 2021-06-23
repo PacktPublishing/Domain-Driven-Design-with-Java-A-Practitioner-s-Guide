@@ -11,10 +11,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
@@ -29,9 +29,6 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
     private StringProperty clientReference;
     private BooleanProperty createDisabled;
 
-    private Command createLCCommand;
-    private LCApplicationId lcApplicationId;
-
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              CreateLCService service) {
         this.service = service;
@@ -39,17 +36,8 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
         this.createDisabled.bind(this.clientReference.length().lessThan(clientReferenceMinLength));
-        createLCCommand = new DelegateCommand(() -> new Action() {
-            @Override
-            protected void action() {
-                lcApplicationId = createLC(CreateLCViewModel.this.service);
-            }
-        });
     }
 
-    public LCApplicationId getLcApplicationId() {
-        return lcApplicationId;
-    }
     public String getClientReference() {
         return clientReference.get();
     }
@@ -74,17 +62,27 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
         this.createDisabled.set(createDisabled);
     }
 
-    public LCApplicationId createLC(CreateLCService service) {
+    public void createLC() {
         if (!getCreateDisabled()) {
-            return service.createLC(userScope.getLoggedInUserId(), this.getClientReference());
-        }
-        lcScope.setLcApplicationId(lcApplicationId);
-        lcScope.setClientReference(clientReference.get());
-        throw new IllegalStateException("Trying to save an invalid LC?");
-    }
+            new Service<LCApplicationId>() {
+                @Override
+                protected void succeeded() {
+                    lcScope.setLcApplicationId(getValue());
+                    lcScope.setClientReference(clientReference.get());
+                }
 
-    public Command getCreateLCCommand() {
-        return createLCCommand;
+                @Override
+                protected Task<LCApplicationId> createTask() {
+                    return new Task<>() {
+                        @Override
+                        protected LCApplicationId call()  {
+                            return service.createLC(userScope.getLoggedInUserId(), CreateLCViewModel.this.getClientReference());
+                        }
+                    };
+                }
+
+            }.start();
+        }
     }
 
     public LCScope getLCScope() {
