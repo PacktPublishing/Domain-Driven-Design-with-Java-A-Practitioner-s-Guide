@@ -45,8 +45,8 @@ public class CreateLCViewTests {
 
     @Test
     void createShouldUpdateCreateButtonStatusBasedOnClientReferenceAsBlank(FxRobot robot) {
-        final String createButton = ".button";
-        robot.lookup(".text-field").queryAs(TextField.class).setText("");
+        final String createButton = "#create-button";
+        robot.lookup("#client-reference").queryAs(TextField.class).setText("");
 
         verifyThat(createButton, LabeledMatchers.hasText("Create"));
         verifyThat(createButton, NodeMatchers.isDisabled());
@@ -54,8 +54,8 @@ public class CreateLCViewTests {
 
     @Test
     void createShouldUpdateCreateButtonStatusBasedOnClientReferenceAsFilledIn(FxRobot robot) {
-        final String createButton = ".button";
-        robot.lookup(".text-field").queryAs(TextField.class).setText("Test");
+        final String createButton = "#create-button";
+        robot.lookup("#client-reference").queryAs(TextField.class).setText("Test");
         verifyThat(createButton, LabeledMatchers.hasText("Create"));
         verifyThat(createButton, NodeMatchers.isEnabled());
     }
@@ -64,8 +64,8 @@ public class CreateLCViewTests {
     @RunInUiThread(false)
     void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) {
         final String clientReference = "Test";
-        robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
-        robot.clickOn(".button");
+        robot.lookup("#client-reference").queryAs(TextField.class).setText(clientReference);
+        robot.clickOn("#create-button");
         Mockito.verify(service).createLC("admin", clientReference);
         verifyThat("#lc-details", isVisible());
     }
