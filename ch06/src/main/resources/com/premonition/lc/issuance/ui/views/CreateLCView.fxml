@@ -10,13 +10,13 @@
 <Pane fx:controller="com.premonition.lc.issuance.ui.views.CreateLCView"
       maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
       prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
-    <Button fx:id="createButton" defaultButton="true" layoutX="436.0" layoutY="318.0" mnemonicParsing="false" text="Create"
+    <Button id="create-button" fx:id="createButton" defaultButton="true" layoutX="436.0" layoutY="318.0" mnemonicParsing="false" text="Create"
             textAlignment="CENTER" onAction="#create">
         <font>
             <Font size="36.0"/>
         </font>
     </Button>
-    <TextField fx:id="clientReference" layoutX="132.0" layoutY="166.0" promptText="Enter a name for your LC">
+    <TextField id="client-reference" fx:id="clientReference" layoutX="132.0" layoutY="166.0" promptText="Enter a name for your LC">
         <font>
             <Font size="36.0"/>
         </font>

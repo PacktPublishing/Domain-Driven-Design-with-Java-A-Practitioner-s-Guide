@@ -48,7 +48,6 @@ public class SafeApplicationExtension extends ApplicationExtension implements Be
             System.setProperty("java.awt.headless", "true");
             System.setProperty("testfx.headless", "true");
             System.setProperty("prism.order", "sw");
-            System.setProperty("prism.verbose", "true");
         }
     }
 }

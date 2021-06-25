@@ -4,15 +4,7 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.utils.commands.Action;
-import de.saxsys.mvvmfx.utils.commands.Command;
-import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import javafx.beans.property.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,17 +16,16 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
     @InjectScope
     private UserScope userScope;
 
-    private final LCScope lcScope;
-
-    private StringProperty clientReference;
-    private BooleanProperty createDisabled;
+    private final StringProperty clientReference;
+    private final BooleanProperty createDisabled;
+    private final ObjectProperty<LCApplicationId> lcApplicationId;
 
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              CreateLCService service) {
         this.service = service;
-        this.lcScope = new LCScope();
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
+        this.lcApplicationId = new SimpleObjectProperty<>();
         this.createDisabled.bind(this.clientReference.length().lessThan(clientReferenceMinLength));
     }
 
@@ -62,34 +53,27 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
         this.createDisabled.set(createDisabled);
     }
 
-    public void createLC() {
-        if (!getCreateDisabled()) {
-            new Service<LCApplicationId>() {
-                @Override
-                protected void succeeded() {
-                    lcScope.setLcApplicationId(getValue());
-                    lcScope.setClientReference(clientReference.get());
-                }
-
-                @Override
-                protected Task<LCApplicationId> createTask() {
-                    return new Task<>() {
-                        @Override
-                        protected LCApplicationId call()  {
-                            return service.createLC(userScope.getLoggedInUserId(), CreateLCViewModel.this.getClientReference());
-                        }
-                    };
-                }
-
-            }.start();
-        }
+    public LCApplicationId getLcApplicationId() {
+        return lcApplicationId.get();
     }
 
-    public LCScope getLCScope() {
-        return lcScope;
+    public ObjectProperty<LCApplicationId> lcApplicationIdProperty() {
+        return lcApplicationId;
+    }
+
+    public void setLcApplicationId(LCApplicationId lcApplicationId) {
+        this.lcApplicationId.set(lcApplicationId);
+    }
+
+    public void createLC() {
+        lcApplicationId.set(service.createLC(userScope.getLoggedInUserId(), getClientReference()));
     }
 
     void setUserScope(UserScope userScope) {
         this.userScope = userScope;
+    }
+
+    public LCScope getScope() {
+        return new LCScope(lcApplicationId.get(), clientReference.get());
     }
 }

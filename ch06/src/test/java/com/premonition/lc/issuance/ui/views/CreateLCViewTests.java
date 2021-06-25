@@ -1,6 +1,5 @@
 package com.premonition.lc.issuance.ui.views;
 
-import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.CreateLCService;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import com.premonition.lc.issuance.ui.viewmodels.UserScope;
@@ -9,11 +8,10 @@ import de.saxsys.mvvmfx.FluentViewLoader;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
+import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +22,9 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 import static org.testfx.api.FxAssert.verifyThat;
 
+@Log4j2
 @UITest
 public class CreateLCViewTests {
 
@@ -73,6 +67,8 @@ public class CreateLCViewTests {
         robot.clickOn(".button");
         Platform.runLater(() -> {
             Mockito.verify(service).createLC("admin", clientReference);
+            log.info("All verified!");
         });
+        log.info("Test is ending now!");
     }
 }
