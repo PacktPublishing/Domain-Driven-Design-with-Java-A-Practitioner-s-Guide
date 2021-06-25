@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="574.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.premonition.lc.issuance.ui.views.LCDetailsView">
+<BorderPane id="lc-details" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="574.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.premonition.lc.issuance.ui.views.LCDetailsView">
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <Tab text="Basics">
@@ -118,7 +118,7 @@
                         <Font size="24.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="143.0" text="Exit">
+                  <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="143.0" text="Exit" onAction="#exit">
                      <font>
                         <Font size="24.0" />
                      </font>

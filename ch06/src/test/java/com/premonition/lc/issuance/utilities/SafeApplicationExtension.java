@@ -16,7 +16,12 @@ public class SafeApplicationExtension extends ApplicationExtension implements Be
     public void interceptTestMethod(Invocation<Void> invocation,
                                     ReflectiveInvocationContext<Method> invocationContext,
                                     ExtensionContext extensionContext) throws Throwable {
-        if (Platform.isFxApplicationThread()) {
+        final Boolean runInUiThread = extensionContext.getTestMethod()
+                .map(m -> m.getAnnotation(RunInUiThread.class))
+                .map(RunInUiThread::value)
+                .orElse(true);
+
+        if (Platform.isFxApplicationThread() || !runInUiThread) {
             invocation.proceed();
         } else {
             AtomicReference<Throwable> throwable = new AtomicReference<>();
