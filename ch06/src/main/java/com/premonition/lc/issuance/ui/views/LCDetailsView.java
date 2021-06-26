@@ -6,6 +6,9 @@ import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.LCDetailsViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import de.saxsys.mvvmfx.utils.commands.Action;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -61,5 +64,20 @@ public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
     }
 
     public void exit(ActionEvent event) {
+    }
+
+    public void save(ActionEvent event) {
+        new Service<Void>() {
+
+            @Override
+            protected Task<Void> createTask() {
+                return new Action() {
+                    @Override
+                    protected void action() {
+                        viewModel.save();
+                    }
+                };
+            }
+        }.start();
     }
 }

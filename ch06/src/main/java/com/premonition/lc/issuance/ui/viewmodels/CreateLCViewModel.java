@@ -2,7 +2,7 @@ package com.premonition.lc.issuance.ui.viewmodels;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
-import com.premonition.lc.issuance.ui.services.CreateLCService;
+import com.premonition.lc.issuance.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
 import javafx.beans.property.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
 
-    private final CreateLCService service;
+    private final BackendService service;
 
     @InjectScope
     private UserScope userScope;
@@ -21,7 +21,7 @@ public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
     private final ObjectProperty<LCApplicationId> lcApplicationId;
 
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
-                             CreateLCService service) {
+                             BackendService service) {
         this.service = service;
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");

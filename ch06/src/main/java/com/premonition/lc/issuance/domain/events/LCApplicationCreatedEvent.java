@@ -7,14 +7,14 @@ import lombok.Data;
 @Data
 public class LCApplicationCreatedEvent {
     private final LCApplicationId id;
+    private final String applicantId;
+    private final String clientReference;
     private AdvisingBank advisingBank;
 
-    public LCApplicationCreatedEvent(LCApplicationId id) {
-        this.id = id;
-    }
 
-    public LCApplicationCreatedEvent(LCApplicationId id, AdvisingBank advisingBank) {
+    public LCApplicationCreatedEvent(LCApplicationId id, String applicantId, String clientReference) {
         this.id = id;
-        this.advisingBank = advisingBank;
+        this.applicantId = applicantId;
+        this.clientReference = clientReference;
     }
 }

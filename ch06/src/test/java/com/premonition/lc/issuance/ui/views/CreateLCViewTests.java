@@ -1,6 +1,6 @@
 package com.premonition.lc.issuance.ui.views;
 
-import com.premonition.lc.issuance.ui.services.CreateLCService;
+import com.premonition.lc.issuance.ui.services.BackendService;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import com.premonition.lc.issuance.utilities.RunInUiThread;
@@ -29,7 +29,7 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 public class CreateLCViewTests {
 
     @MockBean
-    private CreateLCService service;
+    private BackendService service;
 
     @Autowired
     private ApplicationContext context;
