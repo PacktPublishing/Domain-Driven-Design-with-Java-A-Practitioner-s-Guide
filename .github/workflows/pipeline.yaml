@@ -9,6 +9,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Install dot
+        run: sudo apt-get install dot pandoc
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up JDK 14
