@@ -2,17 +2,136 @@
 [quote, Marty Rubin]
 To accomplish a difficult task, one must first make it easy.
 
-The essence of DDD is a lot about capturing the business process and user intent a lot more closely. Task-based UIs (in contrast to CRUD-based UIs) treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In this chapter, we will design the UI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. We will also employ https://martinfowler.com/articles/consumerDrivenContracts.html[consumer-driven contracts]footnote:[https://martinfowler.com/articles/consumerDrivenContracts.html] using https://docs.pact.io/[Pact JVM]footnote:[https://docs.pact.io/] to express expectations of the user interface to the service implementation.
+The essence of DDD is a lot about capturing the business process and user intent a lot more closely. In the previous chapter, we designed a set of APIs without paying a lot of attention to how those APIs would get consumed by its eventual users. In this chapter, we will design the GUI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. As part of that, we will examine how this approach of designing APIs in isolation can cause an impedance mismatch between the producers and the consumers. We will examine the consequences of this _impedance mismatch_ and how task-based UIs can help cope with this mismatch a lot better.
+
+At the end of the chapter, you will learn how to employ DDD principles to help you build robust user experiences that are simple and intuitive. You will also learn why it may be prudent to design your backend APIs from the perspective of the consumer.
 
 === Technical Requirements
+* JDK 1.8+ (We have used Java 16 to compile sample sources)
+* JavaFX SDK 16 and SceneBuilder
+* Maven 3.x
+* Spring Boot 2.4.x
+* mvvmFX 1.8 (https://sialcasa.github.io/mvvmFX/)
+* JUnit 5.7.x (Included with spring boot)
+* TestFX (for UI testing)
+* OpenJFX Monocle (for headless UI testing)
+* Project Lombok (To reduce verbosity)
 
 === Bootstrapping the UI
+We will simply be building on top of the LC application we created in Chapter 5: Implementing Domain Logic. For detailed instructions, refer to the section on Bootstrapping the Application. In addition, we will need to add the following dependencies to the `dependencies` section of the Maven `pom.xml` file in the root directory of the project:
 
-=== MVC vs. MVP vs. MVVM
+[source,xml,linenum]
+----
+<dependencies>
+    <!--...-->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx</artifactId>
+        <version>${mvvmfx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx-spring-boot</artifactId>
+        <version>${mvvmfx.version}</version>
+    </dependency>
+    <!--...-->
+</dependencies>
+----
 
-=== Task-based vs. CRUD-based UIs
+To run UI tests, you will need to add the following dependencies:
+[source,xml,linenum]
+----
+<dependencies>
+    <!--...-->
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>testfx-junit5</artifactId>
+        <scope>test</scope>
+        <version>${testfx-junit5.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>openjfx-monocle</artifactId>
+        <version>${openjfx-monocle.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx-testing-utils</artifactId>
+        <version>${mvvmfx.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <!--...-->
+</dependencies>
+----
 
-=== Invoking commands
+To be able to run the application from the command line, you will need to add the `javafx-maven-plugin` to the `plugins` section of your `pom.xml`, per the following:
+[source,xml,linenum]
+----
+<plugin>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-maven-plugin</artifactId>
+    <version>${javafx-maven-plugin.version}</version>
+    <configuration>
+        <mainClass>com.premonition.lc.issuance.App</mainClass>
+    </configuration>
+</plugin>
+----
+To run the application from the command line, use:
+[source,bash]
+----
+mvn javafx:run
+----
 
-=== Implementing the Submit LC Screen
+NOTE: If you are using a JDK greater that version 1.8, the JavaFX libraries may not be bundled with the JDK itself. When running the application from your IDE, you will likely need to add the following:
+[source,bash]
+----
+--module-path=<path-to-javafx-sdk>/lib/ \
+   --add-modules=javafx.controls,javafx.graphics,javafx.fxml,javafx.media
+----
 
+NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
+
+=== API Recap
+
+=== CRUD-based versus task-based UIs
+Task-based UIs (in contrast to CRUD-based UIs) treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly.
+
+=== Design pattern considerations
+
+==== Usability
+
+==== Testability
+
+=== Implementing the save LC functionality
+
+=== Invoking backend services
+
+=== Summary
+
+=== Questions
+
+=== Further reading
+
+[cols="3,3,6"]
+|===
+|Title |Author |Location
+
+|TODO
+|TODO
+|TODO
+|===

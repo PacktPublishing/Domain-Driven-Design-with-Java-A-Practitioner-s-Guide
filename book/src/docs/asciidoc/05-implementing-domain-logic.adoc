@@ -18,7 +18,7 @@ In the Command Query Responsibility Segregation (CQRS) section, we  describe how
 By the end of this chapter, you would have learnt how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical Requirements
-* JDK 1.8+ (We have used Java 14 to compile sample sources)
+* JDK 1.8+ (We have used Java 16 to compile sample sources)
 * Maven 3.x
 * Spring Boot 2.4.x
 * JUnit 5.7.x (Included with spring boot)
@@ -910,7 +910,7 @@ With this knowledge, we should be able to implement robust, well encapsulated, e
 
 3. Based on your current understanding, would you apply CQRS architecture pattern in your solution? And how would you justify the choice to your team ?
 
-=== Further Reading
+=== Further reading
 
 [cols="3,3,6"]
 |===

@@ -23,6 +23,7 @@
 		<testfx-junit5.version>4.0.16-alpha</testfx-junit5.version>
 		<openjfx-monocle.version>jdk-12.0.1+2</openjfx-monocle.version>
 		<mvvmfx.version>1.8.0</mvvmfx.version>
+		<javafx-maven-plugin.version>0.0.6</javafx-maven-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,11 +103,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-web</artifactId>
-			<version>${javafx.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
 			<version>${javafx.version}</version>
 		</dependency>
@@ -156,9 +152,10 @@
 				</configuration>
 			</plugin>
 			<plugin>
+<!--				test-->
 				<groupId>org.openjfx</groupId>
 				<artifactId>javafx-maven-plugin</artifactId>
-				<version>0.0.6</version>
+				<version>${javafx-maven-plugin.version}</version>
 				<configuration>
 					<mainClass>com.premonition.lc.issuance.App</mainClass>
 				</configuration>
