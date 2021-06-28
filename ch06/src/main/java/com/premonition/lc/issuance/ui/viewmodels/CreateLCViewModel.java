@@ -4,12 +4,13 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateLCViewModel implements de.saxsys.mvvmfx.ViewModel {
+public class CreateLCViewModel implements ViewModel {
 
     private final BackendService service;
 

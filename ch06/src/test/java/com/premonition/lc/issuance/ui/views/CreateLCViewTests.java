@@ -6,6 +6,7 @@ import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import com.premonition.lc.issuance.utilities.RunInUiThread;
 import com.premonition.lc.issuance.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.MvvmFX;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -14,9 +15,12 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.testfx.api.FxRobot;
+import org.testfx.framework.junit5.Init;
 import org.testfx.framework.junit5.Start;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
@@ -34,11 +38,16 @@ public class CreateLCViewTests {
     @Autowired
     private ApplicationContext context;
 
+    @Init
+    public void init() {
+        MvvmFX.setCustomDependencyInjector(context::getBean);
+    }
+
     @Start
     public void start(Stage stage) {
         final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class)
                 .providedScopes(new UserScope("admin"))
-                .viewModel(context.getBean(CreateLCViewModel.class)).load().getView();
+                .load().getView();
         stage.setScene(new Scene(parent));
         stage.show();
     }

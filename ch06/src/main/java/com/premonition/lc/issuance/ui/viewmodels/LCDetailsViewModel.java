@@ -1,6 +1,6 @@
 package com.premonition.lc.issuance.ui.viewmodels;
 
-import com.premonition.lc.issuance.domain.LCApplicationId;
+import com.premonition.lc.issuance.ui.models.LCDetailsModel;
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
@@ -45,11 +45,11 @@ public class LCDetailsViewModel implements ViewModel {
         return basics;
     }
 
-    public LCApplicationId getApplicationId() {
-        return lcScope.getLcApplicationId();
+    public void save() {
+        service.saveLC(this.getModel());
     }
 
-    public void save() {
-        service.saveLC(this);
+    private LCDetailsModel getModel() {
+        return new LCDetailsModel(lcScope.getLcApplicationId(), getClientReference());
     }
 }
