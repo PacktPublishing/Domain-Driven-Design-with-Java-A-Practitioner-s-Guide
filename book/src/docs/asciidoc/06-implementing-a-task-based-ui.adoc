@@ -106,9 +106,76 @@ NOTE: If you are using a JDK greater that version 1.8, the JavaFX libraries may 
 
 NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
 
-=== API Recap
+Before we dive deep into building the GUI solution, let's do a quick recap of where we left the APIs.
 
 === CRUD-based versus task-based UIs
+
+If you recall from chapter 5, we created the following commands:
+[.text-center]
+[plantuml,potential-commands]
+....
+@startuml
+skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
+cloud Commands {
+    cloud "Create LC Application" as St
+    cloud "Update LC Application" as U
+    cloud "Submit LC Application" as Su
+    cloud Validate as V {
+        cloud "Validate Product" as VP
+        cloud "Validate Applicant" as VA
+    }
+    cloud "Approve LC Application" as AA
+    cloud "Decline LC Application" as DA
+    cloud "Issue LC" as I
+
+   St -down-> U
+   U -down-> U
+   U -down-> Su
+   Su -down-> V
+   V -right-> AA
+   V --> DA
+   AA --> I
+
+}
+@enduml
+....
+If you observe carefully, there seem to be commands at two levels of granularity. The "Create LC Application" and "Update LC application" are coarse grained, whereas the others are a lot more focused in terms of their intent. One possible decomposition of the coarse grained commands can be as depicted here:
+
+[.text-center]
+[plantuml,revised-commands]
+....
+@startuml
+skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
+cloud "Old Commands" as Old {
+    cloud "Update LC Application"
+    cloud "Create LC Application"
+}
+
+cloud "New Commands" as New {
+    cloud "Start LC Application"
+    cloud "Add / Update Beneficiary"
+    cloud "Add / Update Advising Bank"
+    cloud "Add / Update Merchandise"
+    cloud "Add / Update Documents"
+    cloud "Add / Update Conditions"
+}
+
+Old -down-> New
+@enduml
+....
+
+In addition to just being more fine-grained than the commands in the previous iteration, the revised commands seem to better capture the user's intent. This may feel like a minor change in semantics, but can have a huge impact on the way our solution is used by its ultimate end-users. The question then is whether we should _always_ prefer fine-grained APIs over coarse grained ones. The answer can be a lot more nuanced. Let's examine
+
+==== CRUD-based experiences
+
+==== Task-based experiences
+
+==== Impact on APIs and user experiences
+
+==== Task-based or CRUD-based?
+
 Task-based UIs (in contrast to CRUD-based UIs) treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly.
 
 === Design pattern considerations

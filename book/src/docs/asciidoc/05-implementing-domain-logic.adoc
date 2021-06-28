@@ -116,6 +116,7 @@ skinparam handwritten true
 skinparam CloudFontName "Gloria Hallelujah"
 cloud Commands {
     cloud "Start LC Application"
+    cloud "Update LC Application"
     cloud "Submit LC Application"
     cloud "Validate Product"
     cloud "Validate Applicant"
