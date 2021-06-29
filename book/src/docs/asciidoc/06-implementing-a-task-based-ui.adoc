@@ -166,13 +166,70 @@ Old -down-> New
 @enduml
 ....
 
-In addition to just being more fine-grained than the commands in the previous iteration, the revised commands seem to better capture the user's intent. This may feel like a minor change in semantics, but can have a huge impact on the way our solution is used by its ultimate end-users. The question then is whether we should _always_ prefer fine-grained APIs over coarse grained ones. The answer can be a lot more nuanced. Let's examine
+In addition to just being more fine-grained than the commands in the previous iteration, the revised commands seem to better capture the user's intent. This may feel like a minor change in semantics, but can have a huge impact on the way our solution is used by its ultimate end-users. The question then is whether we should _always_ prefer fine-grained APIs over coarse grained ones. The answer can be a lot more nuanced. When designing APIs and experiences, we see two main styles being employed:
 
-==== CRUD-based experiences
+* CRUD-based
+* Task-based
 
-==== Task-based experiences
+Let's look at each of these in a bit more detail:
 
-==== Impact on APIs and user experiences
+==== CRUD-based APIs
+CRUD is an acronym used to refer to the four basic operations that can be performed on database applications: Create, Read, Update, and Delete. Many programming languages and protocols have their own equivalent of CRUD, often with slight variations in naming and intent. For example, SQL — a popular language for interacting with databases — calls the four functions Insert, Select, Update, and Delete. Similarly, the HTTP protocol has `POST`, `GET`, `PUT` and `DELETE` as verbs to represent these CRUD operations. This approach has got extended to our design of APIs as well. This has resulted in the proliferation of both CRUD-based APIs and user experiences. Take a look at the `CreateLCApplicationCommand` from Chapter 5:
+
+[source,java,linenum]
+....
+import lombok.Data;
+
+@Data
+public class CreateLCApplicationCommand {
+
+    private LCApplicationId id;
+
+    private ClientId clientId;
+    private Party applicant;
+    private Party beneficiary;
+    private AdvisingBank advisingBank;
+    private LocalDate issueDate;
+    private MonetaryAmount amount;
+    private String merchandiseDescription;
+}
+
+....
+Along similar lines, it would not be uncommon to create a corresponding  `UpdateLCApplicationCommand` as depicted here:
+[source,java,linenum]
+....
+import lombok.Data;
+
+@Data
+public class UpdateLCApplicationCommand {
+
+    @TargetAggregateIdentifier
+    private LCApplicationId id;
+
+    private ClientId clientId;
+    private Party applicant;
+    private Party beneficiary;
+    private AdvisingBank advisingBank;
+    private LocalDate issueDate;
+    private MonetaryAmount amount;
+    private String merchandiseDescription;
+}
+
+....
+While this is very common and also very easy to grasp, it is not without problems. Here are some questions that taking this approach raises:
+
+1. Are we allowed to change everything listed in the `update` command?
+2. Assuming that is true, do they all change at the same time?
+3. How do we know what exactly changed? Should we be doing a diff?
+4. What if all the attributes mentioned above are not included in the `update` command?
+5. What if we need to add attributes in future?
+6. Is the business intent of what the user wanted to accomplish captured?
+
+In a simple system, the answer to these questions may not matter that much. However, as system complexity increases, will this approach remain resilient to change? We feel that it merits taking a look at another approach called task-based APIs to be able to answer these questions.
+
+==== Task-based APIs
+
+==== Impact of API style on user experiences
 
 ==== Task-based or CRUD-based?
 
