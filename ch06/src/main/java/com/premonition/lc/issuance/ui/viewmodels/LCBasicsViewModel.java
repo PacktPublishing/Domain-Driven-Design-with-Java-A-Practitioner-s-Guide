@@ -29,83 +29,83 @@ public class LCBasicsViewModel {
         return amount.get();
     }
 
-    public DoubleProperty amountProperty() {
-        return amount;
-    }
-
     public void setAmount(double amount) {
         this.amount.set(amount);
+    }
+
+    public DoubleProperty amountProperty() {
+        return amount;
     }
 
     public LocalDate getExpiryDate() {
         return expiryDate.get();
     }
 
-    public ObjectProperty<LocalDate> expiryDateProperty() {
-        return expiryDate;
-    }
-
     public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate.set(expiryDate);
+    }
+
+    public ObjectProperty<LocalDate> expiryDateProperty() {
+        return expiryDate;
     }
 
     public boolean isTransferable() {
         return transferable.get();
     }
 
-    public BooleanProperty transferableProperty() {
-        return transferable;
-    }
-
     public void setTransferable(boolean transferable) {
         this.transferable.set(transferable);
+    }
+
+    public BooleanProperty transferableProperty() {
+        return transferable;
     }
 
     public boolean isRevocable() {
         return revocable.get();
     }
 
-    public BooleanProperty revocableProperty() {
-        return revocable;
-    }
-
     public void setRevocable(boolean revocable) {
         this.revocable.set(revocable);
+    }
+
+    public BooleanProperty revocableProperty() {
+        return revocable;
     }
 
     public TenorType getTenorType() {
         return tenorType.get();
     }
 
-    public ObjectProperty<TenorType> tenorTypeProperty() {
-        return tenorType;
-    }
-
     public void setTenorType(TenorType tenorType) {
         this.tenorType.set(tenorType);
+    }
+
+    public ObjectProperty<TenorType> tenorTypeProperty() {
+        return tenorType;
     }
 
     public int getTenorDays() {
         return tenorDays.get();
     }
 
-    public IntegerProperty tenorDaysProperty() {
-        return tenorDays;
-    }
-
     public void setTenorDays(int tenorDays) {
         this.tenorDays.set(tenorDays);
+    }
+
+    public IntegerProperty tenorDaysProperty() {
+        return tenorDays;
     }
 
     public Currency getCurrency() {
         return currency.get();
     }
 
-    public SimpleObjectProperty<Currency> currencyProperty() {
-        return currency;
-    }
-
     public void setCurrency(Currency currency) {
         this.currency.set(currency);
+    }
+
+    public SimpleObjectProperty<Currency> currencyProperty() {
+        return currency;
     }
 }

@@ -1,7 +1,6 @@
 package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.ui.services.BackendService;
-import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import com.premonition.lc.issuance.utilities.RunInUiThread;
 import com.premonition.lc.issuance.utilities.UITest;
@@ -15,10 +14,8 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.Init;
 import org.testfx.framework.junit5.Start;

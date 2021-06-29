@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(OutputCaptureExtension.class)
 class ApiApplicationTests {
 
-	@Test
-	void shouldNotContainErrorLevelLogMessages(CapturedOutput output) {
-		assertThat(output.toString()).doesNotContainPattern("(?i)ERROR");
-	}
+    @Test
+    void shouldNotContainErrorLevelLogMessages(CapturedOutput output) {
+        assertThat(output.toString()).doesNotContainPattern("(?i)ERROR");
+    }
 
-	@Test
-	void shouldStartSuccessfully(CapturedOutput output) throws Exception {
-		assertThat(output.toString()).containsPattern("JVM running for");
-	}
+    @Test
+    void shouldStartSuccessfully(CapturedOutput output) throws Exception {
+        assertThat(output.toString()).containsPattern("JVM running for");
+    }
 }

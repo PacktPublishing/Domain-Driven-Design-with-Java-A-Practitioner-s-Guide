@@ -33,12 +33,12 @@ public class LCDetailsViewModel implements ViewModel {
         return clientReference.get();
     }
 
-    public StringProperty clientReferenceProperty() {
-        return clientReference;
-    }
-
     public void setClientReference(String clientReference) {
         this.clientReference.set(clientReference);
+    }
+
+    public StringProperty clientReferenceProperty() {
+        return clientReference;
     }
 
     public LCBasicsViewModel getBasics() {

@@ -13,13 +13,11 @@ import org.springframework.stereotype.Component;
 public class CreateLCViewModel implements ViewModel {
 
     private final BackendService service;
-
-    @InjectScope
-    private UserScope userScope;
-
     private final StringProperty clientReference;
     private final BooleanProperty createDisabled;
     private final ObjectProperty<LCApplicationId> lcApplicationId;
+    @InjectScope
+    private UserScope userScope;
 
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              BackendService service) {
@@ -34,36 +32,36 @@ public class CreateLCViewModel implements ViewModel {
         return clientReference.get();
     }
 
-    public StringProperty clientReferenceProperty() {
-        return clientReference;
-    }
-
     public void setClientReference(String clientReference) {
         this.clientReference.set(clientReference);
+    }
+
+    public StringProperty clientReferenceProperty() {
+        return clientReference;
     }
 
     public boolean getCreateDisabled() {
         return createDisabled.get();
     }
 
-    public BooleanProperty createDisabledProperty() {
-        return createDisabled;
-    }
-
     public void setCreateDisabled(boolean createDisabled) {
         this.createDisabled.set(createDisabled);
+    }
+
+    public BooleanProperty createDisabledProperty() {
+        return createDisabled;
     }
 
     public LCApplicationId getLcApplicationId() {
         return lcApplicationId.get();
     }
 
-    public ObjectProperty<LCApplicationId> lcApplicationIdProperty() {
-        return lcApplicationId;
-    }
-
     public void setLcApplicationId(LCApplicationId lcApplicationId) {
         this.lcApplicationId.set(lcApplicationId);
+    }
+
+    public ObjectProperty<LCApplicationId> lcApplicationIdProperty() {
+        return lcApplicationId;
     }
 
     public void createLC() {

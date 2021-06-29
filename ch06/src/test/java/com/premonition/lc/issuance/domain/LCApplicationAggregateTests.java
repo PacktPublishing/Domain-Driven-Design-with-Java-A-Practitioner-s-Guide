@@ -41,7 +41,7 @@ public class LCApplicationAggregateTests {
         final LCApplicationCreatedEvent created = new LCApplicationCreatedEvent(id,
                 "test-user", "Test LC");
         fixture.given(created)
-        .when(new SaveLCApplicationCommand(id))
-        .expectEvents(new LCApplicationSavedEvent());
+                .when(new SaveLCApplicationCommand(id))
+                .expectEvents(new LCApplicationSavedEvent());
     }
 }

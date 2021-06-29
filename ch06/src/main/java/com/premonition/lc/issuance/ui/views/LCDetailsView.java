@@ -2,7 +2,6 @@ package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.domain.Currencies;
 import com.premonition.lc.issuance.domain.TenorType;
-import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.LCDetailsViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -11,11 +10,9 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 

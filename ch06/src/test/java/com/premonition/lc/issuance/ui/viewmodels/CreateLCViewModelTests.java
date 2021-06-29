@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CreateLCViewModelTests {
@@ -42,23 +40,4 @@ class CreateLCViewModelTests {
         viewModel.setClientReference("12345");
         assertThat(viewModel.getCreateDisabled()).isFalse();
     }
-
-//    @Test
-//    void shouldInvokeServiceOnSave() {
-//        final String clientReference = "My awesome LC";
-//        viewModel.setClientReference(clientReference);
-//
-//        viewModel.createLC();
-//
-//        verify(service).createLC("admin", clientReference);
-//    }
-
-//    @Test
-//    void shouldNotInvokeServiceIfCreateDisabled() {
-//        final String clientReference = "123";
-//        viewModel.setClientReference(clientReference);
-//
-//        assertThrows(IllegalStateException.class, () -> viewModel.createLC(service));
-//        verifyNoInteractions(service);
-//    }
 }
