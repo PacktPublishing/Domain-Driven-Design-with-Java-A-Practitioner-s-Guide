@@ -1,5 +1,6 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.services.BackendService;
 import com.premonition.lc.issuance.ui.viewmodels.UserScope;
 import com.premonition.lc.issuance.utilities.RunInUiThread;
@@ -11,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
@@ -69,18 +75,22 @@ public class CreateLCViewTests {
     @Test
     @RunInUiThread(false)
     void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) {
+        LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        when(service.createLC(anyString(), anyString())).thenReturn(lcApplicationId);
         final String clientReference = "Test";
         robot.lookup("#client-reference").queryAs(TextField.class).setText(clientReference);
         robot.clickOn("#create-button");
         Mockito.verify(service).createLC("admin", clientReference);
         verifyThat("#lc-details", isVisible());
+        verifyThat("#client-reference", LabeledMatchers.hasText(clientReference));
+        Assertions.assertTrue(((Stage) robot.window(0)).getTitle().contains(lcApplicationId.toString()));
     }
 
     @Test
     @RunInUiThread(false)
     void shouldStayOnCreateLCScreenOnCreationFailure(FxRobot robot) {
         final String clientReference = "Test";
-        Mockito.when(service.createLC("admin", clientReference)).thenThrow(new RuntimeException("Failed!!"));
+        when(service.createLC("admin", clientReference)).thenThrow(new RuntimeException("Failed!!"));
         robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
         robot.clickOn(".button");
         verifyThat("#create-lc", isVisible());
