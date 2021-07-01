@@ -1,3 +1,4 @@
+[.text-justify]
 == Implementing the User Interface -- Task-based (20 pages)
 [quote, Marty Rubin]
 To accomplish a difficult task, one must first make it easy.
@@ -108,7 +109,7 @@ NOTE: Please refer to the ch06 directory of the accompanying source code reposit
 
 Before we dive deep into building the GUI solution, let's do a quick recap of where we left the APIs.
 
-=== CRUD-based versus task-based UIs
+=== API Styles
 
 If you recall from chapter 5, we created the following commands:
 [.text-center]
@@ -155,11 +156,13 @@ cloud "Old Commands" as Old {
 
 cloud "New Commands" as New {
     cloud "Start LC Application"
-    cloud "Add / Update Beneficiary"
-    cloud "Add / Update Advising Bank"
-    cloud "Add / Update Merchandise"
-    cloud "Add / Update Documents"
-    cloud "Add / Update Conditions"
+    cloud "Change Applicant"
+    cloud "Change Beneficiary"
+    cloud "Change Advising Bank"
+    cloud "Change LC Amount"
+    cloud "Change Merchandise"
+    cloud "Change Documents"
+    cloud "Change Conditions"
 }
 
 Old -down-> New
@@ -228,6 +231,36 @@ While this is very common and also very easy to grasp, it is not without problem
 In a simple system, the answer to these questions may not matter that much. However, as system complexity increases, will this approach remain resilient to change? We feel that it merits taking a look at another approach called task-based APIs to be able to answer these questions.
 
 ==== Task-based APIs
+In a typical organization, individuals perform tasks relevant to their specialization. The bigger the organization, the higher the degree of specialization. This approach of segregating tasks according to one's specialization makes sense, because it mitigates the possibility of stepping on each others' shoes, especially when getting complex pieces of work done. For example, in the LC application process, there is a need to establish the value/legality of the product while also determining the credit worthiness of the applicant. It makes sense that each of these tasks are usually performed by individuals in unrelated departments. It also follows that these tasks can be performed independently from the other.
+
+In terms of a business process, if we have a single `CreateLCApplicationCommand` that precedes these operations, individuals in both departments firstly have to wait for the entire application to be filled out before either can commence their work. Secondly, if either piece of information is updated through a single `UpdateLCApplicationCommand`, it is unclear what changed. This can result in a spurious notification being sent to at least one department because of this lack of clarity in the process.
+
+Since most work happens in the form of specific tasks, it can work to our advantage if our processes and by extension, our APIs mirror these behaviors.
+
+Keeping this in mind, let's re-examine our revised APIs for the LC application process:
+
+[.text-center]
+[plantuml,revised-commands]
+....
+@startuml
+skinparam handwritten true
+skinparam CloudFontName "Gloria Hallelujah"
+
+cloud {
+    cloud "Start LC Application"
+    cloud "Change Applicant"
+    cloud "Change Beneficiary"
+    cloud "Change Advising Bank"
+    cloud "Change LC Amount"
+    cloud "Change Merchandise"
+    cloud "Change Documents"
+    cloud "Change Conditions"
+}
+
+@enduml
+....
+
+While it may have appeared previously that we have simply converted our coarse-grained APIs to become more fine-grained, this in reality is a better representation of the tasks that the user intended to perform. So, in essence, task-based APIs are the decomposition of work in a manner that aligns more closely to the users' intents. With our new APIs, product validation can commence as soon as `ChangeMerchandise` happens. Also, it is unambiguously clear what the user did and what needs to happen in reaction to the user's action.
 
 ==== Impact of API style on user experiences
 
