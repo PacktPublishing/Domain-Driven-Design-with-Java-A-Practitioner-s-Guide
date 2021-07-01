@@ -92,7 +92,7 @@
         </TabPane>
     </center>
     <top>
-        <Label fx:id="clientReference" prefHeight="44.0" prefWidth="542.0" textAlignment="CENTER" BorderPane.alignment="CENTER">
+        <Label id="client-reference" fx:id="clientReference" prefHeight="44.0" prefWidth="542.0" textAlignment="CENTER" BorderPane.alignment="CENTER">
             <font>
                 <Font size="36.0" />
             </font>
