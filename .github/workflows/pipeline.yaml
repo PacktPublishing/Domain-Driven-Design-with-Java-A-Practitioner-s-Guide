@@ -27,3 +27,7 @@ jobs:
       - name: Build and package with Maven
         run: >-
           mvn -B clean package --file pom.xml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: target/**/*.html
