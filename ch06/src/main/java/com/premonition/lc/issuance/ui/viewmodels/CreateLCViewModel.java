@@ -6,10 +6,12 @@ import com.premonition.lc.issuance.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.*;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Log4j2
 public class CreateLCViewModel implements ViewModel {
 
     private final BackendService service;

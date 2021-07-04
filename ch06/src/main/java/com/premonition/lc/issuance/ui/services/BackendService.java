@@ -20,6 +20,7 @@ public class BackendService {
 
     public LCApplicationId createLC(String applicantId, String clientReference) {
         final LCApplicationId id = gateway.sendAndWait(new CreateLCApplicationCommand(applicantId, clientReference));
+        log.info("Created LC with Ref: {}", clientReference);
         log.info("Created LC with id: {}", id);
         return id;
     }

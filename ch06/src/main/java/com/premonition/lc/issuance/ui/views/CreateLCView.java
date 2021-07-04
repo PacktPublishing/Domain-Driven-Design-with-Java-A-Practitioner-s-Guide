@@ -1,5 +1,6 @@
 package com.premonition.lc.issuance.ui.views;
 
+import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -56,8 +57,9 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
 
     private void showLCDetailsView(Stage stage) {
         stage.titleProperty().bind(viewModel.lcApplicationIdProperty().asString("LC: %s"));
+        LCScope scope = viewModel.getScope();
         final Parent parent = FluentViewLoader.fxmlView(LCDetailsView.class)
-                .providedScopes(viewModel.getScope())
+                .providedScopes(scope)
                 .load().getView();
         stage.setScene(new Scene(parent));
         stage.show();
