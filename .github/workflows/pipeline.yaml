@@ -31,3 +31,9 @@ jobs:
         with:
           name: my-artifact
           path: book/**/*.html
+      - name: Deploy Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          full_commit_message: ${{ github.event.head_commit.message }}
