@@ -35,6 +35,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: target/generated-docs
+          publish_dir: book/target/generated-docs
           exclude_assets: '.github,*.pdf'
           full_commit_message: ${{ github.event.head_commit.message }}
