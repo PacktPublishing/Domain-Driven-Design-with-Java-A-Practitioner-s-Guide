@@ -37,15 +37,3 @@ jobs:
           destination-repository-name: 'chapters'
           user-email: me@karthiks.in
           target-branch: main
-
-    #      - uses: actions/upload-artifact@v2
-#        with:
-#          name: my-artifact
-#          path: book/**/*.html
-#      - name: Deploy Pages
-#        uses: peaceiris/actions-gh-pages@v3
-#        with:
-#          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-#          publish_dir: book/target/generated-docs
-#          exclude_assets: '.github,*.pdf'
-#          full_commit_message: ${{ github.event.head_commit.message }}
