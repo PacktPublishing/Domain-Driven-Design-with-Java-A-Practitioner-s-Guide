@@ -33,7 +33,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_FOR_CHAPTER_GITHUB_PAGES }}
         with:
           source-directory: 'book/target/generated-docs'
-          destination-github-username: 'karthik-krishnan'
+          destination-github-username: 'ddd-book-java'
           destination-repository-name: 'chapters'
           user-email: me@karthiks.in
           target-branch: main
