@@ -27,14 +27,24 @@ jobs:
       - name: Build and package with Maven
         run: >-
           mvn -B clean package --file pom.xml
-      - uses: actions/upload-artifact@v2
-        with:
-          name: my-artifact
-          path: book/**/*.html
-      - name: Deploy Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: book/target/generated-docs
-          exclude_assets: '.github,*.pdf'
-          full_commit_message: ${{ github.event.head_commit.message }}
+      - name: Publish Chapters
+          uses: cpina/github-action-push-to-another-repository@main
+          env:
+            API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_FOR_CHAPTER_GITHUB_PAGES }}
+          with:
+            source-directory: 'book/target/generated-docs'
+            destination-github-username: 'karthik-krishnan'
+            destination-repository-name: 'chapters'
+            user-email: me@karthiks.in
+            target-branch: main
+    #      - uses: actions/upload-artifact@v2
+#        with:
+#          name: my-artifact
+#          path: book/**/*.html
+#      - name: Deploy Pages
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+#          publish_dir: book/target/generated-docs
+#          exclude_assets: '.github,*.pdf'
+#          full_commit_message: ${{ github.event.head_commit.message }}
