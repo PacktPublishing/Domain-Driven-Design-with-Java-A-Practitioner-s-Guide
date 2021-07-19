@@ -199,6 +199,7 @@ The domain of a business (at least the successful ones) almost always encompasse
 [plantuml,domains]
 ....
 @startuml
+skinparam CloudFontName "Gloria Hallelujah"
 skinparam monochrome true
 skinparam handwritten true
 cloud "Retail Domain" {
@@ -224,6 +225,7 @@ In certain businesses, subdomains themselves may turn out to become very complex
 [plantuml,subdomains]
 ....
 @startuml
+skinparam CloudFontName "Gloria Hallelujah"
 skinparam monochrome true
 skinparam handwritten true
   cloud "Product Subdomain" {
@@ -259,9 +261,34 @@ Previously, we saw how <<_silo_mentality, organizational silos>> can result in v
 DDD advocates breaking down these artificial barriers, and putting the domain experts and the developers on the same level footing by working collaboratively towards creating what DDD calls a *_ubiquitous language_* -- a shared vocabulary of terms, words, phrases to continuously enhance the collective understanding of the entire team. This phraseology is then used actively in every aspect of the solution: the everyday vocabulary, the designs, the code -- in short by *everyone* and *everywhere*. Consistent use of the common ubiquitous language helps reinforce a shared understanding and  produce solutions that better reflect the mental model of the domain experts.
 
 ==== Evolving a Domain Model and a Solution
-The ubiquitous language helps establish a consistent albeit informal lingo among team members. To enhance understanding, this can be further refined into a formal set of abstractions -- a *_domain model_* to represent the solution in software. It is very important to note that this domain model is modeled to fall within the context of a single subdomain for which a solution is being explored, not the entire domain of the business. This solution is termed as a *_bounded context_* i.e. the ubiquitous language and domain model are only valid within those bounds and context -- not outside of it. This means that the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*.
+The ubiquitous language helps establish a consistent albeit informal lingo among team members. To enhance understanding, this can be further refined into a formal set of abstractions -- a *_domain model_* to represent the solution in software. It is very important to note that this domain model is modeled to fall within the context of a single subdomain for which a solution is being explored, not the entire domain of the business. This boundary is termed as a *_bounded context_* i.e. the ubiquitous language and domain model are only valid within those bounds and context -- not outside of it. This means that the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*.
 
 Care should be taken to retain focus on solving the business problem at hand at all times. Teams will be better served if they expend the same amount of effort modeling business logic as the technical aspects of the solution. To keep accidental complexity in check, it will be best to isolate the infrastructure aspects of the solution from this model. These models can take several forms, including conversations, whiteboard sessions, documentation, diagrams, tests and other forms of architecture fitness functions. It is also important to note that this is *not* a one-time activity. As the business evolves, the domain model and the solution will need to keep up. This can only be achieved through close collaboration between the domain experts and the developers at all times.
+
+[.text-center]
+[plantuml,bounded-context]
+....
+@startuml
+skinparam handwritten true
+skinparam monochrome true
+skinparam CloudFontName "Gloria Hallelujah"
+
+cloud Retail {
+    cloud E-Commerce as ecom {
+        cloud Product as p1
+        cloud Order
+        cloud SKU as s1
+        cloud Customer
+    }
+    cloud Merchandising as merch {
+        cloud Supplier
+        cloud Product as p2
+        cloud Display
+        cloud SKU as s2
+    }
+}
+@enduml
+....
 
 DDD has a catalog of strategic and tactical patterns which accelerate this process of continuous learning. In addition, modern techniques such as https://domainstorytelling.org/[domain storytelling], https://www.eventstorming.com/[event storming], and https://evolutionaryarchitecture.com/[evolutionary architecture] can greatly aid this process of evolving the ubiquitous language and domain model. We will examine all of these in much detail in upcoming chapters,
 

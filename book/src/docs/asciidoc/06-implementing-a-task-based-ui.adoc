@@ -1,3 +1,5 @@
+:icons: font
+
 [.text-justify]
 == Implementing the User Interface -- Task-based (20 pages)
 [quote, Marty Rubin]
@@ -165,7 +167,7 @@ cloud "New Commands" as New {
     cloud "Change Conditions"
 }
 
-Old -down-> New
+Old ---> New
 @enduml
 ....
 
@@ -222,7 +224,7 @@ public class UpdateLCApplicationCommand {
 While this is very common and also very easy to grasp, it is not without problems. Here are some questions that taking this approach raises:
 
 1. Are we allowed to change everything listed in the `update` command?
-2. Assuming that is true, do they all change at the same time?
+2. Assuming that everything can change, do they all change at the same time?
 3. How do we know what exactly changed? Should we be doing a diff?
 4. What if all the attributes mentioned above are not included in the `update` command?
 5. What if we need to add attributes in future?
@@ -260,13 +262,75 @@ cloud {
 @enduml
 ....
 
-While it may have appeared previously that we have simply converted our coarse-grained APIs to become more fine-grained, this in reality is a better representation of the tasks that the user intended to perform. So, in essence, task-based APIs are the decomposition of work in a manner that aligns more closely to the users' intents. With our new APIs, product validation can commence as soon as `ChangeMerchandise` happens. Also, it is unambiguously clear what the user did and what needs to happen in reaction to the user's action.
-
-==== Impact of API style on user experiences
+While it may have appeared previously that we have simply converted our coarse-grained APIs to become more fine-grained, this in reality is a better representation of the tasks that the user intended to perform. So, in essence, task-based APIs are the decomposition of work in a manner that aligns more closely to the users' intents. With our new APIs, product validation can commence as soon as `ChangeMerchandise` happens. Also, it is unambiguously clear what the user did and what needs to happen in reaction to the user's action. It then begs the question on whether we should employ task-based APIs all the time? Let's look at the implications in more detail.
 
 ==== Task-based or CRUD-based?
+CRUD-based APIs seem to operate at the level of the aggregate. In our example, we have the LC aggregate. In the simplest case, this essentially translates to four operations aligned with each of the CRUD verbs. However, as we are seeing, even in our simplified version, the LC is becoming a fairly complex concept. Having to work with just four operations at the level of the LC is cognitively complex. With more requirements, this complexity will only continue to increase. For example, consider a situation where  the business expresses a need to capture a lot more information about the `merchandise`, where today, this is simply captured in the form of free-form text.
 
-Task-based UIs (in contrast to CRUD-based UIs) treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly.
+[source,java,linenum]
+....
+public class Merchandise {
+    private MerchandiseId id;
+    private Set<Item> items;
+    private Packaging packaging;
+    private boolean hazardous;
+}
+
+class Item {
+    private ProductId productId;
+    private int quantity;
+    // ...
+}
+
+class Packaging {
+    // ...
+}
+....
+
+In our current design, the implications of this change are far reaching for both the provider and the consumer(s).
+
+[cols="2,2,2,8"]
+|===
+|Characteristic |CRUD-based |Task-based|Commentary
+
+|Usability
+|--
+|++
+|Task-based interfaces tend to provide more fine-grained controls that capture user intent a lot more explicitly, making them naturally more usable -- especially in cases where the domain is complex.
+
+|Reusability
+|--
+|++
+|Task-based interfaces enable more complex features to be composed using simpler ones providing more flexibility to the consumers.
+
+|Scalability
+|--
+|++
+|Task-based interfaces have an advantage because they can provide the ability to independently scale specific features. However, if the fine-grained task-based APIs are used almost all the time in unison, it may be required to re-examine whether the users' intents are accurately captured.
+
+|Security
+|--
+|++
+|For task-based interfaces, security is enhanced from the producer's perspective by enabling application of the _principle of least privilegefootnote:[https://en.wikipedia.org/wiki/Principle_of_least_privilege]_.
+
+|Latency
+|++
+|--
+|Arguably, coarse-grained CRUD interfaces can enable consumers to achieve a lot more in less interactions, thereby providing low latency.
+
+|Management Overhead
+|++
+|--
+|For the provider, fine-grained interfaces require a lot more work managing a larger number of interfaces.
+
+|Complexity
+|--
+|--
+|Complexity of the system as a whole is proportional to the number of features that need to be implemented. Irrespective of API style, this usually remains constant. However, spreading complexity relatively uniformly across multiple simpler interfaces can enable managing complexity a lot more effectively.
+
+|===
+
+As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. That will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
 
 === Design pattern considerations
 
