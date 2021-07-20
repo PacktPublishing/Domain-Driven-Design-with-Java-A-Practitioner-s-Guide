@@ -21,7 +21,7 @@ import java.util.Objects;
 @SpringBootApplication
 public class App extends MvvmfxSpringApplication {
 
-    public static final InputStream icon = Objects.requireNonNull(App.class.getResourceAsStream("/lc-icon.png"));
+    private static final InputStream icon = Objects.requireNonNull(App.class.getResourceAsStream("/lc-icon.png"));
 
     public static void main(String[] args) {
         Application.launch(args);

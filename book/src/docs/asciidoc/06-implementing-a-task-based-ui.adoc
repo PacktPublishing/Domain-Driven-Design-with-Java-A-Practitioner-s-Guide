@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: images]
 :icons: font
 
 [.text-justify]
@@ -7,7 +8,7 @@ To accomplish a difficult task, one must first make it easy.
 
 The essence of DDD is a lot about capturing the business process and user intent a lot more closely. In the previous chapter, we designed a set of APIs without paying a lot of attention to how those APIs would get consumed by its eventual users. In this chapter, we will design the GUI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. As part of that, we will examine how this approach of designing APIs in isolation can cause an impedance mismatch between the producers and the consumers. We will examine the consequences of this _impedance mismatch_ and how task-based UIs can help cope with this mismatch a lot better.
 
-At the end of the chapter, you will learn how to employ DDD principles to help you build robust user experiences that are simple and intuitive. You will also learn why it may be prudent to design your backend APIs from the perspective of the consumer.
+At the end of the chapter, you will learn how to employ DDD principles to help you build robust user experiences that are simple and intuitive. You will also learn why it may be prudent to design your backend interfaces (APIs) from the perspective of the consumer.
 
 === Technical Requirements
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
@@ -19,95 +20,6 @@ At the end of the chapter, you will learn how to employ DDD principles to help y
 * TestFX (for UI testing)
 * OpenJFX Monocle (for headless UI testing)
 * Project Lombok (To reduce verbosity)
-
-=== Bootstrapping the UI
-We will simply be building on top of the LC application we created in Chapter 5: Implementing Domain Logic. For detailed instructions, refer to the section on Bootstrapping the Application. In addition, we will need to add the following dependencies to the `dependencies` section of the Maven `pom.xml` file in the root directory of the project:
-
-[source,xml,linenum]
-----
-<dependencies>
-    <!--...-->
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>${javafx.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-graphics</artifactId>
-        <version>${javafx.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-fxml</artifactId>
-        <version>${javafx.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>de.saxsys</groupId>
-        <artifactId>mvvmfx</artifactId>
-        <version>${mvvmfx.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>de.saxsys</groupId>
-        <artifactId>mvvmfx-spring-boot</artifactId>
-        <version>${mvvmfx.version}</version>
-    </dependency>
-    <!--...-->
-</dependencies>
-----
-
-To run UI tests, you will need to add the following dependencies:
-[source,xml,linenum]
-----
-<dependencies>
-    <!--...-->
-    <dependency>
-        <groupId>org.testfx</groupId>
-        <artifactId>testfx-junit5</artifactId>
-        <scope>test</scope>
-        <version>${testfx-junit5.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.testfx</groupId>
-        <artifactId>openjfx-monocle</artifactId>
-        <version>${openjfx-monocle.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>de.saxsys</groupId>
-        <artifactId>mvvmfx-testing-utils</artifactId>
-        <version>${mvvmfx.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <!--...-->
-</dependencies>
-----
-
-To be able to run the application from the command line, you will need to add the `javafx-maven-plugin` to the `plugins` section of your `pom.xml`, per the following:
-[source,xml,linenum]
-----
-<plugin>
-    <groupId>org.openjfx</groupId>
-    <artifactId>javafx-maven-plugin</artifactId>
-    <version>${javafx-maven-plugin.version}</version>
-    <configuration>
-        <mainClass>com.premonition.lc.issuance.App</mainClass>
-    </configuration>
-</plugin>
-----
-To run the application from the command line, use:
-[source,bash]
-----
-mvn javafx:run
-----
-
-NOTE: If you are using a JDK greater that version 1.8, the JavaFX libraries may not be bundled with the JDK itself. When running the application from your IDE, you will likely need to add the following:
-[source,bash]
-----
---module-path=<path-to-javafx-sdk>/lib/ \
-   --add-modules=javafx.controls,javafx.graphics,javafx.fxml,javafx.media
-----
-
-NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
 
 Before we dive deep into building the GUI solution, let's do a quick recap of where we left the APIs.
 
@@ -289,56 +201,215 @@ class Packaging {
 
 In our current design, the implications of this change are far reaching for both the provider and the consumer(s).
 
-[cols="2,2,2,8"]
+[cols="<,^,^,6"]
 |===
 |Characteristic |CRUD-based |Task-based|Commentary
 
 |Usability
-|--
-|++
+|[red]#icon:frown-open[]#
+|[green]#icon:check-circle[]#
 |Task-based interfaces tend to provide more fine-grained controls that capture user intent a lot more explicitly, making them naturally more usable -- especially in cases where the domain is complex.
 
 |Reusability
-|--
-|++
+|[red]#icon:times-circle[]#
+|[green]#icon:check-circle[]#
 |Task-based interfaces enable more complex features to be composed using simpler ones providing more flexibility to the consumers.
 
 |Scalability
-|--
-|++
+|[red]#icon:times-circle[]#
+|[green]#icon:check-circle[]#
 |Task-based interfaces have an advantage because they can provide the ability to independently scale specific features. However, if the fine-grained task-based APIs are used almost all the time in unison, it may be required to re-examine whether the users' intents are accurately captured.
 
 |Security
-|--
-|++
+|[red]#icon:times-circle[]#
+|[green]#icon:check-circle[]#
 |For task-based interfaces, security is enhanced from the producer's perspective by enabling application of the _principle of least privilegefootnote:[https://en.wikipedia.org/wiki/Principle_of_least_privilege]_.
 
 |Latency
-|++
-|--
+|[green]#icon:check-circle[]#
+|[red]#icon:times-circle[]#
 |Arguably, coarse-grained CRUD interfaces can enable consumers to achieve a lot more in less interactions, thereby providing low latency.
 
 |Management Overhead
-|++
-|--
+|[green]#icon:check-circle[]#
+|[red]#icon:times-circle[]#
 |For the provider, fine-grained interfaces require a lot more work managing a larger number of interfaces.
 
 |Complexity
-|--
-|--
+|[gray]#icon:question-circle[]#
+|[gray]#icon:question-circle[]#
 |Complexity of the system as a whole is proportional to the number of features that need to be implemented. Irrespective of API style, this usually remains constant. However, spreading complexity relatively uniformly across multiple simpler interfaces can enable managing complexity a lot more effectively.
 
 |===
 
 As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. That will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
 
+This is a chapter on evolving the user interface, however, we have spent a lot of time discussing the backend APIs. However, the same principles apply when designing graphical user interfaces as well. Let's revert back to creating the user interface for the LC application.
+
+=== Bootstrapping the UI
+We will simply be building on top of the LC application we created in Chapter 5: Implementing Domain Logic. For detailed instructions, refer to the section on Bootstrapping the Application. In addition, we will need to add the following dependencies to the `dependencies` section of the Maven `pom.xml` file in the root directory of the project:
+
+[source,xml,linenum]
+----
+<dependencies>
+    <!--...-->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx</artifactId>
+        <version>${mvvmfx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx-spring-boot</artifactId>
+        <version>${mvvmfx.version}</version>
+    </dependency>
+    <!--...-->
+</dependencies>
+----
+
+To run UI tests, you will need to add the following dependencies:
+[source,xml,linenum]
+----
+<dependencies>
+    <!--...-->
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>testfx-junit5</artifactId>
+        <scope>test</scope>
+        <version>${testfx-junit5.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>openjfx-monocle</artifactId>
+        <version>${openjfx-monocle.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>de.saxsys</groupId>
+        <artifactId>mvvmfx-testing-utils</artifactId>
+        <version>${mvvmfx.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <!--...-->
+</dependencies>
+----
+
+To be able to run the application from the command line, you will need to add the `javafx-maven-plugin` to the `plugins` section of your `pom.xml`, per the following:
+[source,xml,linenum]
+----
+<plugin>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-maven-plugin</artifactId>
+    <version>${javafx-maven-plugin.version}</version>
+    <configuration>
+        <mainClass>com.premonition.lc.issuance.App</mainClass>
+    </configuration>
+</plugin>
+----
+To run the application from the command line, use:
+[source,bash]
+----
+mvn javafx:run
+----
+
+NOTE: If you are using a JDK greater that version 1.8, the JavaFX libraries may not be bundled with the JDK itself. When running the application from your IDE, you will likely need to add the following:
+[source,bash]
+----
+--module-path=<path-to-javafx-sdk>/lib/ \
+   --add-modules=javafx.controls,javafx.graphics,javafx.fxml,javafx.media
+----
+
+We are making use of the mvvmfx framework to assemble the UI. To make this work with spring boot, the application launcher looks as depicted here:
+
+[source,java,linenum]
+----
+@SpringBootApplication
+public class App extends MvvmfxSpringApplication { // <1>
+
+    private static final InputStream icon = Objects.requireNonNull(App.class.getResourceAsStream("/lc-icon.png"));
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+
+    @Override
+    public void startMvvmfx(Stage stage) {
+        stage.setTitle("LC Issuance");
+
+        final Parent parent = FluentViewLoader.fxmlView(MainView.class)
+                .providedScopes(new UserScope("admin"))
+                .load().getView();
+
+        final Image icon = new Image(App.icon);
+        stage.getIcons().add(icon);
+        final Scene scene = new Scene(parent);
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (KeyCode.ESCAPE == event.getCode()) {
+                stage.close();
+            }
+        });
+        stage.setScene(scene);
+        stage.show();
+    }
+}
+----
+<1> Note that we are required to extend from the `mvvmfx` framework class `MvvmfxSpringApplication`.
+
+NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
+
+=== Implementing the UI
+When working with user interfaces, it is fairly customary to use one of these presentation patterns:
+
+* Model-View-Controller (MVC)
+* Model-View-Presenter (MVP)
+* Model-View-ViewModel (MVVM)
+
+Each of these patterns enable us to produce code that is loosely coupled, testable and maintainable. Let's briefly examine each of these in more detail here:
+
+==== Model View Controller
+This is arguably the oldest, most popular when implementing user interfaces, given that it has been in existence since the early 1970s. The pattern breaks the app into three components:
+
+.MVC design pattern
+[.text-center]
+image::ui-patterns/mvc.png[]
+
+* Model: responsible to house the business logic and managing the state of the application.
+* View: responsible for presenting data to the user and handling user interactions.
+* Controller: responsible to act as a glue between the model and the view. It is also responsible for handling incoming requests, data management, networking and validation.
+
+==== Model View Presenter
+
+.MVP design pattern
+[.text-center]
+image::ui-patterns/mvp.png[]
+
+==== Model View ViewModel
+
+.MVVM design pattern
+[.text-center]
+image::ui-patterns/mvvm.png[]
+
+==== MVC versus MVP versus MVVM
+
 === Design pattern considerations
 
 ==== Usability
 
 ==== Testability
-
-=== Implementing the save LC functionality
 
 === Invoking backend services
 
