@@ -154,7 +154,7 @@ Since most work happens in the form of specific tasks, it can work to our advant
 Keeping this in mind, let's re-examine our revised APIs for the LC application process:
 
 [.text-center]
-[plantuml,revised-commands]
+[plantuml,revised-commands-recap]
 ....
 @startuml
 skinparam handwritten true
