@@ -206,7 +206,7 @@ In our current design, the implications of this change are far reaching for both
 |Characteristic |CRUD-based |Task-based|Commentary
 
 |Usability
-|[red]#icon:frown-open[]#
+|[red]#icon:times-circle[]#
 |[green]#icon:check-circle[]#
 |Task-based interfaces tend to provide more fine-grained controls that capture user intent a lot more explicitly, making them naturally more usable -- especially in cases where the domain is complex.
 
@@ -387,9 +387,11 @@ This is arguably the oldest, most popular when implementing user interfaces, giv
 [.text-center]
 image::ui-patterns/mvc.png[]
 
-* Model: responsible to house the business logic and managing the state of the application.
-* View: responsible for presenting data to the user and handling user interactions.
-* Controller: responsible to act as a glue between the model and the view. It is also responsible for handling incoming requests, data management, networking and validation.
+* *Model*: responsible to house the business logic and managing the state of the application.
+* *View*: responsible for presenting data to the user.
+* *Controller*: responsible to act as a glue between the model and the view. It is also responsible for handling user interactions, data management, networking and validation.
+
+NOTE: There are different schools of thought when it comes where concerns such as data fetching, persistence and related network interactions, etc. need to live. Some implementations (such as the active recordfootnote:[https://martinfowler.com/eaaCatalog/activeRecord.html] pattern) advocate making use of the model to house this logic. In other cases, the controller delegates to a repositoryfootnote:[https://martinfowler.com/eaaCatalog/repository.html] to interact with dumb models. Which variation you prefer to use comes down to personal tastes.
 
 ==== Model View Presenter
 
@@ -397,21 +399,26 @@ image::ui-patterns/mvc.png[]
 [.text-center]
 image::ui-patterns/mvp.png[]
 
-==== Model View ViewModel
+* *Model*: responsible to house the business logic and managing the state of the application.
+* *View*: responsible for presenting data to the user and notifying the presenter about user interactions.
+* *Presenter*: responsible for handling user interactions on behalf of the view. The presenter usually interacts with the view through an interface that the view implements. This allows for easier unit testing of the presenter independent of the view. The presenter interacts with the model for updates and read operations.
+
+==== Model View View-Model
 
 .MVVM design pattern
 [.text-center]
 image::ui-patterns/mvvm.png[]
 
+* Model: responsible to house the business logic and managing the state of the application.
+* View: responsible for presenting data to the user and notifying the view-model about user interactions.
+* View-Model: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
+
+Now that we understand the mechanics of each of these patterns, let's look at which one to use.
+
 ==== MVC versus MVP versus MVVM
+The MVC pattern has been around for the longest time. The idea of separating concerns among collaborating model, view and controller objects is a sound one. However, beyond the definition of these objects, actual implementations seem to vary wildly -- with the controller becoming overly complex in a lot of cases. In contrast, MVP and MVVM, while being derivatives of MVC, seem to bring out better separation of concerns between the collaborating objects. MVVM, in particular when coupled with data binding constructs, make for code that is much more readable, maintainable and testable. In this book, we make use of MVVM because it enables test-driven development which is a strong personal preference for us.
 
-=== Design pattern considerations
-
-==== Usability
-
-==== Testability
-
-=== Invoking backend services
+=== UI Implementation
 
 === Summary
 
