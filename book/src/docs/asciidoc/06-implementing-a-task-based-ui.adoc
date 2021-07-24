@@ -415,10 +415,286 @@ image::ui-patterns/mvvm.png[]
 
 Now that we understand the mechanics of each of these patterns, let's look at which one to use.
 
-==== MVC versus MVP versus MVVM
+==== Which one: MVC, MVP or MVVM
 The MVC pattern has been around for the longest time. The idea of separating concerns among collaborating model, view and controller objects is a sound one. However, beyond the definition of these objects, actual implementations seem to vary wildly -- with the controller becoming overly complex in a lot of cases. In contrast, MVP and MVVM, while being derivatives of MVC, seem to bring out better separation of concerns between the collaborating objects. MVVM, in particular when coupled with data binding constructs, make for code that is much more readable, maintainable and testable. In this book, we make use of MVVM because it enables test-driven development which is a strong personal preference for us.
 
 === UI Implementation
+
+==== MVVM primer
+Let's consider the example of creating a new LC. To create a new LC, all we need is for the applicant to provide a friendly client reference. This is usually an easy to remember string of free text. A simple rendition of this UI is shown here:
+
+.Create LC screen
+[.text-center]
+image::mvvm/create-lc-ui.png[]
+
+===== Declarative view
+When working with JavaFX, the view can be rendered using a declarative style in FXML format. Important excerpts from the `CreateLCView.fxml` file for the create LC view are shown here:
+
+[source,xml,linenum]
+....
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+
+<Pane id="create-lc"  xmlns="http://javafx.com/javafx/16"
+                      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.premonition.lc.issuance.ui.views.CreateLCView"> <!--1-->
+    ...
+
+    <TextField id="client-reference"
+               fx:id="clientReference"/>                                 <!--2-->
+
+    <Button id="create-button"
+            fx:id="createButton"
+            text="Create"
+            onAction="#create"/>                                         <!--3-->
+    ...
+</Pane>
+
+....
+<1> The `CreateLCView` class acts as the view delegate for the FXML view and is assigned using the `fx:controller` attribute of the root element (`javafx.scene.layout.Pane` in this case).
+<2> In order to reference `client-reference` textbox in the view delegate, we use the `fx:id` annotation -- `clientReference` in this case.
+<3> Similarly, the `create-button` is referenced using `fx:id=createButton` in the view delegate. Furthermore, the `create` method in the view delegate is assigned to handle the default action (the button press event for `javafx.scene.control.Button`).
+
+===== View delegate
+Next, let's look at the structure of the view delegate `com.premonition.lc.issuance.ui.views.CreateLCView`:
+
+[source,java,linenum]
+....
+//...
+public class CreateLCView {                     // <1>
+
+    @FXML
+    private TextField clientReference;          // <2>
+    @FXML
+    private Button createButton;                // <3>
+
+    public void create(ActionEvent event) {     // <4>
+        // Handle button press logic here
+    }
+
+    // Other parts omitted for brevity...
+}
+....
+<1> The view delegate class for the `CreateLCView.fxml` view.
+<2> The Java binding for the `clientReference` textbox in the view. The name of the member needs to match exactly with the value of the `fx:id` attribute in the view. Further, it needs to be annotated with the `@javafx.fxml.FXML` annotation. The use of the `@FXML` annotation is optional if the member in the view delegate is `public` and matches the name in the view.
+<3> Similarly, the `createButton` is bound to the corresponding button widget in the view.
+<4> The method for the action handler when the `createButton` is pressed.
+
+===== View-Model
+The view-model class `CreateLCViewModel for the `CreateLCView` is shown here:
+
+[source,java,linenum]
+....
+import javafx.beans.property.StringProperty;
+import de.saxsys.mvvmfx.ViewModel;
+
+public class CreateLCViewModel implements ViewModel {      // <1>
+
+    private final StringProperty clientReference;          // <2>
+
+    public CreateLCViewModel() {
+        this.clientReference = new SimpleStringProperty(); // <3>
+    }
+
+    public StringProperty clientReferenceProperty() {      // <4>
+        return clientReference;
+    }
+
+    public String getClientReference() {
+        return clientReference.get();
+    }
+
+    public void setClientReference(String clientReference) {
+        this.clientReference.set(clientReference);
+    }
+
+    // Other getters and setters omitted for brevity
+}
+....
+<1> The view-model class for the `CreateLCView`. Note that we are required to implement the `de.saxsys.mvvmfx.ViewModel` interface provided by the `mvvmfx` framework.
+<2> We are initializing the `clientReference` property using the `SimpleStringProperty` provided by JavaFX. There are several other property classes to define more complex types. Please refer to the JavaFX documentation for more details.
+<3> The value of the `clientReference` in the view-model. We will look at how to associate this with value of the `clientReference` textbox in the view shortly. Note that we are using the `StringProperty` provided by `JavaFX`, which provides access to the underlying `String` value of the client reference.
+<4> `JavaFX` beans are required to create a special accessor for the property itself in addition to the standard getter and setter for the underlying value.
+
+===== Binding the view to the view-model
+Next, let's look at how to associate the view to the view-model:
+
+[source,java,linenum]
+....
+import de.saxsys.mvvmfx.Initialize;
+import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectViewModel;
+//...
+public class CreateLCView implements FxmlView<CreateLCViewModel> {   // <1>
+
+    @FXML
+    private TextField clientReference;
+    @FXML
+    private Button createButton;
+
+    @InjectViewModel
+    private CreateLCViewModel viewModel;                             // <2>
+
+    @Initialize
+    private void initialize() {                                      // <3>
+        clientReference.textProperty()
+            .bindBidirectional(viewModel.clientReferenceProperty()); // <4>
+        createButton.disableProperty()
+            .bind(viewModel.createDisabledProperty());               // <5>
+    }
+
+    // Other parts omitted for brevity...
+}
+....
+<1> The `mvvmfx` framework requires that the view delegate implement the `FXMLView<? extends ViewModelType>`. In this case, the view-model type is `CreateLCViewModel`. The `mvvmfx` framework supports other view types as well. Please refer to the framework documentation for more details.
+<2> The framework provides a `@de.saxsys.mvvmfx.InjectViewModel` annotation to allow dependency injecting the view-model into the view delegate.
+<3> The framework will invoke all methods annotated with the `@de.saxsys.mvvmfx.Initialize` annotation during the initialization process. The annotation can be omitted if the method is named `initialize` and is declared `public`. Please refer to the framework documentation for more details.
+<4> We have now bound the text property of the `clientReference` textbox in the view delegate to the corresponding property in the view-model. Note that this is a *bidirectional* binding, which means that the value in the view and the view model are kept in sync if it changes on either side.
+<5> This is another variation of binding in action, where we are making use of a unidirectional binding. Here, we are binding the disabled property of the `create` button to the corresponding property on the view-model. We will look at why we need to do this shortly.
+
+===== Enforcing business validations in the UI
+We have a business validation that the client reference for an LC needs to be at least 4 characters in length. This will be enforced on the back-end. However, to provide a richer user experience, we will also enforce this validation on the UI.
+
+WARNING: This may feel contrary to the notion of centralizing business validations on the back-end. While this is a noble attempt at implementing the DRY (Don't Repeat Yourself) principle, in reality, it poses a lot of practical problems. Industry luminary, Udi Dahan has a very interesting take on why this may not be such a virtuous thing to pursuefootnote:[https://vimeo.com/131757759]. Ted Neward also talks about this in his blog titled The Fallacies of Enterprise Computingfootnote:[http://blogs.tedneward.com/post/enterprise-computing-fallacies/]
+
+The advantage of using MVVM is that this logic is easily testable in a simple unit test of the view-model. Let's test-drive this now:
+
+[source,java,linenum]
+....
+class CreateLCViewModelTests {
+
+    private CreateLCViewModel viewModel;
+
+    @BeforeEach
+    void before() {
+        int clientReferenceMinLength = 4;
+        viewModel = new CreateLCViewModel(clientReferenceMinLength);
+    }
+
+    @Test
+    void shouldNotEnableCreateByDefault() {
+        assertThat(viewModel.getCreateDisabled()).isTrue();
+    }
+
+    @Test
+    void shouldNotEnableCreateIfClientReferenceLesserThanMinimumLength() {
+        viewModel.setClientReference("123");
+        assertThat(viewModel.getCreateDisabled()).isTrue();
+    }
+
+    @Test
+    void shouldEnableCreateIfClientReferenceEqualToMinimumLength() {
+        viewModel.setClientReference("1234");
+        assertThat(viewModel.getCreateDisabled()).isFalse();
+    }
+
+    @Test
+    void shouldEnableCreateIfClientReferenceGreaterThanMinimumLength() {
+        viewModel.setClientReference("12345");
+        assertThat(viewModel.getCreateDisabled()).isFalse();
+    }
+}
+....
+
+Now, let's look at the implementation for this functionality in the view-model:
+[source,java,linenum]
+....
+public class CreateLCViewModel implements ViewModel {
+
+    //...
+    private final StringProperty clientReference;
+    private final BooleanProperty createDisabled;                    // <1>
+
+    public CreateLCViewModel(int clientReferenceMinLength) {         // <2>
+        this.clientReference = new SimpleStringProperty();
+        this.createDisabled = new SimpleBooleanProperty();
+        this.createDisabled
+            .bind(this.clientReference.length()
+                    .lessThan(clientReferenceMinLength));            // <3>
+    }
+
+    //...
+}
+
+public class CreateLCView implements FxmlView<CreateLCViewModel> {
+
+    //...
+    @Initialize
+    public void initialize() {
+        createButton.disableProperty()
+            .bind(viewModel.createDisabledProperty());               // <4>
+        clientReference.textProperty()
+            .bindBidirectional(viewModel.clientReferenceProperty());
+    }
+    //...
+}
+....
+<1> We declare a `createDisabled` property in the view-model to manage when the create button should be disabled.
+<2> The minimum length for a valid client reference is injected into the view-model. It is conceivable that this value will be provided as part of external configuration, or possibly from the back-end.
+<3> We create a binding expression to match the business requirement.
+<4> We bind the view-model property to the disabled property of the create button in the view delegate.
+
+Let's also look at how to write an end-to-end, headless UI test as shown here:
+[source,java,linenum]
+....
+
+@UITest
+public class CreateLCViewTests {                                  // <1>
+
+    @Autowired
+    private ApplicationContext context;
+
+    @Init
+    public void init() {
+        MvvmFX.setCustomDependencyInjector(context::getBean);     // <2>
+    }
+
+    @Start
+    public void start(Stage stage) {                              // <3>
+        final Parent parent = FluentViewLoader
+                .fxmlView(CreateLCView.class)
+                .load().getView();
+        stage.setScene(new Scene(parent));
+        stage.show();
+    }
+
+    @Test
+    void blankClientReference(FxRobot robot) {
+        robot.lookup("#client-reference")                         // <4>
+            .queryAs(TextField.class)
+            .setText("");
+
+        verifyThat("#create-button", NodeMatchers.isDisabled());  // <5>
+    }
+
+    @Test
+    void validClientReference(FxRobot robot) {
+        robot.lookup("#client-reference")
+            .queryAs(TextField.class)
+            .setText("Test");
+
+        verifyThat("#create-button", NodeMatchers.isEnabled());   // <5>
+    }
+}
+....
+<1> We have written a convenience `@UITest` extension to combine spring framework and TestFX testing. Please refer to the accompanying source code with the book for more details.
+<2> We set up the spring context to act as the dependency injection provider for the mvvmfx framework and its injection annotations (for example, `@InjectViewModel`) to work.
+<3> We are using the `@Start` annotation provided by the TestFX framework to launch the UI.
+<4> The TestFX framework injects an instance of the `FxRobot` UI helper, which we can use to access UI elements.
+<5> We are using the The TestFX framework provided convenience matchers for test assertions.
+
+Now, when we run the application, we can see that the create button is enabled when a valid client reference is entered:
+
+.The Create button is enabled with a valid client reference
+[.text-center]
+image::mvvm/valid-client-reference-input.png[]
+
+==== A CRUD-based UI example
+
+==== A task-based UI example
+
+=== The BFF Pattern
 
 === Summary
 

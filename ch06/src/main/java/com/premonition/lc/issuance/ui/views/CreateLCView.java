@@ -5,6 +5,7 @@ import com.premonition.lc.issuance.ui.utils.UIUtils;
 import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -65,6 +66,7 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
         stage.show();
     }
 
+    @Initialize
     public void initialize() {
         createButton.disableProperty().bind(viewModel.createDisabledProperty());
         clientReference.textProperty().bindBidirectional(viewModel.clientReferenceProperty());
