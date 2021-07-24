@@ -340,8 +340,6 @@ We are making use of the mvvmfx framework to assemble the UI. To make this work 
 @SpringBootApplication
 public class App extends MvvmfxSpringApplication { // <1>
 
-    private static final InputStream icon = Objects.requireNonNull(App.class.getResourceAsStream("/lc-icon.png"));
-
     public static void main(String[] args) {
         Application.launch(args);
     }
@@ -350,18 +348,11 @@ public class App extends MvvmfxSpringApplication { // <1>
     public void startMvvmfx(Stage stage) {
         stage.setTitle("LC Issuance");
 
-        final Parent parent = FluentViewLoader.fxmlView(MainView.class)
-                .providedScopes(new UserScope("admin"))
+        final Parent parent = FluentViewLoader
+                .fxmlView(MainView.class)
                 .load().getView();
 
-        final Image icon = new Image(App.icon);
-        stage.getIcons().add(icon);
         final Scene scene = new Scene(parent);
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (KeyCode.ESCAPE == event.getCode()) {
-                stage.close();
-            }
-        });
         stage.setScene(scene);
         stage.show();
     }
