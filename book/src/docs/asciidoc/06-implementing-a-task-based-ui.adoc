@@ -1,8 +1,9 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
+:icon-set: fas
 
 [.text-justify]
-== Implementing the User Interface -- Task-based (20 pages)
+== Implementing the User Interface -- Task-based
 [quote, Marty Rubin]
 To accomplish a difficult task, one must first make it easy.
 
@@ -206,33 +207,33 @@ In our current design, the implications of this change are far reaching for both
 |Characteristic |CRUD-based |Task-based|Commentary
 
 |Usability
-|[red]#icon:times-circle[]#
-|[green]#icon:check-circle[]#
+|[red]#icon:thumbs-down[]#
+|[green]#icon:thumbs-up[]#
 |Task-based interfaces tend to provide more fine-grained controls that capture user intent a lot more explicitly, making them naturally more usable -- especially in cases where the domain is complex.
 
 |Reusability
-|[red]#icon:times-circle[]#
-|[green]#icon:check-circle[]#
+|[red]#icon:thumbs-down[]#
+|[green]#icon:thumbs-up[]#
 |Task-based interfaces enable more complex features to be composed using simpler ones providing more flexibility to the consumers.
 
 |Scalability
-|[red]#icon:times-circle[]#
-|[green]#icon:check-circle[]#
+|[red]#icon:thumbs-down[]#
+|[green]#icon:thumbs-up[]#
 |Task-based interfaces have an advantage because they can provide the ability to independently scale specific features. However, if the fine-grained task-based APIs are used almost all the time in unison, it may be required to re-examine whether the users' intents are accurately captured.
 
 |Security
-|[red]#icon:times-circle[]#
-|[green]#icon:check-circle[]#
+|[red]#icon:thumbs-down[]#
+|[green]#icon:thumbs-up[]#
 |For task-based interfaces, security is enhanced from the producer's perspective by enabling application of the _principle of least privilegefootnote:[https://en.wikipedia.org/wiki/Principle_of_least_privilege]_.
 
 |Latency
-|[green]#icon:check-circle[]#
-|[red]#icon:times-circle[]#
+|[green]#icon:thumbs-up[]#
+|[red]#icon:thumbs-down[]#
 |Arguably, coarse-grained CRUD interfaces can enable consumers to achieve a lot more in less interactions, thereby providing low latency.
 
 |Management Overhead
-|[green]#icon:check-circle[]#
-|[red]#icon:times-circle[]#
+|[green]#icon:thumbs-up[]#
+|[red]#icon:thumbs-down[]#
 |For the provider, fine-grained interfaces require a lot more work managing a larger number of interfaces.
 
 |Complexity

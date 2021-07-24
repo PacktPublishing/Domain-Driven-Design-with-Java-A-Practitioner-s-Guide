@@ -162,6 +162,7 @@
                             <source-highlighter>coderay</source-highlighter>
                             <coderay-css>style</coderay-css>
                             <autoReloadInterval>1000</autoReloadInterval>
+                            <iconSet>fas</iconSet>
                         </attributes>
                     </configuration>
                     <executions>
