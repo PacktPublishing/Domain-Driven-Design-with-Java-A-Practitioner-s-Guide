@@ -10,6 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.Callable;
+
+import static javafx.beans.binding.Bindings.createBooleanBinding;
+
 @Component
 @Log4j2
 public class CreateLCViewModel implements ViewModel {
@@ -27,7 +31,15 @@ public class CreateLCViewModel implements ViewModel {
         this.clientReference = new SimpleStringProperty(this, "clientReference", "");
         this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
         this.lcApplicationId = new SimpleObjectProperty<>();
-        this.createDisabled.bind(this.clientReference.length().lessThan(clientReferenceMinLength));
+        this.createDisabled.bind(createBooleanBinding(exceeds(clientReferenceMinLength),
+                clientReference));
+    }
+
+    private Callable<Boolean> exceeds(int clientReferenceMinLength) {
+        return () -> {
+            final String value = clientReference.get();
+            return value == null || value.trim().length() < clientReferenceMinLength;
+        };
     }
 
     public String getClientReference() {

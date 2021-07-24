@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runners.Parameterized;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,15 +32,17 @@ class CreateLCViewModelTests {
         viewModel.setUserScope(new UserScope("admin"));
     }
 
-    @Parameters(name = "{index}: For client reference '{0}' create disabled should be {1}")
-    public static Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                {null,    true},
-                {"",      true},
-                {"123",   true},
-                {"1234",  false},
-                {"12345", false}
-        });
+    @Parameters(name = "{index}: For client reference \"{0}\" create disabled should be {1}")
+    public static Stream<Arguments> data() {
+        return Stream.of(
+                Arguments.of(null, true),
+                Arguments.of("", true),
+                Arguments.of(" ", true),
+                Arguments.of("      ", true),
+                Arguments.of("123", true),
+                Arguments.of("1234", false),
+                Arguments.of("12345", false)
+        );
     }
 
     @ParameterizedTest
