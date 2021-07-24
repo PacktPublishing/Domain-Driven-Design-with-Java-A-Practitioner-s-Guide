@@ -7,7 +7,6 @@ import com.premonition.lc.issuance.utilities.RunInUiThread;
 import com.premonition.lc.issuance.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;

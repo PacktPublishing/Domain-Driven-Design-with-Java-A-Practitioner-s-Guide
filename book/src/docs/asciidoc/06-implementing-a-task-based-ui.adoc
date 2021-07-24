@@ -27,62 +27,45 @@ Before we dive deep into building the GUI solution, let's do a quick recap of wh
 === API Styles
 
 If you recall from chapter 5, we created the following commands:
+
+.Commands from the event storming session
 [.text-center]
 [plantuml,potential-commands]
 ....
 @startuml
 skinparam handwritten true
-skinparam CloudFontName "Gloria Hallelujah"
-cloud Commands {
-    cloud "Create LC Application" as St
-    cloud "Update LC Application" as U
-    cloud "Submit LC Application" as Su
-    cloud Validate as V {
-        cloud "Validate Product" as VP
-        cloud "Validate Applicant" as VA
-    }
-    cloud "Approve LC Application" as AA
-    cloud "Decline LC Application" as DA
-    cloud "Issue LC" as I
-
-   St -down-> U
-   U -down-> U
-   U -down-> Su
-   Su -down-> V
-   V -right-> AA
-   V --> DA
-   AA --> I
-
+<style>
+activityDiagram {
+  FontName "Gloria Hallelujah"
+  FontSize 20
 }
+</style>
+start
+partition Start {
+:Create LC Application;
+#palegreen:Update LC Application;
+note right: Optional
+}
+:Submit LC Application;
+fork
+:Validate Applicant;
+fork again
+:Validate Product;
+end fork
+if (valid?) is (<color:green>yes) then
+:Approve Application;
+:Issue LC;
+end
+else (<color:red>no)
+:Deny Application;
+end
 @enduml
 ....
 If you observe carefully, there seem to be commands at two levels of granularity. The "Create LC Application" and "Update LC application" are coarse grained, whereas the others are a lot more focused in terms of their intent. One possible decomposition of the coarse grained commands can be as depicted here:
 
+.Decomposed commands
 [.text-center]
-[plantuml,revised-commands]
-....
-@startuml
-skinparam handwritten true
-skinparam CloudFontName "Gloria Hallelujah"
-cloud "Old Commands" as Old {
-    cloud "Update LC Application"
-    cloud "Create LC Application"
-}
-
-cloud "New Commands" as New {
-    cloud "Start LC Application"
-    cloud "Change Applicant"
-    cloud "Change Beneficiary"
-    cloud "Change Advising Bank"
-    cloud "Change LC Amount"
-    cloud "Change Merchandise"
-    cloud "Change Documents"
-    cloud "Change Conditions"
-}
-
-Old ---> New
-@enduml
-....
+image::ui-patterns/old-new-commands.png[]
 
 In addition to just being more fine-grained than the commands in the previous iteration, the revised commands seem to better capture the user's intent. This may feel like a minor change in semantics, but can have a huge impact on the way our solution is used by its ultimate end-users. The question then is whether we should _always_ prefer fine-grained APIs over coarse grained ones. The answer can be a lot more nuanced. When designing APIs and experiences, we see two main styles being employed:
 
@@ -170,6 +153,7 @@ cloud {
     cloud "Change Merchandise"
     cloud "Change Documents"
     cloud "Change Conditions"
+    cloud "Change Shipment Date"
 }
 
 @enduml
@@ -200,7 +184,7 @@ class Packaging {
 }
 ....
 
-In our current design, the implications of this change are far reaching for both the provider and the consumer(s).
+In our current design, the implications of this change are far reaching for both the provider and the consumer(s). Let's look at some of the consequences in more detail:
 
 [cols="<,^,^,6"]
 |===
@@ -243,7 +227,7 @@ In our current design, the implications of this change are far reaching for both
 
 |===
 
-As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. That will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
+As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. Which style you use will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
 
 This is a chapter on evolving the user interface, however, we have spent a lot of time discussing the backend APIs. However, the same principles apply when designing graphical user interfaces as well. Let's revert back to creating the user interface for the LC application.
 
@@ -334,7 +318,7 @@ NOTE: If you are using a JDK greater that version 1.8, the JavaFX libraries may 
    --add-modules=javafx.controls,javafx.graphics,javafx.fxml,javafx.media
 ----
 
-We are making use of the mvvmfx framework to assemble the UI. To make this work with spring boot, the application launcher looks as depicted here:
+We are making use of the mvvmFX framework to assemble the UI. To make this work with spring boot, the application launcher looks as depicted here:
 
 [source,java,linenum]
 ----
@@ -359,7 +343,7 @@ public class App extends MvvmfxSpringApplication { // <1>
     }
 }
 ----
-<1> Note that we are required to extend from the `mvvmfx` framework class `MvvmfxSpringApplication`.
+<1> Note that we are required to extend from the mvvmFX framework class `MvvmfxSpringApplication`.
 
 NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
 
@@ -453,6 +437,7 @@ Next, let's look at the structure of the view delegate `com.premonition.lc.issua
 
 [source,java,linenum]
 ....
+import javafx.fxml.FXML;
 //...
 public class CreateLCView {                     // <1>
 
@@ -504,7 +489,7 @@ public class CreateLCViewModel implements ViewModel {      // <1>
     // Other getters and setters omitted for brevity
 }
 ....
-<1> The view-model class for the `CreateLCView`. Note that we are required to implement the `de.saxsys.mvvmfx.ViewModel` interface provided by the `mvvmfx` framework.
+<1> The view-model class for the `CreateLCView`. Note that we are required to implement the `de.saxsys.mvvmfx.ViewModel` interface provided by the mvvmFX framework.
 <2> We are initializing the `clientReference` property using the `SimpleStringProperty` provided by JavaFX. There are several other property classes to define more complex types. Please refer to the JavaFX documentation for more details.
 <3> The value of the `clientReference` in the view-model. We will look at how to associate this with value of the `clientReference` textbox in the view shortly. Note that we are using the `StringProperty` provided by `JavaFX`, which provides access to the underlying `String` value of the client reference.
 <4> `JavaFX` beans are required to create a special accessor for the property itself in addition to the standard getter and setter for the underlying value.
@@ -539,7 +524,7 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {   // <1>
     // Other parts omitted for brevity...
 }
 ....
-<1> The `mvvmfx` framework requires that the view delegate implement the `FXMLView<? extends ViewModelType>`. In this case, the view-model type is `CreateLCViewModel`. The `mvvmfx` framework supports other view types as well. Please refer to the framework documentation for more details.
+<1> The mvvmFX framework requires that the view delegate implement the `FXMLView<? extends ViewModelType>`. In this case, the view-model type is `CreateLCViewModel`. The mvvmFX framework supports other view types as well. Please refer to the framework documentation for more details.
 <2> The framework provides a `@de.saxsys.mvvmfx.InjectViewModel` annotation to allow dependency injecting the view-model into the view delegate.
 <3> The framework will invoke all methods annotated with the `@de.saxsys.mvvmfx.Initialize` annotation during the initialization process. The annotation can be omitted if the method is named `initialize` and is declared `public`. Please refer to the framework documentation for more details.
 <4> We have now bound the text property of the `clientReference` textbox in the view delegate to the corresponding property in the view-model. Note that this is a *bidirectional* binding, which means that the value in the view and the view model are kept in sync if it changes on either side.
@@ -548,9 +533,9 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {   // <1>
 ===== Enforcing business validations in the UI
 We have a business validation that the client reference for an LC needs to be at least 4 characters in length. This will be enforced on the back-end. However, to provide a richer user experience, we will also enforce this validation on the UI.
 
-WARNING: This may feel contrary to the notion of centralizing business validations on the back-end. While this is a noble attempt at implementing the DRY (Don't Repeat Yourself) principle, in reality, it poses a lot of practical problems. Industry luminary, Udi Dahan has a very interesting take on why this may not be such a virtuous thing to pursuefootnote:[https://vimeo.com/131757759]. Ted Neward also talks about this in his blog titled The Fallacies of Enterprise Computingfootnote:[http://blogs.tedneward.com/post/enterprise-computing-fallacies/]
+WARNING: This may feel contrary to the notion of centralizing business validations on the back-end. While this may be a noble attempt at implementing the DRY (Don't Repeat Yourself) principle, in reality, it poses a lot of practical problems. Distributed systems expert -- Udi Dahan has a very interesting take on why this may not be such a virtuous thing to pursuefootnote:[https://vimeo.com/131757759]. Ted Neward also talks about this in his blog titled __The Fallacies of Enterprise Computing__footnote:[http://blogs.tedneward.com/post/enterprise-computing-fallacies/].
 
-The advantage of using MVVM is that this logic is easily testable in a simple unit test of the view-model. Let's test-drive this now:
+The advantage of using MVVM is that this logic is easily testable in a simple unit test of the view-model. Let's see this in action test-drive this now:
 
 [source,java,linenum]
 ....
@@ -671,7 +656,7 @@ public class CreateLCViewTests {                                  // <1>
 }
 ....
 <1> We have written a convenience `@UITest` extension to combine spring framework and TestFX testing. Please refer to the accompanying source code with the book for more details.
-<2> We set up the spring context to act as the dependency injection provider for the mvvmfx framework and its injection annotations (for example, `@InjectViewModel`) to work.
+<2> We set up the spring context to act as the dependency injection provider for the mvvmFX framework and its injection annotations (for example, `@InjectViewModel`) to work.
 <3> We are using the `@Start` annotation provided by the TestFX framework to launch the UI.
 <4> The TestFX framework injects an instance of the `FxRobot` UI helper, which we can use to access UI elements.
 <5> We are using the The TestFX framework provided convenience matchers for test assertions.
