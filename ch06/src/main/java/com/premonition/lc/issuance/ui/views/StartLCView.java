@@ -16,29 +16,25 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 @Component
-@Log4j2
-public class CreateLCView implements FxmlView<CreateLCViewModel> {
+public class StartLCView implements FxmlView<CreateLCViewModel> {
 
     @FXML
     private TextField clientReference;
     @FXML
-    private Button createButton;
+    private Button startButton;
 
     @InjectViewModel
     private CreateLCViewModel viewModel;
 
-    public void create(ActionEvent event) {
+    public void start(ActionEvent event) {
         new Service<Void>() {
             @Override
             protected void succeeded() {
-                log.info("LC was created successfully!");
                 Stage stage = UIUtils.getStage(event);
                 showLCDetailsView(stage);
-                log.info("LC details view was launched!");
             }
 
             @Override
@@ -46,8 +42,7 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
                 return new Task<>() {
                     @Override
                     protected Void call() {
-                        viewModel.createLC();
-                        log.info("Backend call was successful!");
+                        viewModel.startLC();
                         return null;
                     }
                 };
@@ -68,7 +63,7 @@ public class CreateLCView implements FxmlView<CreateLCViewModel> {
 
     @Initialize
     public void initialize() {
-        createButton.disableProperty().bind(viewModel.createDisabledProperty());
+        startButton.disableProperty().bind(viewModel.startDisabledProperty());
         clientReference.textProperty().bindBidirectional(viewModel.clientReferenceProperty());
     }
 

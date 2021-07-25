@@ -31,7 +31,7 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 @Log4j2
 @UITest
-public class CreateLCViewTests {
+public class StartLCViewTests {
 
     @MockBean
     private BackendService service;
@@ -46,7 +46,7 @@ public class CreateLCViewTests {
 
     @Start
     public void start(Stage stage) {
-        final Parent parent = FluentViewLoader.fxmlView(CreateLCView.class)
+        final Parent parent = FluentViewLoader.fxmlView(StartLCView.class)
                 .providedScopes(new UserScope("admin"))
                 .load().getView();
         stage.setScene(new Scene(parent));
@@ -54,43 +54,42 @@ public class CreateLCViewTests {
     }
 
     @Test
-    void createShouldUpdateCreateButtonStatusBasedOnClientReferenceAsBlank(FxRobot robot) {
-        final String createButton = "#create-button";
+    void startButtonShouldBeDisabledForBlankValue(FxRobot robot) {
+        final String startButton = "#start-button";
         robot.lookup("#client-reference").queryAs(TextField.class).setText("");
 
-        verifyThat(createButton, LabeledMatchers.hasText("Create"));
-        verifyThat(createButton, NodeMatchers.isDisabled());
+        verifyThat(startButton, LabeledMatchers.hasText("Start"));
+        verifyThat(startButton, NodeMatchers.isDisabled());
     }
 
     @Test
-    void createShouldUpdateCreateButtonStatusBasedOnClientReferenceAsFilledIn(FxRobot robot) {
-        final String createButton = "#create-button";
+    void startButtonShouldBeEnabledForValidValue(FxRobot robot) {
+        final String startButton = "#start-button";
         robot.lookup("#client-reference").queryAs(TextField.class).setText("Test");
-        verifyThat(createButton, LabeledMatchers.hasText("Create"));
-        verifyThat(createButton, NodeMatchers.isEnabled());
+        verifyThat(startButton, LabeledMatchers.hasText("Start"));
+        verifyThat(startButton, NodeMatchers.isEnabled());
     }
 
     @Test
     @RunInUiThread(false)
     void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) throws InterruptedException {
         LCApplicationId lcApplicationId = LCApplicationId.randomId();
-        when(service.createLC(anyString(), anyString())).thenReturn(lcApplicationId);
+        when(service.startNewLC(anyString(), anyString())).thenReturn(lcApplicationId);
         final String clientReference = "Test";
         robot.lookup("#client-reference").queryAs(TextField.class).setText(clientReference);
-        robot.clickOn("#create-button");
-        Mockito.verify(service).createLC("admin", clientReference);
+        robot.clickOn("#start-button");
+        Mockito.verify(service).startNewLC("admin", clientReference);
         verifyThat("#lc-details", isVisible());
         Assertions.assertTrue(((Stage) robot.window(0)).getTitle().contains(lcApplicationId.toString()));
-//        verifyThat("#client-reference", LabeledMatchers.hasText(clientReference));
     }
 
     @Test
     @RunInUiThread(false)
     void shouldStayOnCreateLCScreenOnCreationFailure(FxRobot robot) {
         final String clientReference = "Test";
-        when(service.createLC("admin", clientReference)).thenThrow(new RuntimeException("Failed!!"));
+        when(service.startNewLC("admin", clientReference)).thenThrow(new RuntimeException("Failed!!"));
         robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
         robot.clickOn(".button");
-        verifyThat("#create-lc", isVisible());
+        verifyThat("#start-lc", isVisible());
     }
 }

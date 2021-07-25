@@ -1,8 +1,8 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
+import com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand;
 import com.premonition.lc.issuance.domain.commands.SaveLCApplicationCommand;
-import com.premonition.lc.issuance.domain.events.LCApplicationCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationStartedEvent;
 import com.premonition.lc.issuance.domain.events.LCApplicationSavedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -23,9 +23,9 @@ public class LCApplication {
     }
 
     @CommandHandler
-    public LCApplication(CreateLCApplicationCommand command) {
+    public LCApplication(StartNewLCApplicationCommand command) {
         // TODO: perform validations here
-        AggregateLifecycle.apply(new LCApplicationCreatedEvent(command.getId(),
+        AggregateLifecycle.apply(new LCApplicationStartedEvent(command.getId(),
                 command.getApplicantId(), command.getClientReference()));
     }
 
@@ -35,7 +35,7 @@ public class LCApplication {
     }
 
     @EventSourcingHandler
-    private void on(LCApplicationCreatedEvent event) {
+    private void on(LCApplicationStartedEvent event) {
         this.id = event.getId();
         this.state = State.DRAFT;
     }

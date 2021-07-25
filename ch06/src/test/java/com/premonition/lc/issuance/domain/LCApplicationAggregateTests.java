@@ -1,8 +1,8 @@
 package com.premonition.lc.issuance.domain;
 
-import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
+import com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand;
 import com.premonition.lc.issuance.domain.commands.SaveLCApplicationCommand;
-import com.premonition.lc.issuance.domain.events.LCApplicationCreatedEvent;
+import com.premonition.lc.issuance.domain.events.LCApplicationStartedEvent;
 import com.premonition.lc.issuance.domain.events.LCApplicationSavedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
@@ -27,10 +27,10 @@ public class LCApplicationAggregateTests {
     void shouldPublishLCApplicationCreated() {
         fixture.given()
 
-                .when(new CreateLCApplicationCommand("admin", "My Test"))
+                .when(new StartNewLCApplicationCommand("admin", "My Test"))
 
                 .expectEventsMatching(exactSequenceOf(
-                        messageWithPayload(any(LCApplicationCreatedEvent.class)),
+                        messageWithPayload(any(LCApplicationStartedEvent.class)),
                         andNoMore()
                 ));
     }
@@ -38,9 +38,9 @@ public class LCApplicationAggregateTests {
     @Test
     void shouldSaveLCApplication() {
         final LCApplicationId id = LCApplicationId.randomId();
-        final LCApplicationCreatedEvent created = new LCApplicationCreatedEvent(id,
+        final LCApplicationStartedEvent started = new LCApplicationStartedEvent(id,
                 "test-user", "Test LC");
-        fixture.given(created)
+        fixture.given(started)
                 .when(new SaveLCApplicationCommand(id))
                 .expectEvents(new LCApplicationSavedEvent());
     }

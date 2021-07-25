@@ -5,14 +5,14 @@ import com.premonition.lc.issuance.domain.LCApplicationId;
 import lombok.Data;
 
 @Data
-public class LCApplicationCreatedEvent {
+public class LCApplicationStartedEvent {
     private final LCApplicationId id;
     private final String applicantId;
     private final String clientReference;
     private AdvisingBank advisingBank;
 
 
-    public LCApplicationCreatedEvent(LCApplicationId id, String applicantId, String clientReference) {
+    public LCApplicationStartedEvent(LCApplicationId id, String applicantId, String clientReference) {
         this.id = id;
         this.applicantId = applicantId;
         this.clientReference = clientReference;

@@ -1,7 +1,7 @@
 package com.premonition.lc.issuance.ui.services;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
-import com.premonition.lc.issuance.domain.commands.CreateLCApplicationCommand;
+import com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand;
 import com.premonition.lc.issuance.domain.commands.SaveLCApplicationCommand;
 import com.premonition.lc.issuance.ui.models.LCDetailsModel;
 import lombok.extern.log4j.Log4j2;
@@ -18,8 +18,8 @@ public class BackendService {
         this.gateway = gateway;
     }
 
-    public LCApplicationId createLC(String applicantId, String clientReference) {
-        final LCApplicationId id = gateway.sendAndWait(new CreateLCApplicationCommand(applicantId, clientReference));
+    public LCApplicationId startNewLC(String applicantId, String clientReference) {
+        final LCApplicationId id = gateway.sendAndWait(new StartNewLCApplicationCommand(applicantId, clientReference));
         log.info("Created LC with Ref: {}", clientReference);
         log.info("Created LC with id: {}", id);
         return id;

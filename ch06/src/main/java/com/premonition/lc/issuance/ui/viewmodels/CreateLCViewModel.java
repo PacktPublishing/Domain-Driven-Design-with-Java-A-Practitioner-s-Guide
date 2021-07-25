@@ -20,7 +20,7 @@ public class CreateLCViewModel implements ViewModel {
 
     private final BackendService service;
     private final StringProperty clientReference;
-    private final BooleanProperty createDisabled;
+    private final BooleanProperty startDisabled;
     private final ObjectProperty<LCApplicationId> lcApplicationId;
     @InjectScope
     private UserScope userScope;
@@ -28,10 +28,10 @@ public class CreateLCViewModel implements ViewModel {
     public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
                              BackendService service) {
         this.service = service;
-        this.clientReference = new SimpleStringProperty(this, "clientReference", "");
-        this.createDisabled = new SimpleBooleanProperty(this, "createEnabled");
+        this.clientReference = new SimpleStringProperty();
+        this.startDisabled = new SimpleBooleanProperty();
         this.lcApplicationId = new SimpleObjectProperty<>();
-        this.createDisabled.bind(createBooleanBinding(exceeds(clientReferenceMinLength),
+        this.startDisabled.bind(createBooleanBinding(exceeds(clientReferenceMinLength),
                 clientReference));
     }
 
@@ -54,16 +54,16 @@ public class CreateLCViewModel implements ViewModel {
         return clientReference;
     }
 
-    public boolean getCreateDisabled() {
-        return createDisabled.get();
+    public boolean getStartDisabled() {
+        return startDisabled.get();
     }
 
-    public void setCreateDisabled(boolean createDisabled) {
-        this.createDisabled.set(createDisabled);
+    public void setStartDisabled(boolean startDisabled) {
+        this.startDisabled.set(startDisabled);
     }
 
-    public BooleanProperty createDisabledProperty() {
-        return createDisabled;
+    public BooleanProperty startDisabledProperty() {
+        return startDisabled;
     }
 
     public LCApplicationId getLcApplicationId() {
@@ -78,8 +78,8 @@ public class CreateLCViewModel implements ViewModel {
         return lcApplicationId;
     }
 
-    public void createLC() {
-        lcApplicationId.set(service.createLC(userScope.getLoggedInUserId(), getClientReference()));
+    public void startLC() {
+        lcApplicationId.set(service.startNewLC(userScope.getLoggedInUserId(), getClientReference()));
     }
 
     void setUserScope(UserScope userScope) {

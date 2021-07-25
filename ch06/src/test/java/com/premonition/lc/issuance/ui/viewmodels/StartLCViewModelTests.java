@@ -7,19 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class CreateLCViewModelTests {
+class StartLCViewModelTests {
 
     @Mock
     private BackendService service;
@@ -32,7 +29,7 @@ class CreateLCViewModelTests {
         viewModel.setUserScope(new UserScope("admin"));
     }
 
-    @Parameters(name = "{index}: For client reference \"{0}\" create disabled should be {1}")
+    @Parameters(name = "{index}: For client reference \"{0}\" start disabled should be {1}")
     public static Stream<Arguments> data() {
         return Stream.of(
                 Arguments.of(null, true),
@@ -49,29 +46,29 @@ class CreateLCViewModelTests {
     @MethodSource("data")
     void shouldTest(String clientReference, boolean expected) {
         viewModel.setClientReference(clientReference);
-        assertThat(viewModel.getCreateDisabled()).isEqualTo(expected);
+        assertThat(viewModel.getStartDisabled()).isEqualTo(expected);
     }
 
     @Test
     void shouldNotEnableCreateByDefault() {
-        assertThat(viewModel.getCreateDisabled()).isTrue();
+        assertThat(viewModel.getStartDisabled()).isTrue();
     }
 
     @Test
     void shouldNotEnableCreateIfClientReferenceLesserThanMinimumLength() {
         viewModel.setClientReference("123");
-        assertThat(viewModel.getCreateDisabled()).isTrue();
+        assertThat(viewModel.getStartDisabled()).isTrue();
     }
 
     @Test
     void shouldEnableCreateIfClientReferenceEqualToMinimumLength() {
         viewModel.setClientReference("1234");
-        assertThat(viewModel.getCreateDisabled()).isFalse();
+        assertThat(viewModel.getStartDisabled()).isFalse();
     }
 
     @Test
     void shouldEnableCreateIfClientReferenceGreaterThanMinimumLength() {
         viewModel.setClientReference("12345");
-        assertThat(viewModel.getCreateDisabled()).isFalse();
+        assertThat(viewModel.getStartDisabled()).isFalse();
     }
 }
