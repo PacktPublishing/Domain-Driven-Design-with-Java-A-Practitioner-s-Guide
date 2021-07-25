@@ -1,10 +1,8 @@
 package com.premonition.lc.issuance.ui.services;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
-import com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand;
 import com.premonition.lc.issuance.domain.commands.SaveLCApplicationCommand;
 import com.premonition.lc.issuance.ui.models.LCDetailsModel;
-import lombok.extern.log4j.Log4j2;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
