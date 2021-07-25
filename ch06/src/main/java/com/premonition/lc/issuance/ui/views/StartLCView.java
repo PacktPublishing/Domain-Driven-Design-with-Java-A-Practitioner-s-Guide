@@ -2,7 +2,7 @@ package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.ui.scopes.LCScope;
 import com.premonition.lc.issuance.ui.utils.UIUtils;
-import com.premonition.lc.issuance.ui.viewmodels.CreateLCViewModel;
+import com.premonition.lc.issuance.ui.viewmodels.StartLCViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.Initialize;
@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StartLCView implements FxmlView<CreateLCViewModel> {
+public class StartLCView implements FxmlView<StartLCViewModel> {
 
     @FXML
     private TextField clientReference;
@@ -27,7 +27,7 @@ public class StartLCView implements FxmlView<CreateLCViewModel> {
     private Button startButton;
 
     @InjectViewModel
-    private CreateLCViewModel viewModel;
+    private StartLCViewModel viewModel;
 
     public void start(ActionEvent event) {
         new Service<Void>() {
@@ -42,7 +42,7 @@ public class StartLCView implements FxmlView<CreateLCViewModel> {
                 return new Task<>() {
                     @Override
                     protected Void call() {
-                        viewModel.startLC();
+                        viewModel.startNewLC();
                         return null;
                     }
                 };

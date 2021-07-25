@@ -2,7 +2,7 @@ package com.premonition.lc.issuance.ui.views;
 
 import com.premonition.lc.issuance.domain.LCApplicationId;
 import com.premonition.lc.issuance.ui.services.BackendService;
-import com.premonition.lc.issuance.ui.viewmodels.UserScope;
+import com.premonition.lc.issuance.ui.viewmodels.LoggedInUserScope;
 import com.premonition.lc.issuance.utilities.RunInUiThread;
 import com.premonition.lc.issuance.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -47,7 +47,7 @@ public class StartLCViewTests {
     @Start
     public void start(Stage stage) {
         final Parent parent = FluentViewLoader.fxmlView(StartLCView.class)
-                .providedScopes(new UserScope("admin"))
+                .providedScopes(new LoggedInUserScope("admin"))
                 .load().getView();
         stage.setScene(new Scene(parent));
         stage.show();

@@ -8,8 +8,9 @@ import lombok.extern.log4j.Log4j2;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
+import static com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand.startApplication;
+
 @Service
-@Log4j2
 public class BackendService {
 
     private final CommandGateway gateway;
@@ -19,10 +20,7 @@ public class BackendService {
     }
 
     public LCApplicationId startNewLC(String applicantId, String clientReference) {
-        final LCApplicationId id = gateway.sendAndWait(new StartNewLCApplicationCommand(applicantId, clientReference));
-        log.info("Created LC with Ref: {}", clientReference);
-        log.info("Created LC with id: {}", id);
-        return id;
+        return gateway.sendAndWait(startApplication(applicantId, clientReference));
     }
 
     public void saveLC(LCDetailsModel model) {

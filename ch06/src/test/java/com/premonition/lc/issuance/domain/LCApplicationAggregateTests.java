@@ -9,6 +9,7 @@ import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.premonition.lc.issuance.domain.commands.StartNewLCApplicationCommand.startApplication;
 import static org.axonframework.test.matchers.Matchers.andNoMore;
 import static org.axonframework.test.matchers.Matchers.exactSequenceOf;
 import static org.axonframework.test.matchers.Matchers.messageWithPayload;
@@ -24,10 +25,10 @@ public class LCApplicationAggregateTests {
     }
 
     @Test
-    void shouldPublishLCApplicationCreated() {
+    void shouldPublishLCApplicationIsStarted() {
         fixture.given()
 
-                .when(new StartNewLCApplicationCommand("admin", "My Test"))
+                .when(startApplication("admin", "My Test"))
 
                 .expectEventsMatching(exactSequenceOf(
                         messageWithPayload(any(LCApplicationStartedEvent.class)),

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 public class MainViewModel implements ViewModel {
 
     @InjectScope
-    private UserScope userScope;
+    private LoggedInUserScope userScope;
 
-    public UserScope getUserScope() {
+    public LoggedInUserScope getUserScope() {
         return userScope;
     }
 }

@@ -16,17 +16,17 @@ import static javafx.beans.binding.Bindings.createBooleanBinding;
 
 @Component
 @Log4j2
-public class CreateLCViewModel implements ViewModel {
+public class StartLCViewModel implements ViewModel {
 
     private final BackendService service;
     private final StringProperty clientReference;
     private final BooleanProperty startDisabled;
     private final ObjectProperty<LCApplicationId> lcApplicationId;
     @InjectScope
-    private UserScope userScope;
+    private LoggedInUserScope userScope;
 
-    public CreateLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
-                             BackendService service) {
+    public StartLCViewModel(@Value("${application.client.reference.min.length:4}") int clientReferenceMinLength,
+                            BackendService service) {
         this.service = service;
         this.clientReference = new SimpleStringProperty();
         this.startDisabled = new SimpleBooleanProperty();
@@ -78,11 +78,13 @@ public class CreateLCViewModel implements ViewModel {
         return lcApplicationId;
     }
 
-    public void startLC() {
-        lcApplicationId.set(service.startNewLC(userScope.getLoggedInUserId(), getClientReference()));
+    public void startNewLC() {
+        if (!startDisabled.get()) {
+            lcApplicationId.set(service.startNewLC(userScope.getLoggedInUserId(), getClientReference()));
+        }
     }
 
-    void setUserScope(UserScope userScope) {
+    void setLoggedInUser(LoggedInUserScope userScope) {
         this.userScope = userScope;
     }
 

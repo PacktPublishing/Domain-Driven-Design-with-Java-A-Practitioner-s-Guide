@@ -1,6 +1,6 @@
 package com.premonition.lc.issuance;
 
-import com.premonition.lc.issuance.ui.viewmodels.UserScope;
+import com.premonition.lc.issuance.ui.viewmodels.LoggedInUserScope;
 import com.premonition.lc.issuance.ui.views.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.spring.MvvmfxSpringApplication;
@@ -32,7 +32,7 @@ public class App extends MvvmfxSpringApplication {
         stage.setTitle("LC Issuance");
 
         final Parent parent = FluentViewLoader.fxmlView(MainView.class)
-                .providedScopes(new UserScope("admin"))
+                .providedScopes(new LoggedInUserScope("admin"))
                 .load().getView();
 
         final Image icon = new Image(App.icon);

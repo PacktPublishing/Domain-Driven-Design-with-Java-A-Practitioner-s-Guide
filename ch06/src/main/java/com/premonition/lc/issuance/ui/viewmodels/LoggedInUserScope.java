@@ -4,7 +4,7 @@ import de.saxsys.mvvmfx.Scope;
 import lombok.Data;
 
 @Data
-public class UserScope implements Scope {
+public class LoggedInUserScope implements Scope {
     private final String loggedInUserId;
 
     public String getLoggedInUserId() {

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
@@ -21,12 +22,12 @@ class StartLCViewModelTests {
     @Mock
     private BackendService service;
 
-    private CreateLCViewModel viewModel;
+    private StartLCViewModel viewModel;
 
     @BeforeEach
     void before() {
-        viewModel = new CreateLCViewModel(4, service);
-        viewModel.setUserScope(new UserScope("admin"));
+        viewModel = new StartLCViewModel(4, service);
+        viewModel.setLoggedInUser(new LoggedInUserScope("admin"));
     }
 
     @Parameters(name = "{index}: For client reference \"{0}\" start disabled should be {1}")
@@ -70,5 +71,23 @@ class StartLCViewModelTests {
     void shouldEnableCreateIfClientReferenceGreaterThanMinimumLength() {
         viewModel.setClientReference("12345");
         assertThat(viewModel.getStartDisabled()).isFalse();
+    }
+
+    @Test
+    void shouldInvokeBackendWhenStartingCreationOfNewLC() throws Exception {
+        viewModel.setClientReference("12345");
+
+        viewModel.startNewLC();
+
+        Mockito.verify(service).startNewLC("admin", "12345");
+    }
+
+    @Test
+    void shouldNotInvokeBackendIfStartButtonIsDisabled() {
+        viewModel.setClientReference("");
+
+        viewModel.startNewLC();
+
+        Mockito.verifyNoInteractions(service);
     }
 }

@@ -65,7 +65,8 @@ If you observe carefully, there seem to be commands at two levels of granularity
 
 .Decomposed commands
 [.text-center]
-image::ui-patterns/old-new-commands.png[]
+[[decomposed-commands]]
+image::ui-patterns/decomposed-commands.png[]
 
 In addition to just being more fine-grained than the commands in the previous iteration, the revised commands seem to better capture the user's intent. This may feel like a minor change in semantics, but can have a huge impact on the way our solution is used by its ultimate end-users. The question then is whether we should _always_ prefer fine-grained APIs over coarse grained ones. The answer can be a lot more nuanced. When designing APIs and experiences, we see two main styles being employed:
 
@@ -137,8 +138,9 @@ Since most work happens in the form of specific tasks, it can work to our advant
 
 Keeping this in mind, let's re-examine our revised APIs for the LC application process:
 
-.Revised commands -- recap
+.Revised commands
 [.text-center]
+[[revised-commands]]
 image::ui-patterns/revised-commands-recap.png[]
 
 While it may have appeared previously that we have simply converted our coarse-grained APIs to become more fine-grained, this in reality is a better representation of the tasks that the user intended to perform. So, in essence, task-based APIs are the decomposition of work in a manner that aligns more closely to the users' intents. With our new APIs, product validation can commence as soon as `ChangeMerchandise` happens. Also, it is unambiguously clear what the user did and what needs to happen in reaction to the user's action. It then begs the question on whether we should employ task-based APIs all the time? Let's look at the implications in more detail.
@@ -383,6 +385,7 @@ Let's consider the example of creating a new LC. To start creation of a new LC, 
 
 .Start LC creation screen
 [.text-center]
+[[start-lc-creation-screen]]
 image::mvvm/start-lc-ui.png[]
 
 ===== Declarative view
@@ -652,7 +655,106 @@ image::mvvm/valid-client-reference-input.png[]
 Now that we have the start button enabling correctly, let's implement the actual creation of the LC itself by invoking the backend API.
 
 ===== Integrating with the backend
+LC creation is a complex process, requiring information about a variety of items as evidenced in figure <<revised-commands>> when we decomposed the LC creation process. In this section, we will integrate the UI with the command to start creation of a new LC. This happens when we press the _Start_ button on the <<start-lc-creation-screen>>. The revised `StartNewLCApplicationCommand` looks as shown here:
 
+[source,java,linenum]
+....
+@Data
+public class StartNewLCApplicationCommand {
+    private final String applicantId;
+    private final LCApplicationId id;
+    private final String clientReference;
+
+    private StartNewLCApplicationCommand(String applicantId, String clientReference) {
+        this.id = LCApplicationId.randomId();
+        this.applicantId = applicantId;
+        this.clientReference = clientReference;
+    }
+
+    public static StartNewLCApplicationCommand startApplication( // <1>
+                    String applicantId,
+                    String clientReference) {
+        return new StartNewLCApplicationCommand(applicantId, clientReference);
+    }
+}
+....
+<1> To start a new LC application, we need an `applicantId` and a `clientReference`.
+
+Given that we are using the MVVM pattern, the code to invoke the backend service is part of the view-model. Let's test-drive this functionality:
+
+[source,java,linenum]
+....
+@ExtendWith(MockitoExtension.class)
+class StartLCViewModelTests {
+
+    @Mock
+    private BackendService service;
+
+    @BeforeEach
+    void before() {
+        int clientReferenceMinLength = 4;
+        viewModel = new StartLCViewModel(clientReferenceMinLength, service);
+    }
+
+    @Test
+    void shouldNotInvokeBackendIfStartButtonIsDisabled() {
+        viewModel.setClientReference("");
+        viewModel.startNewLC();
+
+        Mockito.verifyNoInteractions(service);
+    }
+}
+....
+
+The view-model is enhanced accordingly to inject an instance of the `BackendService` and looks as shown here:
+
+[source,java,linenum]
+....
+public class StartLCViewModel implements ViewModel {
+
+    private final BackendService service;
+    // Other members omitted for brevity
+
+    public StartLCViewModel(int clientReferenceMinLength,
+                            BackendService service) {
+        this.service = service;
+        // Other code omitted for brevity
+    }
+
+    public void startNewLC() {
+        // TODO: invoke backend!
+    }
+}
+....
+Now a test to actually make sure that the backend gets invoked only when a valid client reference is input:
+[source,java,linenum]
+....
+class StartLCViewModelTests {
+    // ...
+
+    @BeforeEach
+    void before() {
+        viewModel = new StartLCViewModel(4, service);
+        viewModel.setLoggedInUser(new LoggedInUserScope("test-applicant")); // <1>
+    }
+
+    @Test
+    void shouldNotInvokeBackendIfStartButtonIsDisabled() {
+        viewModel.setClientReference("");
+        viewModel.startNewLC();
+
+        Mockito.verifyNoInteractions(service);                              // <2>
+    }
+
+    @Test
+    void shouldInvokeBackendWhenStartingCreationOfNewLC() {
+        viewModel.setClientReference("My first LC");
+        viewModel.startNewLC();
+
+Mockito.verify(service).startNewLC("test-applicant", "12345");              // <3>
+    }
+}
+....
 ==== A CRUD-based UI example
 
 ==== A task-based UI example
