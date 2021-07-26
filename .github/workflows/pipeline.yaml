@@ -11,20 +11,17 @@ jobs:
     steps:
       - name: Install Graphviz
         run: |
-          sudo apt-get install graphviz pandoc
           cd /usr/share/fonts
+          sudo mkdir googlefonts
+          cd googlefonts
           wget "https://github.com/google/fonts/raw/main/ofl/gloriahallelujah/GloriaHallelujah.ttf"
+          sudo chmod -R --reference=/usr/share/fonts /usr/share/fonts/googlefonts
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up JDK 16
         uses: actions/setup-java@v1
         with:
           java-version: 16
-      - name: Install Custom Fonts
-        run: |
-          mkdir $JAVA_HOME/jre/lib/fonts
-          cd $JAVA_HOME/jre/lib/fonts
-          wget "https://github.com/google/fonts/raw/main/ofl/gloriahallelujah/GloriaHallelujah.ttf"
       - name: Cache local repository
         uses: actions/cache@v1
         with:
