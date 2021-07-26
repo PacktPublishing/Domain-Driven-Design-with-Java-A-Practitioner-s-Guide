@@ -12,7 +12,7 @@ jobs:
       - name: Install Graphviz
         run: |
           sudo apt-get install graphviz pandoc
-          wget https://www.fontmirror.com/app_public/files/t/1/family_zip/2020/02/Gloria_Hallelujah_Font_Family_(Fontmirror).zip
+          wget "https://www.fontmirror.com/app_public/files/t/1/family_zip/2020/02/Gloria_Hallelujah_Font_Family_(Fontmirror).zip"
           cd /usr/share/fonts
           sudo mkdir googlefonts
           cd googlefonts
