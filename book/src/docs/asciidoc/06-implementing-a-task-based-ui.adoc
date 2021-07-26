@@ -33,13 +33,15 @@ If you recall from chapter 5, we created the following commands:
 [plantuml,command-flow]
 ....
 @startuml
-skinparam handwritten true
-<style>
-activityDiagram {
-  FontName "Gloria Hallelujah"
-  FontSize 20
-}
-</style>
+skinparam handwrittern true
+skinparam ActivityFontName "Gloria Hallelujah"
+skinparam ActivityFontSize 18
+skinparam ActivityDiamondFontName "Gloria Hallelujah"
+skinparam ActivityDiamondFontSize 18
+skinparam NoteFontName "Gloria Hallelujah"
+skinparam NoteFontSize 18
+skinparam PartitionFontName "Gloria Hallelujah"
+skinparam PartitionFontSize 18
 start
 partition Start {
 :Create LC Application;
