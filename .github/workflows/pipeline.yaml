@@ -16,7 +16,7 @@ jobs:
           sudo mkdir googlefonts
           cd googlefonts
           wget "https://github.com/google/fonts/raw/main/ofl/gloriahallelujah/GloriaHallelujah.ttf"
-          sudo chmod -R --reference=/usr/share/fonts/opentype /usr/share/fonts/googlefonts
+          sudo chmod -R --reference=/usr/share/fonts /usr/share/fonts/googlefonts
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up JDK 16
