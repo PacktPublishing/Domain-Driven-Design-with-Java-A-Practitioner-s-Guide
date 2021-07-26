@@ -10,7 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Graphviz
-        run: sudo apt-get install graphviz pandoc
+        run: |
+          sudo apt-get install graphviz pandoc
+          wget https://www.fontmirror.com/app_public/files/t/1/family_zip/2020/02/Gloria_Hallelujah_Font_Family_(Fontmirror).zip
+          cd /usr/share/fonts
+          sudo mkdir googlefonts
+          cd googlefonts
+          sudo unzip -d . ./Gloria_Hallelujah_Font_Family_(Fontmirror).zip
+          sudo chmod -R --reference=/usr/share/fonts/opentype /usr/share/fonts/googlefonts
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up JDK 16
