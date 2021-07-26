@@ -30,7 +30,7 @@ If you recall from chapter 5, we created the following commands:
 
 .Commands from the event storming session
 [.text-center]
-[plantuml,potential-commands]
+[plantuml,command-flow]
 ....
 @startuml
 skinparam handwritten true
