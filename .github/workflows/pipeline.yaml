@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 16
+      - name: Install Custom Fonts
+        run: |
+          mkdir $JAVA_HOME/jre/lib/fonts
+          wget "https://github.com/google/fonts/raw/main/ofl/gloriahallelujah/GloriaHallelujah.ttf"
       - name: Cache local repository
         uses: actions/cache@v1
         with:
