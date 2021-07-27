@@ -72,13 +72,15 @@ public class StartLCViewTests {
 
     @Test
     @RunInUiThread(false)
-    void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) throws InterruptedException {
+    void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) {
         LCApplicationId lcApplicationId = LCApplicationId.randomId();
         when(service.startNewLC(anyString(), anyString())).thenReturn(lcApplicationId);
         final String clientReference = "Test";
         robot.lookup("#client-reference").queryAs(TextField.class).setText(clientReference);
         robot.clickOn("#start-button");
+
         Mockito.verify(service).startNewLC("admin", clientReference);
+
         verifyThat("#lc-details", isVisible());
         Assertions.assertTrue(((Stage) robot.window(0)).getTitle().contains(lcApplicationId.toString()));
     }

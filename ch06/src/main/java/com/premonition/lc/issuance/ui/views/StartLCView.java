@@ -38,6 +38,11 @@ public class StartLCView implements FxmlView<StartLCViewModel> {
             }
 
             @Override
+            protected void failed() {
+
+            }
+
+            @Override
             protected Task<Void> createTask() {
                 return new Task<>() {
                     @Override

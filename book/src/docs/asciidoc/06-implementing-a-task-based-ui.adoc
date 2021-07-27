@@ -487,7 +487,7 @@ import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 //...
-public class StartLCView implements FxmlView<StartLCViewModel> {   // <1>
+public class StartLCView implements FxmlView<StartLCViewModel> {     // <1>
 
     @FXML
     private TextField clientReference;
@@ -495,14 +495,14 @@ public class StartLCView implements FxmlView<StartLCViewModel> {   // <1>
     private Button startButton;
 
     @InjectViewModel
-    private StartLCViewModel viewModel;                             // <2>
+    private StartLCViewModel viewModel;                              // <2>
 
     @Initialize
     private void initialize() {                                      // <3>
         clientReference.textProperty()
             .bindBidirectional(viewModel.clientReferenceProperty()); // <4>
         startButton.disableProperty()
-            .bind(viewModel.startDisabledProperty());               // <5>
+            .bind(viewModel.startDisabledProperty());                // <5>
     }
 
     // Other parts omitted for brevity...
@@ -565,9 +565,9 @@ public class StartLCViewModel implements ViewModel {
 
     //...
     private final StringProperty clientReference;
-    private final BooleanProperty startDisabled;                    // <1>
+    private final BooleanProperty startDisabled;                     // <1>
 
-    public StartLCViewModel(int clientReferenceMinLength) {         // <2>
+    public StartLCViewModel(int clientReferenceMinLength) {          // <2>
         this.clientReference = new SimpleStringProperty();
         this.startDisabled = new SimpleBooleanProperty();
         this.startDisabled
@@ -584,7 +584,7 @@ public class StartLCView implements FxmlView<StartLCViewModel> {
     @Initialize
     public void initialize() {
         startButton.disableProperty()
-            .bind(viewModel.startDisabledProperty());               // <4>
+            .bind(viewModel.startDisabledProperty());                // <4>
         clientReference.textProperty()
             .bindBidirectional(viewModel.clientReferenceProperty());
     }
@@ -601,7 +601,7 @@ Let's also look at how to write an end-to-end, headless UI test as shown here:
 ....
 
 @UITest
-public class StartLCViewTests {                                  // <1>
+public class StartLCViewTests {                                   // <1>
 
     @Autowired
     private ApplicationContext context;
@@ -626,7 +626,7 @@ public class StartLCViewTests {                                  // <1>
             .queryAs(TextField.class)
             .setText("");
 
-        verifyThat("#start-button", NodeMatchers.isDisabled());  // <5>
+        verifyThat("#start-button", NodeMatchers.isDisabled());   // <5>
     }
 
     @Test
@@ -635,7 +635,7 @@ public class StartLCViewTests {                                  // <1>
             .queryAs(TextField.class)
             .setText("Test");
 
-        verifyThat("#start-button", NodeMatchers.isEnabled());   // <5>
+        verifyThat("#start-button", NodeMatchers.isEnabled());    // <5>
     }
 }
 ....
@@ -734,7 +734,7 @@ class StartLCViewModelTests {
     @BeforeEach
     void before() {
         viewModel = new StartLCViewModel(4, service);
-        viewModel.setLoggedInUser(new LoggedInUserScope("test-applicant")); // <1>
+        viewModel.setLoggedInUser(new LoggedInUserScope("test-applicant"));   // <1>
     }
 
     @Test
@@ -742,7 +742,7 @@ class StartLCViewModelTests {
         viewModel.setClientReference("");
         viewModel.startNewLC();
 
-        Mockito.verifyNoInteractions(service);                              // <2>
+        Mockito.verifyNoInteractions(service);                                // <2>
     }
 
     @Test
@@ -750,19 +750,165 @@ class StartLCViewModelTests {
         viewModel.setClientReference("My first LC");
         viewModel.startNewLC();
 
-        Mockito.verify(service).startNewLC("test-applicant", "12345");      // <3>
+        Mockito.verify(service).startNewLC("test-applicant", "My first LC");  // <3>
     }
 }
 ....
-==== A CRUD-based UI example
+<1> We set the logged in user
+<2> When the client reference is blank, there should be no interactions with the backend service.
+<3> When a valid value for the client reference is entered, the backend should be invoked with the entered value.
 
-==== A task-based UI example
+The implementation to make this test pass, then looks like this:
+[source,java,linenum]
+....
+public class StartLCViewModel {
+    //...
+    public void startNewLC() {
+        if (!getStartDisabled()) {                  // <1>
+            service.startNewLC(
+                    userScope.getLoggedInUserId(),
+                    getClientReference());          // <2>
+        }
+    }
+    //...
+}
+....
+<1> We check that the start button is enabled before invoking the backend.
+<2> The actual backend call with the appropriate values.
 
-=== The BFF Pattern
+Now let's look at how to integrate the backend call from the view. We test this in a UI test as shown here:
+[source,java,linenum]
+....
+@UITest
+public class StartLCViewTests {
+
+    @MockBean
+    private BackendService service;                                   // <1>
+
+    //...
+
+    @Test
+    void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) {
+        final String clientReference = "My first LC";
+        LCApplicationId lcApplicationId = LCApplicationId.randomId();
+
+        when(service.startNewLC("test-applicant", clientReference))
+                .thenReturn(lcApplicationId);                         // <2>
+
+        robot.lookup("#client-reference")
+            .queryAs(TextField.class)
+            .setText(clientReference);                                // <3>
+        robot.clickOn("#start-button");                               // <4>
+
+        Mockito.verify(service).startNewLC("admin", clientReference); // <5>
+
+        verifyThat("#lc-details-screen", isVisible());                // <6>
+    }
+}
+....
+<1> We inject a mock instance of the backend service.
+<2> We stub the call to the backend to return successfully.
+<3> We type in a valid value for the client reference.
+<4> We click on the `start` button.
+<5> We verify that the service was indeed invoked with the correct arguments.
+<6> We verify that we have moved to the next screen in the UI (the LC details screen).
+
+Let's also look at what happens when the service invocation fails in another test:
+[source,java,linenum]
+....
+public class StartLCViewTests {
+    //...
+    @Test
+    void shouldStayOnCreateLCScreenOnCreationFailure(FxRobot robot) {
+        final String clientReference = "My first LC";
+        when(service.startNewLC("test-applicant", clientReference))
+            .thenThrow(new RuntimeException("Failed!!"));   // <1>
+
+        robot.lookup("#client-reference")
+            .queryAs(TextField.class)
+            .setText(clientReference);
+        robot.clickOn("#start-button");
+
+        verifyThat("#start-lc-screen", isVisible());        // <2>
+    }
+}
+....
+<1> We stub the backend service call to fail with an exception.
+<2> We verify that we continue to remain on the `start-lc-screen`.
+
+The view implementation for this functionality is shown here:
+
+[source,java,linenum]
+....
+import javafx.concurrent.Service;
+
+public class StartLCView {
+    //...
+    public void start(ActionEvent event) {
+        new Service<Void>() {                    // <1>
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() {
+                        viewModel.startNewLC();  // <2>
+                        return null;
+                    }
+                };
+            }
+
+            @Override
+            protected void succeeded() {
+                Stage stage = UIUtils.getStage(event);
+                showLCDetailsView(stage);        // <3>
+            }
+
+            @Override
+            protected void failed() {
+                // Nothing for now. Remain on the same screen.
+            }
+        }.start();
+    }
+}
+....
+<1> JavaFX, like most frontend frameworks, is single-threaded and requires that long-running tasks not be invoked on the UI thread. For this purpose, it provides the `javafx.concurrent.Service` abstraction to handle such interactions elegantly in a background thread.
+<2> The actual invocation of the backend through the view-model happens here.
+<3> We show the next screen to enter more LC details here.
+
+Finally, the service implementation itself is shown here:
+
+[source,java,linenum]
+....
+import org.axonframework.commandhandling.gateway.CommandGateway;
+
+@Service
+public class BackendService {
+
+    private final CommandGateway gateway;                         // <1>
+
+    public BackendService(CommandGateway gateway) {
+        this.gateway = gateway;
+    }
+
+    public LCApplicationId startNewLC(String applicantId, String clientReference) {
+        return gateway.sendAndWait(                               // <2>
+                  startApplication(applicantId, clientReference)
+               );
+    }
+}
+....
+<1> We inject the `org.axonframework.commandhandling.gateway.CommandGateway` provided by the Axon framework to invoke the command.
+<2> The actual invocation of the backend using the `sendAndWait` method happens here. In this case, we are blocking until the backend call completes. There are other variations that do not require this kind of blocking. Please refer to the Axon framework documentation for more details.
+
+We have now seen a complete example of how to implement the UI and invoke the backend API.
 
 === Summary
+In this chapter, we looked the nuances of API styles and clarified why it is very important to design APIs that capture the users' intent closely. We looked at the differences between CRUD-based and task-based APIs. Finally, we implemented the UI making use of the MVVM design pattern and demonstrated how it aids in test-driving frontend functionality.
 
 === Questions
+* What kind of APIs do you come up with? CRUD-based? Task-based? Something else?
+* How do consumers find your APIs? Do they have to implement further translations of your APIs to consume them meaningfully?
+* Are you able to test-drive your front-end functionality? Do you see merit in this approach?
 
 === Further reading
 
@@ -770,7 +916,20 @@ class StartLCViewModelTests {
 |===
 |Title |Author |Location
 
-|TODO
-|TODO
-|TODO
+|Task-drien user interfaces
+|Oleksandr Sukholeyster
+|https://www.uxmatters.com/mt/archives/2014/12/task-driven-user-interfaces.php
+
+|Business logic, a different perspective
+|Udi Dahan
+|https://vimeo.com/131757759
+
+|The Fallacies of Enterprise Computing
+|Ted Neward
+|http://blogs.tedneward.com/post/enterprise-computing-fallacies/
+
+|GUI architectures
+|Martin Fowler
+|https://martinfowler.com/eaaDev/uiArchs.html
+
 |===

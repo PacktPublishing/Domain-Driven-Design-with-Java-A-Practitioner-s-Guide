@@ -79,7 +79,7 @@ public class StartLCViewModel implements ViewModel {
     }
 
     public void startNewLC() {
-        if (!startDisabled.get()) {
+        if (!getStartDisabled()) {
             lcApplicationId.set(service.startNewLC(userScope.getLoggedInUserId(), getClientReference()));
         }
     }
