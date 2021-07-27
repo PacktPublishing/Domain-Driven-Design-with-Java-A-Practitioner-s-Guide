@@ -33,12 +33,8 @@ If you recall from chapter 5, we created the following commands:
 [plantuml,command-flow]
 ....
 @startuml
-<style>
-    ActivityDiagram {
-        FontName "Gloria Hallelujah"
-        FontSize 20
-    }
-</style>
+skinparam defaultFontName "Gloria Hallelujah"
+skinparam defaultFontSize 20
 start
 partition Start {
 :Create LC Application;
