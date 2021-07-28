@@ -9,9 +9,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Install Graphviz
+      - name: Install Graphviz and Custom Fonts
         run: |
-          sudo apt-get install graphviz pandoc
+          sudo apt-get install graphviz
           cd /usr/share/fonts
           wget "https://github.com/google/fonts/raw/main/ofl/gloriahallelujah/GloriaHallelujah.ttf"
       - name: Checkout
