@@ -7,7 +7,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the Command Query Responsibility Segregation (CQRS) section, we  describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates. The list of topics to be covered is as follows:
+In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates. The list of topics to be covered is as follows:
 
 * Identifying aggregates
 * Handling commands and emitting events
@@ -15,7 +15,7 @@ In the Command Query Responsibility Segregation (CQRS) section, we  describe how
 * Persisting aggregates
 * Performing validations
 
-By the end of this chapter, you would have learnt how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
+By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical Requirements
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
@@ -32,7 +32,7 @@ In this chapter, we will make use of the Command Query Responsibility Segregatio
 ==== Recap: What is CQRS
 In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
 
-.Traditional vs. CQRS Architecture
+.Traditional versus CQRS Architecture
 image::cqrs/traditional-vs-cqrs-architecture.png[]
 
 NOTE: We depict multiple read models above because it is possible (but not necessary) to create more than one read model, depending on the kinds of query use cases that need to be supported.
@@ -52,6 +52,8 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 * *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
 NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon Framework because in our opinion it provides a set of conveniences to do so while staying out of the way. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
+
+Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the spring and axon frameworks.
 
 === Bootstrapping the application
 
@@ -101,6 +103,7 @@ With the above set up, you should be able to run the application and start imple
 
 As a reminder, this is the output produced from our eventstorming session:
 
+.Recap of eventstorming session
 image::event-storming/05-read-models.png[]
 
 The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
@@ -108,6 +111,7 @@ The blue stickies in this diagram represent commands. Let's look at how to imple
 === Identifying Commands
 From the eventstorming session, we have the following commands to start with:
 
+.Identified commands
 [.text-center]
 [plantuml,potential-commands]
 ....
@@ -153,7 +157,7 @@ cloud LC
 
 At first glance, each of these entities may be classified as aggregates in our solution. Here, the `LC Application` feels like a reasonably good choice for aggregate, given that we are building a solution to manage LC applications. However, do the others make sense to be classified as such? The `Product` and `Applicant` look like potential entities, but we need to ask ourselves if we will need to operate on these outside of the purview of the `LC Application`. If the answer is a *yes*, then `Product` and `Applicant` _may_ be classified as aggregates. But both `Product` and `Applicant` do not seem to require being operated on without an enveloping `LC Application` within this bounded context. It feels that way because both product and applicant details are required to be provided as part of the LC application process. At least from what we know of the process thus far, this seems to be true. This means we are left with two potential aggregates -- `LC` and `LC Application`.
 
-.Slightly more refined aggregate structure
+.Slightly refined aggregate structure
 [.text-center]
 [plantuml,lc-application]
 ....
@@ -171,7 +175,7 @@ cloud LC
 
 When we look at the output of our eventstorming session, the `LC Application` transitions to become an `LC` much later in the lifecycle. Let's work on the `LC Application` right now, and suspend further analysis on the need for the `LC` aggregate to a later time.
 
-NOTE: For a more detailed explanation of the differences between aggregates, aggregate roots, entities and value objects, refer to Chapter 2.
+NOTE: For a more detailed explanation of the differences between aggregates, aggregate roots, entities and value objects, refer to Chapter 2, The Mechanics of Domain-Driven Design.
 
 Let's start writing our first command to see how this manifests itself in code.
 
@@ -191,7 +195,7 @@ An optional set of events may have occurred in the past. A command is received b
 * Emit one or more events
 * Throw an exception
 
-The Axon framework allows us to express tests in this form. This is outlined below:
+The Axon framework allows us to express tests in the following form.
 
 [source,java,linenum]
 ----
@@ -251,7 +255,7 @@ public class CreateLCApplicationCommand {  // <1>
 <2> The identifier for the LC Application. We are assuming client generated identifiers in this case. The topic of using server-generated versus client-generated identifiers is out of scope for the subject of this book. You may use either depending on what is advantageous in your context. Also note that we are using a strong type for the identifier `LCApplicationId` as opposed to a primitive such as a numeric or a string value. It is also common in some cases to use UUIDs as the identifier. However, we prefer using strong types to be able to differentiate between identifier types. Notice how we are using a type `ClientId` to represent the creator of the application.
 <3> The `Party` and `AdvisingBank` types are complex types to represent those concepts in our solution. Care should be taken to consistently use names that are relevant in the problem (business) domain as opposed to using names that only make sense in the solution (technology) domain. Note the attempt to make use of the _ubiquitous language_ of the domain experts in both cases. This is a practice that we should always be conscious of when naming things in the system.
 
-It is worth noting that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on validations.
+It is worth noting that the `merchandiseDescription` is left as a primitive `String` type. This may feel contradictory to the commentary we present above. We will address this in the upcoming section on Structural validations.
 
 Now let’s look at what the event we will emit as a result of successfully processing the command will look like.
 
@@ -393,10 +397,11 @@ Irrespective of whether we choose to use a relational database or a more modern 
 ==== Event sourced aggregates
 Developers have also been relying on logs for a variety of diagnostic purposes for a very long time. Similarly, relational databases have been employing commit logs to store information durably almost since their inception. However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
 
-NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.
+NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.   The diagram here illustrates the structure of a log where records are written sequentially. In other words, a log is an append-only data structure as depicted here:.
+
+.The log data structure
 [.text-center]
 [ditaa,log-records]
-
 ....
 First                                        Next Record
   |                                              |
@@ -580,7 +585,7 @@ When working with event sourced aggregates, it is very important to be disciplin
 |No
 |===
 
-If there are a large number of events, aggregate loading can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in a subsequent chapter.
+If there are a large number of events, aggregate loading can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in Chapter 11 – Non-Functional Requirements.
 
 ==== Which persistence mechanism should we choose?
 Now that we have a reasonably good understanding of the two types of aggregate persistence mechanisms, it begs the question of which one we should choose. We list a few benefits of using event sourcing below:
@@ -599,7 +604,7 @@ On the flip side, these are some challenges that you might have to consider when
 
 Our experiences indicate that event sourced systems bring a lot of benefits in modern event-driven systems. However, you will need to be cognizant of the considerations presented above in the context of your own ecosystems when making persistence choices.
 
-=== Policy enforcements (validations)
+=== Enforcing policies
 When processing commands, we need to enforce policies or rules. Policies come in two broad categories:
 
 * Structural rules -- those that enforce that the syntax of the dispatched command is valid.
@@ -668,6 +673,7 @@ Structural validations can be accomplished using information that is already ava
 
 Let's look at an example of a validation that requires state present within the aggregate. Consider the example of submitting an LC.While we can make several edits to the LC when it is in draft state, no changes can be made after it is submitted.This means that we can only submit an LC once.This act of submitting the LC is achieved by issuing the `SubmitLCApplicationCommand` as shown in the artifact from the eventstorming session:
 
+.Validations during the submit LC process
 image::aggregate-state-validation.png[]
 
 Let's begin with a test to express our intent:
