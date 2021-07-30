@@ -9,13 +9,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.premonition.lc.issuance</groupId>
-	<artifactId>ch05-lc-issuance-api</artifactId>
+	<artifactId>ch05</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ch05-lc-issuance-api</name>
+	<name>Implementing Domain-Driven Design with Java - Chapter 5</name>
 	<description>Chapter 5 - Sample Application - LC Issuance - API Module</description>
 	<properties>
 		<java.version>16</java.version>
-		<axon-framework.version>4.5</axon-framework.version>
+		<axon-framework.version>4.5.3</axon-framework.version>
 		<commons-io.version>2.8.0</commons-io.version>
 		<jackson-datatype-money.version>1.2.1</jackson-datatype-money.version>
 		<moneta.version>1.4.2</moneta.version>

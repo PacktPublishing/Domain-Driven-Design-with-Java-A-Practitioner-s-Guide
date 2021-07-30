@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.premonition.lc.issuance</groupId>
-	<artifactId>ch06</artifactId>
+	<artifactId>ch07</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Implementing Domain-Driven Design with Java - Chapter 6</name>
-	<description>Chapter 6 - Sample Application - LC Issuance - App</description>
+	<name>Implementing Domain-Driven Design with Java - Chapter 7</name>
+	<description>Chapter 7 - Sample Application - LC Issuance - App</description>
 	<properties>
 		<java.version>16</java.version>
 		<axon-framework.version>4.5.3</axon-framework.version>
@@ -157,7 +157,7 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>${javafx-maven-plugin.version}</version>
 				<configuration>
-					<mainClass>com.premonition.lc.ch06.App</mainClass>
+					<mainClass>com.premonition.lc.ch07.App</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
