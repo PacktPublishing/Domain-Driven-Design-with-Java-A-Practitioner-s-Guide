@@ -1,5 +1,7 @@
 package com.premonition.lc.ch07.ui.views;
 
+import com.premonition.lc.ch07.domain.queries.AllQuery;
+import com.premonition.lc.ch07.domain.queries.LCView;
 import com.premonition.lc.ch07.ui.utils.UIUtils;
 import com.premonition.lc.ch07.ui.viewmodels.MainViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -9,13 +11,22 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.axonframework.messaging.responsetypes.ResponseType;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MainView implements FxmlView<MainViewModel> {
 
+    private final QueryGateway gateway;
+
     @InjectViewModel
     private MainViewModel viewModel;
+
+    public MainView(QueryGateway gateway) {
+        this.gateway = gateway;
+    }
 
     public void create(ActionEvent event) {
         Stage stage = UIUtils.getStage(event);
@@ -28,4 +39,8 @@ public class MainView implements FxmlView<MainViewModel> {
         stage.show();
     }
 
+    public void search(ActionEvent event) {
+        gateway.query(new AllQuery(), ResponseTypes.multipleInstancesOf(LCView.class))
+                .thenAccept(System.out::println);
+    }
 }

@@ -15,7 +15,8 @@
          <Font size="36.0"/>
       </font>
    </Button>
-   <Button layoutX="374.0" layoutY="166.0" mnemonicParsing="false" text="Search...">
+   <Button layoutX="374.0" layoutY="166.0" mnemonicParsing="false" text="Search..."
+           fx:id="search-button" onAction="#search">
       <font>
          <Font size="36.0"/>
       </font>

@@ -3,8 +3,10 @@ package com.premonition.lc.ch06.domain.commands;
 import com.premonition.lc.ch06.domain.LCApplicationId;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class StartNewLCApplicationCommand {
+public class StartNewLCApplicationCommand implements Serializable {
     private final String applicantId;
     private final LCApplicationId id;
     private final String clientReference;

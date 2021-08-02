@@ -3,6 +3,7 @@ package com.premonition.lc.ch07.domain.queries;
 import com.premonition.lc.ch07.domain.events.LCApplicationStartedEvent;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public class LCApplicationSummaryEventHandler {
                 .orElse(new LCSummaryView());
         repository.save(view.increment());
     }
+
 }
