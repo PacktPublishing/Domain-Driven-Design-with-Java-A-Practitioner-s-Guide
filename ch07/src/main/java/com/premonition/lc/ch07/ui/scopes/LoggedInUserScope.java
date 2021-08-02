@@ -1,4 +1,4 @@
-package com.premonition.lc.ch06.ui.viewmodels;
+package com.premonition.lc.ch07.ui.scopes;
 
 import de.saxsys.mvvmfx.Scope;
 import lombok.Data;

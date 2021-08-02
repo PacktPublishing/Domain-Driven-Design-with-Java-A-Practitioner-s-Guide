@@ -1,6 +1,6 @@
 package com.premonition.lc.ch06;
 
-import com.premonition.lc.ch06.ui.viewmodels.LoggedInUserScope;
+import com.premonition.lc.ch06.ui.scopes.LoggedInUserScope;
 import com.premonition.lc.ch06.ui.views.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.spring.MvvmfxSpringApplication;

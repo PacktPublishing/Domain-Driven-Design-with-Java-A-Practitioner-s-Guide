@@ -13,6 +13,7 @@ At the end of the chapter, you will learn how to employ DDD principles to help y
 
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
+
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
 * JavaFX SDK 16 and SceneBuilder
 * Maven 3.x

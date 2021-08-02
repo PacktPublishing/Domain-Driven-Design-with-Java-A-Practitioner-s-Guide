@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.viewmodels;
 
+import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
 import org.springframework.stereotype.Component;

@@ -2,6 +2,7 @@ package com.premonition.lc.ch07.ui.viewmodels;
 
 import com.premonition.lc.ch07.domain.LCApplicationId;
 import com.premonition.lc.ch07.ui.scopes.LCScope;
+import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
 import com.premonition.lc.ch07.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;

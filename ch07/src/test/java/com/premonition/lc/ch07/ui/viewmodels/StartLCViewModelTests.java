@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.viewmodels;
 
+import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
 import com.premonition.lc.ch07.ui.services.BackendService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
