@@ -43,7 +43,7 @@ public class LCDetailsViewTests {
     @Start
     public void start(Stage stage) {
         final Parent parent = FluentViewLoader.fxmlView(LCDetailsView.class)
-                .providedScopes(new LoggedInUserScope("admin"), new LCScope(lcApplicationId, "Test-ClientReference"))
+                .providedScopes(new LoggedInUserScope("admin"), new LCScope(lcApplicationId, "Test"))
                 .load().getView();
         stage.setScene(new Scene(parent));
         stage.show();
@@ -51,7 +51,7 @@ public class LCDetailsViewTests {
 
     @Test
     void shouldLaunchScreenWithClientReferenceAndApplicationIdfromLCScope(FxRobot robot) {
-        verifyThat("#client-reference", LabeledMatchers.hasText("Test-ClientReference"));
+        verifyThat("#client-reference", LabeledMatchers.hasText("Test"));
     }
 
     @AfterEach
