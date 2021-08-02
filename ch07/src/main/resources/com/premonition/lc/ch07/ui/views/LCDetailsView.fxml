@@ -113,7 +113,7 @@
                         <Font size="24.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="143.0" text="Save" onAction="#save">
+                  <Button mnemonicParsing="false" prefHeight="88.0" prefWidth="143.0" text="Save" fx:id="saveButton" onAction="#save">
                      <font>
                         <Font size="24.0" />
                      </font>

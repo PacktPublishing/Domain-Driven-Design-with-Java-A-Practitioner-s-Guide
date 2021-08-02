@@ -1,10 +1,12 @@
 package com.premonition.lc.ch07.ui.viewmodels;
 
+import com.premonition.lc.ch07.domain.LCApplicationId;
 import com.premonition.lc.ch07.ui.models.LCDetailsModel;
 import com.premonition.lc.ch07.ui.scopes.LCScope;
 import com.premonition.lc.ch07.ui.services.BackendService;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.springframework.stereotype.Component;
@@ -44,11 +46,17 @@ public class LCDetailsViewModel implements ViewModel {
     public LCBasicsViewModel getBasics() {
         return basics;
     }
+    public StringProperty stageTitleProperty() {
+        return new SimpleStringProperty("LC Issuance");
+    }
 
     public void save() {
         service.saveLC(this.getModel());
     }
 
+    public void exit() {
+
+    }
     private LCDetailsModel getModel() {
         return new LCDetailsModel(lcScope.getLcApplicationId(), getClientReference());
     }

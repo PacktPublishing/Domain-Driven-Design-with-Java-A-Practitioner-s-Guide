@@ -30,7 +30,7 @@ public class MainView implements FxmlView<MainViewModel> {
 
     public void create(ActionEvent event) {
         Stage stage = UIUtils.getStage(event);
-        stage.setTitle("LC Issuance");
+        stage.titleProperty().bind(viewModel.stageTitleProperty());
         final Parent parent = FluentViewLoader.fxmlView(StartLCView.class)
                 .providedScopes(viewModel.getUserScope())
                 .load()

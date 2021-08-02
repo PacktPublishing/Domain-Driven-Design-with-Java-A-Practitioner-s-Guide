@@ -2,7 +2,9 @@ package com.premonition.lc.ch07.ui.views;
 
 import com.premonition.lc.ch07.domain.Currencies;
 import com.premonition.lc.ch07.domain.TenorType;
+import com.premonition.lc.ch07.ui.utils.UIUtils;
 import com.premonition.lc.ch07.ui.viewmodels.LCDetailsViewModel;
+import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;
@@ -10,9 +12,12 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +66,13 @@ public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
     }
 
     public void exit(ActionEvent event) {
+        Stage stage = UIUtils.getStage(event);
+        stage.titleProperty().bind(viewModel.stageTitleProperty());
+        final Parent parent = FluentViewLoader.fxmlView(MainView.class)
+                .load()
+                .getView();
+        stage.setScene(new Scene(parent));
+        stage.show();
     }
 
     public void save(ActionEvent event) {
