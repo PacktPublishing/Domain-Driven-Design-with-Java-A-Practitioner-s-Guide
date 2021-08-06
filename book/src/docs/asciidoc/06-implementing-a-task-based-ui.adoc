@@ -414,7 +414,7 @@ When working with JavaFX, the view can be rendered using a declarative style in 
 
 <Pane id="start-lc"  xmlns="http://javafx.com/javafx/16"
                       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.premonition.lc.ch06.ui.views.StartLCView"> <!--1-->
+      fx:controller="com.premonition.lc.ch06.ui.views.StartLCView">        <!--1-->
     ...
 
     <TextField id="client-reference"
@@ -442,7 +442,7 @@ import javafx.fxml.FXML;
 public class StartLCView {                     // <1>
 
     @FXML
-    private TextField clientReference;          // <2>
+    private TextField clientReference;         // <2>
     @FXML
     private Button startButton;                // <3>
 
@@ -466,7 +466,7 @@ The view-model class `StartLCViewModel` for the `StartLCView` is shown here:
 import javafx.beans.property.StringProperty;
 import de.saxsys.mvvmfx.ViewModel;
 
-public class StartLCViewModel implements ViewModel {      // <1>
+public class StartLCViewModel implements ViewModel {       // <1>
 
     private final StringProperty clientReference;          // <2>
 
