@@ -41,12 +41,8 @@ If you recall from chapter 5, we created the following commands:
 [plantuml,command-flow]
 ....
 @startuml
-<style>
-    ActivityDiagram {
-        FontName "Gloria Hallelujah"
-        FontSize 20
-    }
-</style>
+skinparam defaultFontName "Gloria Hallelujah"
+skinparam defaultFontSize 20
 start
 partition Start {
 :Create LC Application;
@@ -418,7 +414,7 @@ When working with JavaFX, the view can be rendered using a declarative style in 
 
 <Pane id="start-lc"  xmlns="http://javafx.com/javafx/16"
                       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.premonition.lc.ch07.ui.views.StartLCView"> <!--1-->
+      fx:controller="com.premonition.lc.ch06.ui.views.StartLCView"> <!--1-->
     ...
 
     <TextField id="client-reference"
