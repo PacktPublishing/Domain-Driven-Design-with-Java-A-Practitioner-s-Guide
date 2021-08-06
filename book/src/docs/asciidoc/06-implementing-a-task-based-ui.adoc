@@ -925,6 +925,8 @@ We have now seen a complete example of how to implement the UI and invoke the ba
 === Summary
 In this chapter, we looked the nuances of API styles and clarified why it is very important to design APIs that capture the users' intent closely. We looked at the differences between CRUD-based and task-based APIs. Finally, we implemented the UI making use of the MVVM design pattern and demonstrated how it aids in test-driving frontend functionality.
 
+Now that we have implemented the creation of new LC, for implementing the subsequent commands we will require access to an existing LC.  In the next chapter, we will look at how to implement the query side and how to keep it in sync with the command side.
+
 === Questions
 * What kind of APIs do you come up with in your domain? CRUD-based? Task-based? Something else?
 * How do consumers find your APIs? Do they have to implement further translations of your APIs to consume them meaningfully?
