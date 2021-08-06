@@ -7,7 +7,13 @@ ifndef::imagesdir[:imagesdir: images]
 [quote, Marty Rubin]
 To accomplish a difficult task, one must first make it easy.
 
-The essence of DDD is a lot about capturing the business process and user intent a lot more closely. In the previous chapter, we designed a set of APIs without paying a lot of attention to how those APIs would get consumed by its eventual users. In this chapter, we will design the GUI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. As part of that, we will examine how this approach of designing APIs in isolation can cause an impedance mismatch between the producers and the consumers. We will examine the consequences of this _impedance mismatch_ and how task-based UIs can help cope with this mismatch a lot better.
+The essence of Domain Driven Design(DDD) is a lot about capturing the business process and user intent a lot more closely. In the previous chapter, we designed a set of APIs without paying a lot of attention to how those APIs would get consumed by its eventual users. In this chapter, we will design the GUI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. As part of that, we will examine how this approach of designing APIs in isolation can cause an impedance mismatch between the producers and the consumers. We will examine the consequences of this _impedance mismatch_ and how task-based UIs can help cope with this mismatch a lot better.
+
+In this chapter,we will implement the UI for LC Application and wire up the integration to the backend APIs.  The list of topics to be covered is as follows:
+
+* API styles
+* UI design patterns
+* Implementing the UI
 
 At the end of the chapter, you will learn how to employ DDD principles to help you build robust user experiences that are simple and intuitive. You will also learn why it may be prudent to design your backend interfaces (APIs) from the perspective of the consumer.
 
@@ -349,6 +355,8 @@ This is arguably the oldest, most popular when implementing user interfaces, giv
 [.text-center]
 image::ui-patterns/mvc.png[]
 
+The pattern comprises the following components:
+
 * *Model*: responsible to house the business logic and managing the state of the application.
 * *View*: responsible for presenting data to the user.
 * *Controller*: responsible to act as a glue between the model and the view. It is also responsible for handling user interactions, data management, networking and validation.
@@ -362,6 +370,8 @@ MVP is a refinement of the MVC design pattern that originated in the early 1990s
 [.text-center]
 image::ui-patterns/mvp.png[]
 
+The pattern comprises the following components:
+
 * *Model*: responsible to house the business logic and managing the state of the application.
 * *View*: responsible for presenting data to the user and notifying the presenter about user interactions.
 * *Presenter*: responsible for handling user interactions on behalf of the view. The presenter usually interacts with the view through an interface that the view implements. This allows for easier unit testing of the presenter independent of the view. The presenter interacts with the model for updates and read operations.
@@ -373,9 +383,11 @@ Modern UI frameworks started adopting a declarative style to express the view. M
 [.text-center]
 image::ui-patterns/mvvm.png[]
 
-* Model: responsible to house the business logic and managing the state of the application.
-* View: responsible for presenting data to the user and notifying the view-model about user interactions.
-* View-Model: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
+The pattern comprises the following components:
+
+* *Model* : responsible to house the business logic and managing the state of the application.
+* *View* : responsible for presenting data to the user and notifying the view-model about user interactions.
+* *View-Model*: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
 
 Now that we understand the mechanics of each of these patterns, let's look at which one to use.
 
