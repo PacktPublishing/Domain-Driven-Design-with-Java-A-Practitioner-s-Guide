@@ -414,7 +414,7 @@ When working with JavaFX, the view can be rendered using a declarative style in 
 
 <Pane id="start-lc"  xmlns="http://javafx.com/javafx/16"
                       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.premonition.lc.ch06.ui.views.StartLCView">        <!--1-->
+      fx:controller="com.premonition.lc.ch06.ui.views.StartLCView">      <!--1-->
     ...
 
     <TextField id="client-reference"
@@ -423,7 +423,7 @@ When working with JavaFX, the view can be rendered using a declarative style in 
     <Button id="start-button"
             fx:id="startButton"
             text="Start"
-            onAction="#start"/>                                         <!--3-->
+            onAction="#start"/>                                          <!--3-->
     ...
 </Pane>
 
