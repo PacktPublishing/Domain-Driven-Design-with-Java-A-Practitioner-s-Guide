@@ -19,6 +19,7 @@ By the end of this chapter, you would have learned how to implement the core of 
 
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
+
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
 * Maven 3.x
 * Spring Boot 2.4.x
@@ -773,21 +774,23 @@ import org.axonframework.modelling.command.Repository;
 
 class MyCustomCommandHandler {
 
-    private final Repository<LCApplication> repository; // <1>
+    private final Repository<LCApplication> repository;                 // <1>
 
     MyCustomCommandHandler(Repository<LCApplication> repository) {
-        this.repository = repository;  // <1>
+        this.repository = repository;                                   // <1>
     }
 
     @CommandHandler
     public void handle(SomeCommand command) {
-        Aggregate<LCApplication> application = repository.load(command.getAggregateId());  // <2>
+        Aggregate<LCApplication> application
+            = repository.load(command.getAggregateId());                // <2>
         // Command handling code
     }
 
     @CommandHandler
     public void handle(AnotherCommand command) {
-        Aggregate<LCApplication> application = repository.load(command.getAggregateId());
+        Aggregate<LCApplication> application
+            = repository.load(command.getAggregateId());
         // Command handling code
     }
 }
@@ -866,7 +869,7 @@ The implementation of the command handler is shown below:
 ....
 import org.springframework.stereotype.Service;
 
-@Service // <1>
+@Service                                                         // <1>
 public class CreateLCApplicationCommandHandler {
     private final Repository<LCApplication> repository;
     private final Set<Country> sanctionedCountries;
@@ -879,8 +882,9 @@ public class CreateLCApplicationCommandHandler {
 
     @CommandHandler
     public void handle(CreateLCApplicationCommand command) {
-        // Validations can be performed here as well <2>
-        repository.newInstance(() -> new LCApplication(command, sanctionedCountries)); // <3>
+        // Validations can be performed here as well                <2>
+        repository.newInstance(()
+            -> new LCApplication(command, sanctionedCountries)); // <3>
     }
 }
 ....
