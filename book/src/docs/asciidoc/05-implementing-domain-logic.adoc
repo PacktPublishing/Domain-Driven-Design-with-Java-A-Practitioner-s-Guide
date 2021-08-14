@@ -604,6 +604,9 @@ When working with event sourced aggregates, it is very important to be disciplin
 
 If there are a large number of events, aggregate loading can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in Chapter 11 – Non-Functional Requirements.
 
+==== Persistence technology choices
+If you are using a state store to persist your aggregates, using your usual evaluation process for choosing your persistence technology should suffice. However, if you are looking at event-sourced aggregates, the decision can be a bit more nuanced. In our experience, even a simple relational database can do the trick. Indeed, we had made use of a relational database to act as an event store for a high volume transactional application with billions of events. This setup worked just fine for us. It is worth noting that we were only using the event store to insert new events and loading events for a given aggregate in sequential order. However, there are a multitude of specialized technologies that have been purpose built to act as an event store that support several other value-added features such as time travel, full event replay, event payload introspection, etc. If you have such requirements, it might be worth considering other options such as NoSql databases (document stores like MongoDB or column family stores like Cassandra) or purpose-built commercial offerings such as EventStoreDBfootnote:[https://www.eventstore.com/] and Axon Serverfootnote:[https://axoniq.io/product-overview/axon-server] to evaluate feasibility in your context.
+
 ==== Which persistence mechanism should we choose?
 Now that we have a reasonably good understanding of the two types of aggregate persistence mechanisms, it begs the question of which one we should choose. We list a few benefits of using event sourcing below:
 
