@@ -28,8 +28,17 @@ To follow the examples in this chapter, you will need access to:
 * Project Lombok (To reduce verbosity)
 * Moneta 1.4.x (Money and currency reference implementation - JSR 354)
 
-=== Command Query Responsibility Segregation (CQRS)
-In this chapter, we will make use of the Command Query Responsibility Segregation (CQRS) architecture pattern to express the domain logic for our solution. The CQRS pattern strictly separates *write* (those that mutate state) and *read* (those that answer questions) operations.
+
+=== Continuing our design journey
+In the previous chapter, we discussed eventstorming as  a lightweight method to clarify business flows. This is the As a reminder, this is the output produced from our eventstorming session:
+
+.Recap of eventstorming session
+image::event-storming/05-read-models.png[]
+
+As mentioned previously, the *blue* stickies in this diagram represent *commands*. We will be using the Command Query Responsibility Segregation (CQRS) pattern as a high level architecture approach to implement the domain logic for our LC issuance application. Let's examine the mechanics of using CQRS and why we are using it and how it can result in an elegant solution.
+
+=== Applying CQRS
+As covered in chapter 3, the CQRS pattern separates *write* (operations that mutate state) and *read* (operations that answer questions) operations into distinct (logical and/or physical) components from an architecture perspective. Let's look at what it means to apply CQRS in practical terms.
 
 ==== Recap: What is CQRS
 In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
@@ -53,30 +62,32 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-NOTE: Implementing CQRS does not require the use of any framework. However, in this book we will look at using Axon Framework because in our opinion it provides a set of conveniences to do so while staying out of the way. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
+Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the Spring and Axon frameworks.
 
-Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the spring and axon frameworks.
+==== Tooling choices
+
+Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this essayfootnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the Axon Framework to implement application functionality as we have real-world experience of having used in large scale enterprise development. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
 
 === Bootstrapping the application
 
-To get started, let's create a simple spring boot application using the following command:
-[source,bash,linenum]
-----
-curl -G https://start.spring.io/starter.zip \ # <1>
-       -d dependencies=web,data-jpa,lombok,validation,h2,actuator \ # <2>
-       -d name=lc-issuance-api \
-       -d artifactId=lc-issuance-api \
-       -d groupId=com.example.api \
-       -d packaging=jar \
-       -d description='LC Issuance API' \
-       -d package-name=com.example.api \
-       -o lc-issuance-api.zip # <3>
-----
-<1> The spring initializr to create the application archive in zip form
-<2> The list of dependencies separated by a comma
-<3> The name of the archive containing the generated sources
+To get started, let's create a simple spring boot application. There are several ways to do this. You can always use the Spring starter application at https://start.spring.io to create this application. Here, we will make use of the `spring` CLI to bootstrap the application.
 
-NOTE: Alternatively, you can use use the spring initializr directly at https://start.spring.io or the spring boot CLI to generate the application.
+NOTE: To install the `spring` CLI for your platform, please refer to the detailed instructions at https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started.installing.
+
+To bootstrap the application, use the following command:
+
+[source,bash,linenum]
+....
+spring init \
+      --dependencies 'web,data-jpa,lombok,validation,h2,actuator' \
+      --name lc-issuance-api \
+      --artifactId lc-issuance-api \
+      --groupId com.example.api \
+      --packaging jar \
+      --description 'LC Issuance API' \
+      --package-name com.example.api \
+      --force
+....
 
 This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice and add a dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
 
@@ -88,7 +99,7 @@ This should create a file named `lc-issuance-api.zip` in the current directory. 
         <version>${axon-framework.version}</version> <!--1-->
     </dependency>
 ----
-<1> You may need to change the version
+<1> You may need to change the version. We are at version `4.5.3` at the time of writing this book.
 
 Also, add the following dependency on the `axon-test` library to enable unit testing of aggregates:
 [source,xml,linenum]
@@ -184,7 +195,7 @@ Let's start writing our first command to see how this manifests itself in code.
 ==== Test-driving the system
 While we have a reasonably good conceptual understanding of the system, we are still in the process of refining this understanding. Test-driving the system allows us to exercise our understanding by acting as the first client of the solution that we are producing.
 
-NOTE: This is very well illustrated in the best-selling book -- _Growing Object-Oriented Software, Guided by Tests_ by authors Nat Price and Steve Freeman. This is worth looking at, to gain a deeper understanding of this practice.
+NOTE: The practice of test-driving the system is very well illustrated in the best-selling book -- _Growing Object-Oriented Software, Guided by Tests_ by authors Nat Price and Steve Freeman. This is worth looking at, to gain a deeper understanding of this practice.
 
 So let's start with the first test. To the external world, an event-driven system typically works in a manner depicted below:
 
@@ -192,12 +203,16 @@ So let's start with the first test. To the external world, an event-driven syste
 [.text-center]
 image::event-driven-system.png[]
 
-An optional set of events may have occurred in the past. A command is received by the system (initiated manually by a user or automatically by a part of the system), which acts as a stimulus. The system will react in one of two ways when it handles a command:
-
-* Emit one or more events
-* Throw an exception
+1. An optional set of domain events may have occurred in the past.
+2. A command is received by the system (initiated manually by a user or automatically by a part of the system), which acts as a stimulus.
+3. The command is handled by an aggregate which then proceeds to validate the received command to enforce invariants (structural and domain validations).
+4. The system then reacts in one of two ways:
+  a. Emit one or more events
+  b. Throw an exception
 
 The Axon framework allows us to express tests in the following form.
+
+NOTE: The code snippets shown in this chapter are excerpts to highlight significant concepts and techniques. For the full working example, please refer to the accompanying source code for this chapter (included in the ch05 directory).
 
 [source,java,linenum]
 ----
