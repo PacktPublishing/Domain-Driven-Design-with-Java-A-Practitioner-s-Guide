@@ -18,6 +18,7 @@
         <module>ch06</module>
         <module>ch07</module>
     </modules>
+
     <name>Implementing Domain-Driven Design with Java - Parent</name>
     <description>Implementing Domain-Driven Design with Java</description>
     <scm>

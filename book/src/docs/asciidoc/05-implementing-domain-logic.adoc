@@ -7,7 +7,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote, Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates. The list of topics to be covered is as follows:
+In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates.The list of topics to be covered is as follows:
 
 * Identifying aggregates
 * Handling commands and emitting events
@@ -15,7 +15,7 @@ In the Command Query Responsibility Segregation (CQRS) section, we describe how 
 * Persisting aggregates
 * Performing validations
 
-By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
+By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner.You will also learn how to decouple your domain model from persistence concerns.Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
@@ -60,13 +60,15 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *Different security requirements*: Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
 
-* *More uniform distribution of complexity*: Having a single model to serve all use cases means that they can now be focused towards solving a single concern and thereby reduce complexity. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+* *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern. For query-side use cases, we create models as needed that are distinct from the command-side model. This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+
+NOTE: CQRS is by no means a silver bullet. Although it is general-purpose enough to be used in a variety of scenarios, it is a paradigm shift as applied to mainstream software problems. Like any other architecture decision, you should apply due diligence when choosing to adopt CQRS to your situation.
 
 Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the Spring and Axon frameworks.
 
 ==== Tooling choices
 
-Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this essayfootnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the Axon Framework to implement application functionality as we have real-world experience of having used in large scale enterprise development. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
+Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html[essay]footnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the http://axonframework.org/[Axon Framework]footnote:[http://axonframework.org/] to implement application functionality as we have real-world experience of having used in large scale enterprise development. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
 
 === Bootstrapping the application
 
@@ -122,7 +124,7 @@ image::event-storming/05-read-models.png[]
 The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
 
 === Identifying Commands
-From the eventstorming session, we have the following commands to start with:
+From the eventstorming session in the previous chapter, we have the following commands to start with:
 
 .Identified commands
 [.text-center]
@@ -143,11 +145,11 @@ cloud Commands {
 }
 @enduml
 ....
-Commands are always directed to an aggregate for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
+Commands are always directed to an aggregate (the root entity) for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
 
 [#_identifying_aggregates]
 ==== Identifying Aggregates
-Looking at the output of the eventstorming session, one potential grouping can be as follows:
+Looking at the output of the eventstorming session of our LC (Letter of Credit) application, one potential grouping can be as follows:
 
 .First cut attempt at aggregate design
 image::aggregate-design/aggregate-design-01.png[]
@@ -330,7 +332,7 @@ public class LCApplication {
     }
 }
 ----
-<1> The aggregate identifier for the `LCApplication` aggregate. All aggregates are required to declare an identifier and mark it so using the `@AggregateIdentifier` annotation provided by the framework.
+<1> The aggregate identifier for the `LCApplication` aggregate. For an aggregate, the identifier uniquely identifies one instance from another. For this reason, all aggregates are required to declare an identifier and mark it so using the `@AggregateIdentifier` annotation provided by the framework.
 <2> The method that is handling the command needs to be annotated with the `@CommandHandler` annotation. In this case, the command handler happens to be the constructor of the class given that this the first command that can be received by this aggregate. We will see examples of subsequent commands being handled by other methods later in the chapter.
 <3> The `@CommandHandler` annotation marks a method as being a command handler. The exact command that this method can handle needs to be passed as a parameter to the method. Do note that there can only be one command handler in the *entire* system for any given command.
 <4> Here, we are emitting the `LCApplicationCreatedEvent` using the `AggregateLifecycle` utility provided by the framework. In this very simple case, we are emitting an event unconditionally on receipt of the command. In a real-world scenario, it is conceivable that a set of validations will be performed before deciding to either emit one or more events or failing the command with an exception. We will look at more realistic examples later in the chapter.
@@ -341,15 +343,16 @@ This was a whirlwind introduction to a simple event-driven system. We still need
 
 [#_persisting_aggregates]
 === Persisting aggregates
-When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc. So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
+When working with any system of even moderate complexity, we are required to make interactions durable.That is, interactions need to outlast system restarts, crashes, etc.So the need for persistence is a given.While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution.We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
 
 1. State stored
 2. Event sourced
 
 Let's examine each of these techniques in more detail below:
 
+[#_state_stored_aggregates]
 ==== State stored aggregates
-Saving current values of entities is by far the most popular way to persist state -- thanks to the immense popularity of relational databases and object-relational mapping (ORM) tools like Hibernate. And there is good reason for this ubiquity. Until recently, a majority of enterprise systems used relational databases almost as a default to create business solutions, with ORMs arguably providing a very convenient mechanism to interact with relational databases and their object representations. For example, for our `LCApplication`, it is conceivable that we could use a relational database with a structure that would look something like below:
+Saving current values of entities is by far the most popular way to persist state -- thanks to the immense popularity of relational databases and object-relational mapping (ORM) tools like Hibernate.And there is good reason for this ubiquity.Until recently, a majority of enterprise systems used relational databases almost as a default to create business solutions, with ORMs arguably providing a very convenient mechanism to interact with relational databases and their object representations.For example, for our `LCApplication`, it is conceivable that we could use a relational database with a structure that would look something like below:
 
 .Typical entity relationship model
 [.text-center]
@@ -409,12 +412,13 @@ lc_application }o--|| advising_bank
 lc_application }o--|| issuing_bank
 @enduml
 ....
-Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity. When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_. This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information. We will look at this in more detail below.
+Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity.When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_.This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information.We will look at this in more detail below.
 
+[#_event_sourced_aggregates]
 ==== Event sourced aggregates
-Developers have also been relying on logs for a variety of diagnostic purposes for a very long time. Similarly, relational databases have been employing commit logs to store information durably almost since their inception. However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
+Developers have also been relying on logs for a variety of diagnostic purposes for a very long time.Similarly, relational databases have been employing commit logs to store information durably almost since their inception.However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
 
-NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.   The diagram here illustrates the structure of a log where records are written sequentially. In other words, a log is an append-only data structure as depicted here:.
+NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.The diagram here illustrates the structure of a log where records are written sequentially. In essence, a log is an append-only data structure as depicted here:.
 
 .The log data structure
 [.text-center]
@@ -429,7 +433,7 @@ First                                        Next Record
 +---+---+---+---+---+---+---+---+---+----+----+-=--+
 
 ....
-Writing to a log as compared to a more complex data structure like a table is a relatively simple and fast operation and can handle extremely high volumes of data while providing predictable performance. Indeed, a modern event streaming platform like Kafka makes use of this pattern to scale to support extremely high volumes. We do feel that this can be applied to act as a persistence store when processing commands in mainstream systems because this has benefits beyond the technical advantages listed above. Consider the example of an online order flow below:
+Writing to a log as compared to a more complex data structure like a table is a relatively simple and fast operation and can handle extremely high volumes of data while providing predictable performance.Indeed, a modern event streaming platform like Kafka makes use of this pattern to scale to support extremely high volumes.We do feel that this can be applied to act as a persistence store when processing commands in mainstream systems because this has benefits beyond the technical advantages listed above.Consider the example of an online order flow below:
 
 [cols="2,3,3"]
 |===
@@ -471,9 +475,9 @@ E5: Wheat bread added to cart +
 E6: Order 123 confirmed
 |===
 
-As you can see, in the event store, we continue to have full visibility of all user actions performed. This allows us to reason about these behaviors more holistically. In the traditional store, we lost the information that the user replaced white with wheat bread. While this does not impact the order itself, we lose the opportunity to gather insights from this user behavior. We recognize that this information can be captured in other ways using specialized analytical solutions, however, the event log mechanism provides a natural way to do this without requiring any additional effort, thereby reducing the complexity of the system being built. It also acts as an audit log providing full history of all events that have occurred thus far. This fits well with the essence of domain-driven design where we are constantly exploring ways in which to reduce complexity.
+As you can see, in the event store, we continue to have full visibility of all user actions performed.This allows us to reason about these behaviors more holistically.In the traditional store, we lost the information that the user replaced white with wheat bread.While this does not impact the order itself, we lose the opportunity to gather insights from this user behavior.We recognize that this information can be captured in other ways using specialized analytical solutions, however, the event log mechanism provides a natural way to do this without requiring any additional effort. It also acts as an audit log providing full history of all events that have occurred thus far.This fits well with the essence of domain-driven design where we are constantly exploring ways in which to reduce complexity.
 
-However, there are implications to persisting data in the form of a simple event log. Before processing any command, we will need to hydrate past events in exact order of occurrence and reconstruct aggregate state to allow us to perform validations. For example, when confirming checkout, just having the ordered set of elapsed events will not suffice. We still need to compute the exact items that are in the cart before allowing the order to be placed. This _event replay_ to restore aggregate state (at least those attributes that are required to validate said command) is necessary before processing that command. For example, we need to know which items are in the cart currently before processing the `RemoveItemFromCartCommand`. This is illustrated in the following table:
+However, there are implications to persisting data in the form of a simple event log.Before processing any command, we will need to hydrate past events in exact order of occurrence and reconstruct aggregate state to allow us to perform validations.For example, when confirming checkout, just having the ordered set of elapsed events will not suffice.We still need to compute the exact items that are in the cart before allowing the order to be placed.This _event replay_ to restore aggregate state (at least those attributes that are required to validate said command) is necessary before processing that command.For example, we need to know which items are in the cart currently before processing the `RemoveItemFromCartCommand`.This is illustrated in the following table:
 
 [cols="5,3,4,5"]
 |===
@@ -582,9 +586,9 @@ public class Cart {
     }
 }
 ----
-<1> Before processing any command, the aggregate loading process commences by first invoking the no-args constructor. For this reason, we need the no-args constructor to be *empty* i.e. it should *not* have any code that restores state. State restoration *must* happen only in those methods that trigger an event replay. In the case of the Axon framework, this translates to methods embellished with the `@EventSourcingHandler` annotation.
-<2> It is important to note that it is possible (but not necessary) to emit *more than one event* after processing a command. This is illustrated in the first instance of the `AddItemCommand` in the previous code where we emit `CartCreatedEvent` and `ItemAddedEvent`.
-<3> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.
+<1> Before processing any command, the aggregate loading process commences by first invoking the no-args constructor.For this reason, we need the no-args constructor to be *empty* i.e. it should *not* have any code that restores state.State restoration *must* happen only in those methods that trigger an event replay.In the case of the Axon framework, this translates to methods embellished with the `@EventSourcingHandler` annotation.
+<2> It is important to note that it is possible (but not necessary) to emit *more than one event* after processing a command.This is illustrated in the first instance of the `AddItemCommand` in the previous code where we emit `CartCreatedEvent` and `ItemAddedEvent`.Command handlers do not mutate state of the aggregate.They only make use of existing aggregate state to enforce invariants (validations) and emit events if those invariants hold true.
+<3> The loading process continues through the invocation of event sourcing handler methods in exactly the order of occurrence for that aggregate instance.Event sourcing handlers are only needed to hydrate aggregate state on the basis of past events.This means that they usually are devoid of any business (conditional) logic.It goes without saying that these methods do not emit any events.Event emission is restricted to happen within command handlers when invariants are successfully enforced.
 
 When working with event sourced aggregates, it is very important to be disciplined about the kind of code that one can write:
 [cols="2,1,1,1"]
@@ -602,13 +606,13 @@ When working with event sourced aggregates, it is very important to be disciplin
 |No
 |===
 
-If there are a large number of events, aggregate loading can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate. There are techniques (like snapshotting) we can employ to overcome this. We will cover this in more detail in Chapter 11 – Non-Functional Requirements.
+If there are a large number of historic events to restore state, the aggregate loading process can become a time-consuming operation -- directly proportional to the number of elapsed events for that aggregate.There are techniques (like snapshotting) we can employ to overcome this.We will cover this in more detail in Chapter 11 – Non-Functional Requirements.
 
 ==== Persistence technology choices
 If you are using a state store to persist your aggregates, using your usual evaluation process for choosing your persistence technology should suffice. However, if you are looking at event-sourced aggregates, the decision can be a bit more nuanced. In our experience, even a simple relational database can do the trick. Indeed, we had made use of a relational database to act as an event store for a high volume transactional application with billions of events. This setup worked just fine for us. It is worth noting that we were only using the event store to insert new events and loading events for a given aggregate in sequential order. However, there are a multitude of specialized technologies that have been purpose built to act as an event store that support several other value-added features such as time travel, full event replay, event payload introspection, etc. If you have such requirements, it might be worth considering other options such as NoSql databases (document stores like MongoDB or column family stores like Cassandra) or purpose-built commercial offerings such as EventStoreDBfootnote:[https://www.eventstore.com/] and Axon Serverfootnote:[https://axoniq.io/product-overview/axon-server] to evaluate feasibility in your context.
 
 ==== Which persistence mechanism should we choose?
-Now that we have a reasonably good understanding of the two types of aggregate persistence mechanisms, it begs the question of which one we should choose. We list a few benefits of using event sourcing below:
+Now that we have a reasonably good understanding of the two types of aggregate persistence mechanisms (<<_state_stored_aggregates,state-stored>> and <<_event_sourced_aggregates,event-sourced>>), it begs the question of which one we should choose. We list a few benefits of using event sourcing below:
 
 * We get to use the events as a *natural audit log* in high compliance scenarios.
 * It provides the ability to perform *more insightful analytics* on the basis of the fine-grained events data.
