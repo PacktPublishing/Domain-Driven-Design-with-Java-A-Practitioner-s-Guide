@@ -22,13 +22,13 @@ To follow the examples in this chapter, you will need access to:
 
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
 * JavaFX SDK 16 and SceneBuilder
-* Maven 3.x
 * Spring Boot 2.4.x
 * mvvmFX 1.8 (https://sialcasa.github.io/mvvmFX/)
 * JUnit 5.7.x (Included with spring boot)
 * TestFX (for UI testing)
 * OpenJFX Monocle (for headless UI testing)
 * Project Lombok (To reduce verbosity)
+* Maven 3.x
 
 Before we dive deep into building the GUI solution, let's do a quick recap of where we left the APIs.
 
