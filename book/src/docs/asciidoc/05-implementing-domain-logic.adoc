@@ -28,12 +28,12 @@ To follow the examples in this chapter, you will need access to:
 * Project Lombok (To reduce verbosity)
 * Moneta 1.4.x (Money and currency reference implementation - JSR 354)
 
-
 === Continuing our design journey
-In the previous chapter, we discussed eventstorming as  a lightweight method to clarify business flows. This is the As a reminder, this is the output produced from our eventstorming session:
+In the previous chapter, we discussed eventstorming as  a lightweight method to clarify business flows. As a reminder, this is the output produced from our eventstorming session:
 
 .Recap of eventstorming session
-image::event-storming/05-read-models.png[]
+[.text-center]
+image::event-storming/05-query-models.png[]
 
 As mentioned previously, the *blue* stickies in this diagram represent *commands*. We will be using the Command Query Responsibility Segregation (CQRS) pattern as a high level architecture approach to implement the domain logic for our LC issuance application. Let's examine the mechanics of using CQRS and why we are using it and how it can result in an elegant solution.
 
@@ -46,9 +46,9 @@ In traditional applications, a single domain, data/persistence model is used to 
 .Traditional versus CQRS Architecture
 image::cqrs/traditional-vs-cqrs-architecture.png[]
 
-NOTE: We depict multiple read models above because it is possible (but not necessary) to create more than one read model, depending on the kinds of query use cases that need to be supported.
+NOTE: We depict multiple query models above because it is possible (but not necessary) to create more than one query model, depending on the kinds of query use cases that need to be supported.
 
-For this to work predictably, the read model(s) need to be kept in sync with the write models (we will examine some of the techniques to do that in detail later.
+For this to work predictably, the query model(s) need to be kept in sync with the write models (we will examine some of the techniques to do that in detail later.
 
 [#_why_cqrs]
 ==== Why CQRS?
@@ -115,13 +115,6 @@ Also, add the following dependency on the `axon-test` library to enable unit tes
 ----
 
 With the above set up, you should be able to run the application and start implementing the LC issuance functionality.
-
-As a reminder, this is the output produced from our eventstorming session:
-
-.Recap of eventstorming session
-image::event-storming/05-read-models.png[]
-
-The blue stickies in this diagram represent commands. Let's look at how to implement these commands using the Axon framework.
 
 === Identifying Commands
 From the eventstorming session in the previous chapter, we have the following commands to start with:

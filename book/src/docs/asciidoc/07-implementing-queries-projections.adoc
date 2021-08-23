@@ -24,7 +24,16 @@ When working with query models, we construct models by listening to events as th
 * Axon server to act as an event store
 * Maven 3.x
 
-=== Query models
+=== Continuing our design journey
+In chapter 4 - Domain analysis and modeling, we discussed eventstorming as a lightweight method to clarify business flows. As a reminder, this is the output produced from our eventstorming session:
+
+.Recap of eventstorming session
+[.text-center]
+image::event-storming/05-query-models.png[]
+
+As mentioned previously, the *green* stickies
+
+=== Identifying queries
 In chapter 5, we saw how CQRS applications make use of distinct models to service commands and queries respectively. We also saw how to publish events when a command is successfully processed. Now, let's look at how we can construct a query model by listening to these domain events. Logically, this will look something like how it is depicted here:
 
 .CQRS application
@@ -36,13 +45,13 @@ image::cqrs/cqrs-application.png[]
 2. In an event-sourced system, the command model is constructed by replaying existing events that have occurred for that instance. In a state-stored system, we would simply restore state by reading state from the persistence store.
 3. If business invariants (validations) are satisfied, one or more domain events are published.
 4. In an event-sourced system, the domain event is persisted on the command side. In a state-stored system, we would update the state of the instance in the persistence store.
-5. The external world is notified by publishing these domain events onto an event bus.
+5. The external world is notified by publishing these domain events onto an event bus. The event bus is an infrastructure component onto which events are published.
 
 NOTE: We have already seen the command side flow in action in Chapter 5 - Implementing Domain Logic.
 
 *On the query side:*
 
-1. An event listening component listens to these domain events.
+1. An event listening component listens to these domain events published on the event bus.
 2. Constructs a purpose-built query model to satisfy a specific query use case.
 3. This query model is persisted in a datastore optimized for read operations.
 4. This query model is then exposed in the form of an API.

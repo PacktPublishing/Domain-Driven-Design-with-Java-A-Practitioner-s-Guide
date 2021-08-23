@@ -232,7 +232,7 @@ This is either user initiated or system initiated, in response to a domain event
 
 * *Policy*: A set of business invariants (rules) that need to be adhered to, for an action/activity to be successfully performed.
 
-* *Read Model*: A piece of information required to perform an action/activity.
+* *Query/Read Model*: A piece of information required to perform an action/activity.
 
 * *External System*: A system significant to the business process, but out of scope in the current context.
 
@@ -287,14 +287,14 @@ The next step is to capture *users* who perform these activities along with thei
 .Users and policies
 image::event-storming/04-users-and-policies-full.png[]
 
-===== 4. Outline read models
+===== 4. Outline query models
 
 Every activity requires a certain set of data to be able to be performed.
 Users will need to view out-of-band data that they need to act upon and also see the result of their actions.
-These sets of data are represented as *read models* (using green stickies).
+These sets of data are represented as *query models* (using green stickies).
 
 .Big picture eventstorming workshop board
-image::event-storming/05-read-models.png[]
+image::event-storming/05-query-models.png[]
 
 NOTE: For both the domain storytelling and eventstorming workshops, it works best when we have approximately 6-8 people participating with a right mix of domain and technology experts.
 
@@ -329,9 +329,9 @@ With this knowledge, we should be able to dive deeper into the technical aspects
 
 3. When should you use eventstorming?
 
-4. Pick an application in your current context. Can you use eventstorming to capture domain events, actors, actions, hotspots, read models, external systems, etc. for the scenario you picked?
+4. Pick an application in your current context. Can you use eventstorming to capture domain events, actors, actions, hotspots, query models, external systems, etc. for the scenario you picked?
 
-=== Further Reading
+=== Further reading
 
 [cols="3,3,6"]
 |===
