@@ -1,4 +1,6 @@
 ifndef::imagesdir[:imagesdir: images]
+[.text-justify]
+
 == Implementing Queries and Projections (10 pages)
 [quote, Anonymous]
 The best view comes after the hardest climb.
@@ -34,7 +36,9 @@ image::cqrs/cqrs-application.png[]
 2. In an event-sourced system, the command model is constructed by replaying existing events that have occurred for that instance. In a state-stored system, we would simply restore state by reading state from the persistence store.
 3. If business invariants (validations) are satisfied, one or more domain events are published.
 4. In an event-sourced system, the domain event is persisted on the command side. In a state-stored system, we would update the state of the instance in the persistence store.
-5. The external world is notified by publishing these domain events.
+5. The external world is notified by publishing these domain events onto an event bus.
+
+NOTE: We have already seen the command side flow in action in Chapter 5 - Implementing Domain Logic.
 
 *On the query side:*
 
@@ -43,10 +47,67 @@ image::cqrs/cqrs-application.png[]
 3. This query model is persisted in a datastore optimized for read operations.
 4. This query model is then exposed in the form of an API.
 
-=== Consuming events
+Let's implement each of these steps to see how this works for our LC issuance application.
+
+=== Consume events
+
+As seen in chapter 5, when starting a new LC application, the importer sends a `StartNewLCApplicationCommand`, which results in the `LCApplicationStartedEvent` being emitted as shown here:
+
+[source,java,linenum]
+....
+class LCApplication {
+    //..
+    @CommandHandler
+    public LCApplication(StartNewLCApplicationCommand command) {
+        // Validation code omitted for brevity
+        // Refer to chapter 5 for details.
+        AggregateLifecycle.apply(new LCApplicationStartedEvent(command.getId(),
+                command.getApplicantId(), command.getClientReference()));
+    }
+    //..
+}
+....
+
+Let's write an event processing component which will listen to this event and construct a query model. When working with the Axon framework, we have a convenient way to do this by annotating the event listening method with the `@EventHandler` annotation.
+
+[source,java,linenum]
+....
+import org.axonframework.eventhandling.EventHandler;
+
+class LCApplicationStartedEventHandler {
+
+    @EventHandler                                     // <1>
+    public void on(LCApplicationStartedEvent event) { // <2>
+        // Construct a query model here
+    }
+}
+....
+<1> To make any method an event listener, we annotate it with the `@EventHandler` annotation.
+<2> The handler method needs to specify the event that we intend to listen to. There are other arguments that are supported for event handlers. Please refer to the Axon framework documentation for more information.
+
+
+NOTE: The `@EventHandler` annotation should not be confused with the `@EventSourcingHandler` annotation which we looked at in chapter 5. The `@EventSourcingHandler` annotation is used to replay events and restore aggregate state when loading event-sourced aggregates on the command side, whereas the `@EventHandler` annotation is used to listen to events outside the context of the aggregate. In other words, the `@EventSourcingHandler` annotation is used exclusively within aggregates, whereas the `@EventHandler` annotation can be used anywhere there is a need to consume domain events. In this case, we are using it to construct a query model.
+
 
 === Persisting a query (read) model
 
 === Creating additional query (read) models
 
 === Historic event replays
+
+==== The need for replays
+
+==== Types of replays
+
+===== Full event replays
+
+===== Partial event replays
+
+===== Adhoc event replays
+
+==== Event replay considerations
+
+===== Application availability
+
+===== Optimization techniques
+
