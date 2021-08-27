@@ -2,9 +2,10 @@ ifndef::imagesdir[:imagesdir: images]
 ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/premonition/lc/issuance/domain]
 [.text-justify]
 
+[#_implementing_domain_logic]
 == Implementing Domain Logic
 
-[quote, Eric Evans]
+[quote,Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
 In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates.The list of topics to be covered is as follows:
@@ -41,7 +42,7 @@ As mentioned previously, the *blue* stickies in this diagram represent *commands
 As covered in chapter 3, the CQRS pattern separates *write* (operations that mutate state) and *read* (operations that answer questions) operations into distinct (logical and/or physical) components from an architecture perspective. Let's look at what it means to apply CQRS in practical terms.
 
 ==== Recap: What is CQRS
-In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates and enquiries. This is depicted in the following diagram:
+In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates (commands) and enquiries. This is depicted in the following diagram:
 
 .Traditional versus CQRS Architecture
 image::cqrs/traditional-vs-cqrs-architecture.png[]
@@ -52,7 +53,7 @@ For this to work predictably, the query model(s) need to be kept in sync with th
 
 [#_why_cqrs]
 ==== Why CQRS?
-The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios. We discuss some of these scenarios below:
+The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios.We discuss some of these scenarios below:
 
 * *Volume imbalance between read and writes*: In most systems, read operations often outnumber write operations by significant orders of magnitude. For example, consider the number of times a trader checks stock prices vs. the number of times they actually transact (buy or sell stock trades). It is also usually true that write operations are the ones that make businesses money. Having a single model for both reads and writes in a system with a majority of read operations can overwhelm a system to an extent where write performance can start getting affected.
 
@@ -60,17 +61,34 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *Different security requirements*: Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
 
-* *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern. For query-side use cases, we create models as needed that are distinct from the command-side model. This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+* *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern.For query-side use cases, we create models as needed that are distinct from the command-side model.This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases.It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-NOTE: CQRS is by no means a silver bullet. Although it is general-purpose enough to be used in a variety of scenarios, it is a paradigm shift as applied to mainstream software problems. Like any other architecture decision, you should apply due diligence when choosing to adopt CQRS to your situation.
+NOTE: CQRS is by no means a silver bullet.Although it is general-purpose enough to be used in a variety of scenarios, it is a paradigm shift as applied to mainstream software problems.Like any other architecture decision, you should apply due diligence when choosing to adopt CQRS to your situation.
 
 Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the Spring and Axon frameworks.
 
 ==== Tooling choices
 
-Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html[essay]footnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the http://axonframework.org/[Axon Framework]footnote:[http://axonframework.org/] to implement application functionality as we have real-world experience of having used in large scale enterprise development. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
+Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html[essay]footnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the http://axonframework.org/[Axon Framework]footnote:[http://axonframework.org/] to implement application functionality as we have real-world experience of having used in large scale enterprise development.There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
 
-=== Bootstrapping the application
+[#_implementing_the_command_side]
+=== Implementing the command side
+In this section, we will focus on implementing the command side of the application. This is where we expect all the business logic of the application to be implemented. Logically, it looks as shown here:
+
+.CQRS application -- command side
+[.text-center]
+image::cqrs/cqrs-command-side.png[]
+The high level sequence on the command side is described here:
+
+1. A request to mutate state (command) is received.
+2. In an event-sourced system, the command model is constructed by replaying existing events that have occurred for that instance. In a state-stored system, we would simply restore state by reading state from the persistence store.
+3. If business invariants (validations) are satisfied, one or more domain events are published.
+4. In an event-sourced system, the domain event is persisted on the command side. In a state-stored system, we would update the state of the instance in the persistence store.
+5. The external world is notified by publishing these domain events onto an event bus. The event bus is an infrastructure component onto which events are published.
+
+Let's look at how we can implement this in the context of our Letter of Credit (LC) issuance application.
+
+==== Bootstrapping the application
 
 To get started, let's create a simple spring boot application. There are several ways to do this. You can always use the Spring starter application at https://start.spring.io to create this application. Here, we will make use of the `spring` CLI to bootstrap the application.
 
@@ -116,7 +134,7 @@ Also, add the following dependency on the `axon-test` library to enable unit tes
 
 With the above set up, you should be able to run the application and start implementing the LC issuance functionality.
 
-=== Identifying Commands
+==== Identifying commands
 From the eventstorming session in the previous chapter, we have the following commands to start with:
 
 .Identified commands
@@ -141,7 +159,7 @@ cloud Commands {
 Commands are always directed to an aggregate (the root entity) for processing (handling). This means that we need to resolve each of these commands to be handled by an aggregate. While the sender of the command does not care which component within the system handles it, we need to decide which aggregate will handle each command. It is also important to note that any given command can only be handled by a single aggregate within the system. Let's look at how to group these commands and assign them to aggregates. To be able to do that, we need to identify the aggregates in the system first.
 
 [#_identifying_aggregates]
-==== Identifying Aggregates
+==== Identifying aggregates
 Looking at the output of the eventstorming session of our LC (Letter of Credit) application, one potential grouping can be as follows:
 
 .First cut attempt at aggregate design

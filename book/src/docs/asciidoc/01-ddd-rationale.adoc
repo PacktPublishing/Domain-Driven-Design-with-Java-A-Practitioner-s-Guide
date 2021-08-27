@@ -94,6 +94,16 @@ Technical debt is what results when development teams take arguably sub-optimal 
 @startuml
 skinparam handwritten true
 skinparam monochrome true
+<style>
+stateDiagram {
+  FontName "Gloria Hallelujah"
+  FontSize 20
+}
+</style>
+skinparam State {
+  FontSize 20
+  FontName "Gloria Hallelujah"
+}
 
 state "Software Project" as Project {
   state S1 as "Low Morale and Motivation"
