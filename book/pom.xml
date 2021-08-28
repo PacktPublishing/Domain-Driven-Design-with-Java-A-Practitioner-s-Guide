@@ -16,6 +16,10 @@
     <name>Implementing Domain-Driven Design with Java - Book</name>
     <description>Implementing Domain-Driven Design with Java</description>
 
+    <properties>
+        <maven.build.timestamp.format>MMM dd yyyy hh:mm a z</maven.build.timestamp.format>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -181,6 +181,8 @@
                             <coderay-css>style</coderay-css>
                             <autoReloadInterval>1000</autoReloadInterval>
                             <iconSet>fas</iconSet>
+                            <revnumber>${project.version}</revnumber>
+                            <revdate>${maven.build.timestamp}</revdate>
                         </attributes>
                     </configuration>
                     <executions>
