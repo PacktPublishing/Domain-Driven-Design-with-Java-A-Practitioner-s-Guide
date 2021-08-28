@@ -8,6 +8,7 @@ import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.premonition.lc.ch07.domain.LCState.DRAFT;
 import static com.premonition.lc.ch07.domain.commands.StartNewLCApplicationCommand.startApplication;
 import static org.axonframework.test.matchers.Matchers.andNoMore;
 import static org.axonframework.test.matchers.Matchers.exactSequenceOf;
@@ -39,7 +40,7 @@ public class LCApplicationAggregateTests {
     void shouldSaveLCApplication() {
         final LCApplicationId id = LCApplicationId.randomId();
         final LCApplicationStartedEvent started = new LCApplicationStartedEvent(id,
-                "test-user", "Test LC");
+                "test-user", "Test LC", DRAFT);
         fixture.given(started)
                 .when(new SaveLCApplicationCommand(id))
                 .expectEvents(new LCApplicationSavedEvent());

@@ -1,6 +1,7 @@
 package com.premonition.lc.ch07.ui.views;
 
-import com.premonition.lc.ch07.domain.queries.AllQuery;
+import com.premonition.lc.ch07.domain.LCState;
+import com.premonition.lc.ch07.domain.queries.MyDraftLCsQuery;
 import com.premonition.lc.ch07.domain.queries.LCView;
 import com.premonition.lc.ch07.ui.utils.UIUtils;
 import com.premonition.lc.ch07.ui.viewmodels.MainViewModel;
@@ -18,14 +19,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MainView implements FxmlView<MainViewModel> {
 
-    private final QueryGateway gateway;
-
     @InjectViewModel
     private MainViewModel viewModel;
-
-    public MainView(QueryGateway gateway) {
-        this.gateway = gateway;
-    }
 
     public void create(ActionEvent event) {
         Stage stage = UIUtils.getStage(event);
@@ -39,7 +34,6 @@ public class MainView implements FxmlView<MainViewModel> {
     }
 
     public void search(ActionEvent event) {
-        gateway.query(new AllQuery(), ResponseTypes.multipleInstancesOf(LCView.class))
-                .thenAccept(System.out::println);
+        viewModel.findMyDraftLCs();
     }
 }

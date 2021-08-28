@@ -26,7 +26,7 @@ public class LCApplication {
     public LCApplication(StartNewLCApplicationCommand command) {
         // TODO: perform validations here
         AggregateLifecycle.apply(new LCApplicationStartedEvent(command.getId(),
-                command.getApplicantId(), command.getClientReference()));
+                command.getApplicantId(), command.getClientReference(), LCState.DRAFT));
     }
 
     @CommandHandler

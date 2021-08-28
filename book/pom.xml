@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.premonition</groupId>
+        <groupId>com.premonition.ddd.book</groupId>
         <artifactId>ddd-book-java-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -16,6 +16,20 @@
     <name>Implementing Domain-Driven Design with Java - Book</name>
     <description>Implementing Domain-Driven Design with Java</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ddd-book-java-ch05</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ddd-book-java-ch06</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ddd-book-java-ch07</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <defaultGoal>process-resources</defaultGoal>
         <plugins>

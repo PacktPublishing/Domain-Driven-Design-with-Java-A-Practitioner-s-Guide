@@ -145,7 +145,7 @@ From the eventstorming session in the previous chapter, we have the following co
 skinparam handwritten true
 skinparam CloudFontName "Gloria Hallelujah"
 cloud Commands {
-    cloud "Start LC Application"
+    cloud "Create LC Application"
     cloud "Update LC Application"
     cloud "Submit LC Application"
     cloud "Validate Product"

@@ -63,7 +63,19 @@ Let's implement each of these steps to see how this works for our LC issuance ap
 
 ==== Tooling choices
 
+In a CQRS application, there is a separation between the command and query side. At this time, this separation is logical in our application because both the command and query side are running as components within the same application process. To illustrate the concepts, we will use conveniences provided by the Axon framework to implement the query side in this chapter. In Chapter 10, we will look at how it may not be necessary to use a specialized framework (like Axon) to implement the query side.
+
 === Implementing the query side
+When implementing the query side, we have two concerns to solve for:
+
+1. Consuming domain events and persisting one or more query models.
+2. Exposing the query model as an API.
+
+.Query side dissected
+[.text-center]
+image::cqrs/cqrs-query-side-dissected.png[]
+
+Before we start implementing these concerns, let's identify the queries we need to implement for our LC issuance application.
 
 ==== Identifying queries
 From the eventstorming session, we have the following queries to start with:
@@ -88,9 +100,26 @@ cloud "Queries\n" {
 @enduml
 ....
 
+The queries marked in green, all require us to expose a collection of LCs in various states. To represent this, we can create an `LCView` as shown here:
+
+The `LCView` class is an extremely simple object devoid of any logic.
+[source,java,linenum]
+....
+public class LCView {
+
+    private LCApplicationId id;
+    private String applicantId;
+    private String clientReference;
+    private LCState state;
+
+    // Getters and setters omitted for brevity
+}
+....
+
 These query models are an absolute necessity to implement basic functionality dictated by business requirements. But it is possible and very likely that we will need additional query models as the system requirements evolve. We will enhance our application to support these queries as and when the need arises.
 
-=== Consume events
+
+==== Creating the query model
 
 As seen in chapter 5, when starting a new LC application, the importer sends a `StartNewLCApplicationCommand`, which results in the `LCApplicationStartedEvent` being emitted as shown here:
 
@@ -114,25 +143,97 @@ Let's write an event processing component which will listen to this event and co
 [source,java,linenum]
 ....
 import org.axonframework.eventhandling.EventHandler;
+import org.springframework.stereotype.Component;
 
+@Component
 class LCApplicationStartedEventHandler {
 
-    @EventHandler                                     // <1>
-    public void on(LCApplicationStartedEvent event) { // <2>
-        // Construct a query model here
+    @EventHandler                                      // <1>
+    public void on(LCApplicationStartedEvent event) {
+        LCView view = new LCView(event.getId(),
+                        event.getApplicantId(),
+                        event.getClientReference(),
+                        event.getState());             // <2>
+        // Perform any transformations to optimize access
+        repository.save(view);                         // <3>
     }
 }
 ....
 <1> To make any method an event listener, we annotate it with the `@EventHandler` annotation.
 <2> The handler method needs to specify the event that we intend to listen to. There are other arguments that are supported for event handlers. Please refer to the Axon framework documentation for more information.
-
+<3> We finally save the view into an appropriate query store. When persisting this data, we should consider storing it in a form that is optimized for data access. In other words, we want to reduce as much complexity and cognitive load when querying this data.
 
 NOTE: The `@EventHandler` annotation should not be confused with the `@EventSourcingHandler` annotation which we looked at in chapter 5. The `@EventSourcingHandler` annotation is used to replay events and restore aggregate state when loading event-sourced aggregates on the command side, whereas the `@EventHandler` annotation is used to listen to events outside the context of the aggregate. In other words, the `@EventSourcingHandler` annotation is used exclusively within aggregates, whereas the `@EventHandler` annotation can be used anywhere there is a need to consume domain events. In this case, we are using it to construct a query model.
 
+==== Query side persistence choices
+Segregating the query side this way enables us to choose a persistence technology most appropriate for the problem being solved on the query side. For example, if extreme performance and simple filtering criteria are prime, it may be prudent to choose an in-memory store like Redis or MemCached. If complex search criteria and large datasets are to be supported, then we may want to consider something like ElasticSearch. Or we may even simply choose to stick with just a relational database. The point we would like to emphasize is that employing CQRS affords a level of flexibility that was previously not available to us.
 
-=== Persisting a query (read) model
+==== Consuming the query model
+Applicants usually like to view the LCs they created, specifically those in the draft state. Let's look at how we can implement this functionality. Let's start by defining a simple object to capture the query criteria:
 
-=== Creating additional query (read) models
+[source,java,linenum]
+....
+import org.springframework.data.domain.Pageable;
+
+public class MyLCsQuery {
+
+    private String applicantId;
+    private LCState state;
+    private Pageable page;
+
+    // Getters and setters omitted for brevity
+}
+....
+
+Let's implement the query to retrieve the results for these criteria:
+
+[source,java,linenum]
+....
+import org.axonframework.queryhandling.QueryHandler;
+
+public interface LCViewRepository extends JpaRepository<LCView, LCApplicationId> {
+
+    Page<LCView> findByApplicantIdAndState(         // <1>
+            String applicantId,
+            LCState state,
+            Pageable page);
+
+    @QueryHandler                                   // <2>
+    default Page<LCView> on(MyDraftLCsQuery query) {
+        return findByApplicantIdAndState(           // <3>
+                query.getApplicantId(),
+                LCState.DRAFT,
+                query.getPage());
+    }
+}
+....
+<1> This is the dynamic spring data finder method.
+<2> The `@QueryHandler` annotation provided by Axon framework routes query requests to the respective handler.
+<3> Finally, we invoke the finder method to allow to return results.
+
+To connect this to the UI, we add a new method in the `BackendService` (originally introduced in Chapter 6) to invoke the query as shown here:
+
+[source,java,linenum]
+....
+import org.axonframework.queryhandling.QueryGateway;
+
+public class BackendService {
+
+    private final QueryGateway queryGateway;                    // <1>
+
+    public List<LCView> findMyDraftLCs(String applicantId) {
+        return queryGateway.query(                              // <2>
+                new MyDraftLCsQuery(applicantId),
+                        ResponseTypes.multipleInstancesOf(LCView.class))
+                .join();
+
+    }
+}
+....
+<1> The Axon framework provides the `QueryGateway` convenience that allows us to invoke the query. For more details on how to use the `QueryGateway`, please refer to the Axon framework documentation.
+<2> We execute the query using the `MyDraftLCsQuery` object.
+
+==== Creating additional query (read) models
 
 === Historic event replays
 
