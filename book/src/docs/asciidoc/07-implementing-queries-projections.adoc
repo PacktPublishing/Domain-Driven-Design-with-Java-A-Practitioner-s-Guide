@@ -31,18 +31,10 @@ In <<_domain_analysis_and_modeling,Chapter 4 - Domain analysis and modeling>>, w
 [.text-center]
 image::event-storming/05-query-models.png[]
 
-As mentioned previously, we are making use of the CQRS architecture pattern to create the solution. For a detailed explanation on why this is a sound method to employ, please refer to the <<_why_cqrs,Why CQRS>> section in <<_implementing_domain_logic,Chapter 5 - Implementing Domain Logic>>. In the diagram above, the *green* stickies represent *read/query models*. These query models are required when validating a command (for example: list of valid product identifiers when processing the `ValidateProduct` command) or if information is simply required to be presented to the user (for example: a list of LCs created by an applicant).
+As mentioned previously, we are making use of the CQRS architecture pattern to create the solution. For a detailed explanation on why this is a sound method to employ, please refer to the "<<_when_to_use_cqrs, When to use CQRS>>" section in <<_where_does_ddd_fit,Chapter 3>>. In the diagram above, the *green* stickies represent *read/query models*. These query models are required when validating a command (for example: list of valid product identifiers when processing the `ValidateProduct` command) or if information is simply required to be presented to the user (for example: a list of LCs created by an applicant). Let’s look at what it means to apply CQRS in practical terms for the query side.
 
-=== Applying CQRS
-As covered in chapter 3, the CQRS pattern separates write (operations that mutate state) and read (operations that answer questions) operations into distinct (logical and/or physical) components from an architecture perspective. Let’s look at what it means to apply CQRS in practical terms.
-
-==== Why CQRS?
-As we have seen previously, in a CQRS-based system, there are distinct sets of models:
-
-* One for the command side
-* One or more for the query side
-
-In chapter 5, we saw how to publish events when a command is successfully processed. Now, let's look at how we can construct a query model by listening to these domain events. Logically, this will look something like how it is depicted here:
+=== Implementing the query side
+In <<_implementing_the_command_side,Chapter 5>>, we examined how to publish events when a command is successfully processed. Now, let's look at how we can construct a query model by listening to these domain events. Logically, this will look something like how it is depicted here:
 
 .CQRS application -- query side
 [.text-center]
@@ -65,7 +57,6 @@ Let's implement each of these steps to see how this works for our LC issuance ap
 
 In a CQRS application, there is a separation between the command and query side. At this time, this separation is logical in our application because both the command and query side are running as components within the same application process. To illustrate the concepts, we will use conveniences provided by the Axon framework to implement the query side in this chapter. In Chapter 10, we will look at how it may not be necessary to use a specialized framework (like Axon) to implement the query side.
 
-=== Implementing the query side
 When implementing the query side, we have two concerns to solve for:
 
 1. Consuming domain events and persisting one or more query models.

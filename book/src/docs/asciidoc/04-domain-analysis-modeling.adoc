@@ -5,11 +5,11 @@ ifndef::imagesdir[:imagesdir: images]
 == Domain Analysis and Modeling
 
 [quote,Chinese Proverb]
-He who asks a question remains a fool for five minutes.He who does not ask remains a fool forever.
+He who asks a question remains a fool for five minutes. He who does not ask remains a fool forever.
 
 === Introduction
 
-As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail.Arriving at a shared understanding and creating a useful domain model necessitates high degrees of collaboration with domain experts.In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
+As we saw in the previous chapter, misinterpreted requirements cause a significant portion of software projects to fail. Arriving at a shared understanding and creating a useful domain model necessitates high degrees of collaboration with domain experts. In this chapter, we will introduce the sample application we will use throughout the book and explore modeling techniques such as domain storytelling and eventstorming to enhance our collective understanding of the problem in a reliable and structured manner.
 
 The following topics will be covered in this chapter:
 

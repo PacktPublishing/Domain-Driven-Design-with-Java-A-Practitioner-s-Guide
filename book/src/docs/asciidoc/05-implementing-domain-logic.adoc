@@ -8,7 +8,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote,Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic.In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates.The list of topics to be covered is as follows:
+In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates.The list of topics to be covered is as follows:
 
 * Identifying aggregates
 * Handling commands and emitting events
@@ -16,7 +16,7 @@ In the Command Query Responsibility Segregation (CQRS) section, we describe how 
 * Persisting aggregates
 * Performing validations
 
-By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner.You will also learn how to decouple your domain model from persistence concerns.Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
+By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns.Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
@@ -36,40 +36,11 @@ In the previous chapter, we discussed eventstorming as  a lightweight method to 
 [.text-center]
 image::event-storming/05-query-models.png[]
 
-As mentioned previously, the *blue* stickies in this diagram represent *commands*. We will be using the Command Query Responsibility Segregation (CQRS) pattern as a high level architecture approach to implement the domain logic for our LC issuance application. Let's examine the mechanics of using CQRS and why we are using it and how it can result in an elegant solution.
+As mentioned previously, the *blue* stickies in this diagram represent *commands*. We will be using the  <<_cqrs_pattern,Command Query Responsibility Segregation (CQRS)>> pattern as a high level architecture approach to implement the domain logic for our LC issuance application. Let's examine the mechanics of using CQRS and how it can result in an elegant solution. For a recap of what CQRS is and when it is appropriate to apply this pattern, please refer to the "<<_when_to_use_cqrs, When to use CQRS>>" section in <<_where_does_ddd_fit,Chapter 3>>.
 
-=== Applying CQRS
-As covered in chapter 3, the CQRS pattern separates *write* (operations that mutate state) and *read* (operations that answer questions) operations into distinct (logical and/or physical) components from an architecture perspective. Let's look at what it means to apply CQRS in practical terms.
+NOTE: CQRS is by no means a silver bullet. Although it is general-purpose enough to be used in a variety of scenarios, it is a paradigm shift as applied to mainstream software problems. Like any other architecture decision, you should apply due diligence when choosing to adopt CQRS to your situation.
 
-==== Recap: What is CQRS
-In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates (commands) and enquiries. This is depicted in the following diagram:
-
-.Traditional versus CQRS Architecture
-image::cqrs/traditional-vs-cqrs-architecture.png[]
-
-NOTE: We depict multiple query models above because it is possible (but not necessary) to create more than one query model, depending on the kinds of query use cases that need to be supported.
-
-For this to work predictably, the query model(s) need to be kept in sync with the write models (we will examine some of the techniques to do that in detail later.
-
-[#_why_cqrs]
-==== Why CQRS?
-The traditional, single-model approach works well for simple, CRUD-style applications, but starts to become unwieldy for more complex scenarios.We discuss some of these scenarios below:
-
-* *Volume imbalance between read and writes*: In most systems, read operations often outnumber write operations by significant orders of magnitude. For example, consider the number of times a trader checks stock prices vs. the number of times they actually transact (buy or sell stock trades). It is also usually true that write operations are the ones that make businesses money. Having a single model for both reads and writes in a system with a majority of read operations can overwhelm a system to an extent where write performance can start getting affected.
-
-* *Need for multiple read representations*: When working with relatively complex systems, it is not uncommon to require more than one representation of the same data. For example, when looking at personal health data, one may want to look at a daily, weekly, monthly view. While these views can be computed on the fly from the _raw_ data, each transformation (aggregation, summarization, etc.) adds to the cognitive load on the system. Several times, it is not possible to predict ahead of time, the nature of these requirements. By extension, it is not feasible to design a single canonical model that can provide answers to all these requirements. Creating domain models specifically designed to meet a focused set of requirements can be much easier.
-
-* *Different security requirements*: Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
-
-* *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern.For query-side use cases, we create models as needed that are distinct from the command-side model.This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases.It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
-
-NOTE: CQRS is by no means a silver bullet.Although it is general-purpose enough to be used in a variety of scenarios, it is a paradigm shift as applied to mainstream software problems.Like any other architecture decision, you should apply due diligence when choosing to adopt CQRS to your situation.
-
-Let’s look at how this works in practice by implementing a representative sliver of the Letter of Credit application using the Spring and Axon frameworks.
-
-==== Tooling choices
-
-Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html[essay]footnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the http://axonframework.org/[Axon Framework]footnote:[http://axonframework.org/] to implement application functionality as we have real-world experience of having used in large scale enterprise development.There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
+Let’s look at how this works in practice by implementing a representative sliver of the *command* side of the Letter of Credit application using the Spring and Axon frameworks.
 
 [#_implementing_the_command_side]
 === Implementing the command side
@@ -87,6 +58,10 @@ The high level sequence on the command side is described here:
 5. The external world is notified by publishing these domain events onto an event bus. The event bus is an infrastructure component onto which events are published.
 
 Let's look at how we can implement this in the context of our Letter of Credit (LC) issuance application.
+
+==== Tooling choices
+
+Implementing CQRS does not require the use of any framework. Greg Young, who is considered the father of the CQRS pattern, advises against rolling our own CQRS framework in this https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html[essay]footnote:[https://ordina-jworks.github.io/domain-driven%20design/2016/02/02/A-Decade-Of-DDD-CQRS-And-Event-Sourcing.html], which is worth taking a look at. Using a _good_ framework can help enhance developer effectiveness and accelerate the delivery of business functionality, while abstracting the low-level plumbing and non-functional requirements without limiting flexibility. In this book we will make use of the http://axonframework.org/[Axon Framework]footnote:[http://axonframework.org/] to implement application functionality as we have real-world experience of having used it in large scale enterprise development with success. There are other frameworks that work comparably, like https://www.lagomframework.com/[Lagom Framework]footnote:[https://www.lagomframework.com/] and https://eventuate.io/[Eventuate]footnote:[https://eventuate.io/] that are worth exploring as well.
 
 ==== Bootstrapping the application
 
@@ -354,7 +329,7 @@ This was a whirlwind introduction to a simple event-driven system. We still need
 
 [#_persisting_aggregates]
 === Persisting aggregates
-When working with any system of even moderate complexity, we are required to make interactions durable.That is, interactions need to outlast system restarts, crashes, etc.So the need for persistence is a given.While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution.We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
+When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc.So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
 
 1. State stored
 2. Event sourced
@@ -423,7 +398,7 @@ lc_application }o--|| advising_bank
 lc_application }o--|| issuing_bank
 @enduml
 ....
-Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity.When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_.This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information.We will look at this in more detail below.
+Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity.When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_.This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information. We will look at this in more detail below.
 
 [#_event_sourced_aggregates]
 ==== Event sourced aggregates
@@ -990,4 +965,4 @@ With this knowledge, we should be able to implement robust, well encapsulated, e
 
 1. Refer to section <<_identifying_aggregates>>
 2. Refer to section <<_persisting_aggregates>>, note down the pros and cons of state stored and event sourced approach, and discuss the reasons for your choice with your teammates.
-3. Refer to section <<_why_cqrs>> to list down the advantages of the approach versus the traditional approach.  Share the reasoning with your teammates.
+3. Refer to section <<_when_to_use_cqrs>> to list down the advantages of the approach versus the traditional approach.  Share the reasoning with your teammates.
