@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.viewmodels;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
 import com.premonition.lc.ch07.ui.services.BackendService;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +81,8 @@ class StartLCViewModelTests {
 
         viewModel.startNewLC();
 
-        Mockito.verify(service).startNewLC("admin", "12345");
+        Mockito.verify(service).startNewLC(ApplicantId.from("admin"),
+                "12345");
     }
 
     @Test

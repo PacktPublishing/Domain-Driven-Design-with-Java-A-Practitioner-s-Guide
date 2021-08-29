@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.views;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import com.premonition.lc.ch07.domain.LCApplicationId;
 import com.premonition.lc.ch07.ui.services.BackendService;
 import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
@@ -24,6 +25,7 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -74,12 +76,13 @@ public class StartLCViewTests {
     @RunInUiThread(false)
     void shouldLaunchLCDetailsWhenCreationIsSuccessful(FxRobot robot) {
         LCApplicationId lcApplicationId = LCApplicationId.randomId();
-        when(service.startNewLC(anyString(), anyString())).thenReturn(lcApplicationId);
+        final ApplicantId applicantId = ApplicantId.from("admin");
         final String clientReference = "Test";
+        when(service.startNewLC(applicantId, clientReference)).thenReturn(lcApplicationId);
         robot.lookup("#client-reference").queryAs(TextField.class).setText(clientReference);
         robot.clickOn("#start-button");
 
-        Mockito.verify(service).startNewLC("admin", clientReference);
+        Mockito.verify(service).startNewLC(applicantId, clientReference);
 
         verifyThat("#lc-details", isVisible());
         Assertions.assertTrue(((Stage) robot.window(0)).getTitle().contains(lcApplicationId.toString()));
@@ -89,7 +92,7 @@ public class StartLCViewTests {
     @RunInUiThread(false)
     void shouldStayOnCreateLCScreenOnCreationFailure(FxRobot robot) {
         final String clientReference = "Test";
-        when(service.startNewLC("admin", clientReference)).thenThrow(new RuntimeException("Failed!!"));
+        when(service.startNewLC(ApplicantId.from("admin"), clientReference)).thenThrow(new RuntimeException("Failed!!"));
         robot.lookup(".text-field").queryAs(TextField.class).setText(clientReference);
         robot.clickOn(".button");
         verifyThat("#start-lc", isVisible());

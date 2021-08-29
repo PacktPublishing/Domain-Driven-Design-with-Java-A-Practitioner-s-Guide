@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.scopes;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import de.saxsys.mvvmfx.Scope;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
 public class LoggedInUserScope implements Scope {
     private final String loggedInUserId;
 
-    public String getLoggedInUserId() {
-        return loggedInUserId;
+    public ApplicantId getLoggedInUserId() {
+        return ApplicantId.from(loggedInUserId);
     }
 }

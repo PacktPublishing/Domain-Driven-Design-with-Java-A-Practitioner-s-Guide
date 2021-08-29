@@ -1,14 +1,12 @@
 package com.premonition.lc.ch07.domain.queries;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import com.premonition.lc.ch07.domain.LCApplicationId;
 import com.premonition.lc.ch07.domain.LCState;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -17,7 +15,8 @@ public class LCView {
 
     @EmbeddedId
     private LCApplicationId id;
-    private String applicantId;
+    @Embedded
+    private ApplicantId applicantId;
     private String clientReference;
     @Enumerated(EnumType.STRING)
     private LCState state;
@@ -34,7 +33,7 @@ public class LCView {
         return state;
     }
 
-    public String getApplicantId() {
+    public ApplicantId getApplicantId() {
         return applicantId;
     }
 }

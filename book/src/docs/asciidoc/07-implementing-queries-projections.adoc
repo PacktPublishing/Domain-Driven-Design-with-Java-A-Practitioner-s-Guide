@@ -166,19 +166,18 @@ class LCApplicationStartedEventHandler {
 NOTE: The `@EventHandler` annotation should not be confused with the `@EventSourcingHandler` annotation which we looked at in chapter 5. The `@EventSourcingHandler` annotation is used to replay events and restore aggregate state when loading event-sourced aggregates on the command side, whereas the `@EventHandler` annotation is used to listen to events outside the context of the aggregate. In other words, the `@EventSourcingHandler` annotation is used exclusively within aggregates, whereas the `@EventHandler` annotation can be used anywhere there is a need to consume domain events. In this case, we are using it to construct a query model.
 
 ==== Query side persistence choices
-Segregating the query side this way enables us to choose a persistence technology most appropriate for the problem being solved on the query side. For example, if extreme performance and simple filtering criteria are prime, it may be prudent to choose an in-memory store like Redis or MemCached. If complex search criteria and large datasets are to be supported, then we may want to consider something like ElasticSearch. Or we may even simply choose to stick with just a relational database. The point we would like to emphasize is that employing CQRS affords a level of flexibility that was previously not available to us.
+Segregating the query side this way enables us to choose a persistence technology most appropriate for the problem being solved on the query side. For example, if extreme performance and simple filtering criteria are prime, it may be prudent to choose an in-memory store like Redis or Memcached. If complex search/analytics requirements and large datasets are to be supported, then we may want to consider something like ElasticSearch. Or we may even simply choose to stick with just a relational database. The point we would like to emphasize is that employing CQRS affords a level of flexibility that was previously not available to us.
 
 ==== Consuming the query model
-Applicants usually like to view the LCs they created, specifically those in the draft state. Let's look at how we can implement this functionality. Let's start by defining a simple object to capture the query criteria:
+Applicants like to view the LCs they created, specifically those in the draft state. Let's look at how we can implement this functionality. Let's start by defining a simple object to capture the query criteria:
 
 [source,java,linenum]
 ....
 import org.springframework.data.domain.Pageable;
 
-public class MyLCsQuery {
+public class MyDraftLCsQuery {
 
-    private String applicantId;
-    private LCState state;
+    private ApplicantId applicantId;
     private Pageable page;
 
     // Getters and setters omitted for brevity
@@ -207,9 +206,9 @@ public interface LCViewRepository extends JpaRepository<LCView, LCApplicationId>
     }
 }
 ....
-<1> This is the dynamic spring data finder method.
+<1> This is the dynamic spring data finder method we will use to query the database.
 <2> The `@QueryHandler` annotation provided by Axon framework routes query requests to the respective handler.
-<3> Finally, we invoke the finder method to allow to return results.
+<3> Finally, we invoke the finder method to return results.
 
 To connect this to the UI, we add a new method in the `BackendService` (originally introduced in Chapter 6) to invoke the query as shown here:
 
@@ -231,7 +230,7 @@ public class BackendService {
 }
 ....
 <1> The Axon framework provides the `QueryGateway` convenience that allows us to invoke the query. For more details on how to use the `QueryGateway`, please refer to the Axon framework documentation.
-<2> We execute the query using the `MyDraftLCsQuery` object.
+<2> We execute the query using the `MyDraftLCsQuery` object to return results.
 
 ==== Creating additional query (read) models
 

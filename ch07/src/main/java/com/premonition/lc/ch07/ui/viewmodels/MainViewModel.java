@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.viewmodels;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import com.premonition.lc.ch07.domain.queries.LCView;
 import com.premonition.lc.ch07.ui.scopes.LoggedInUserScope;
 import com.premonition.lc.ch07.ui.services.BackendService;
@@ -28,7 +29,7 @@ public class MainViewModel implements ViewModel {
         return userScope;
     }
 
-    public String loggedInUserId() {
+    public ApplicantId loggedInUserId() {
         return userScope.getLoggedInUserId();
     }
 

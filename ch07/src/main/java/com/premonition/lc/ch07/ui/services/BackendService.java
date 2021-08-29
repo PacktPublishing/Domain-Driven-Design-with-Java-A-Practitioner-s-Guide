@@ -1,5 +1,6 @@
 package com.premonition.lc.ch07.ui.services;
 
+import com.premonition.lc.ch07.domain.ApplicantId;
 import com.premonition.lc.ch07.domain.LCApplicationId;
 import com.premonition.lc.ch07.domain.commands.SaveLCApplicationCommand;
 import com.premonition.lc.ch07.domain.queries.LCView;
@@ -25,7 +26,7 @@ public class BackendService {
         this.commandGateway = gateway;
     }
 
-    public LCApplicationId startNewLC(String applicantId, String clientReference) {
+    public LCApplicationId startNewLC(ApplicantId applicantId, String clientReference) {
         return commandGateway.sendAndWait(startApplication(applicantId, clientReference));
     }
 
@@ -33,7 +34,7 @@ public class BackendService {
         commandGateway.sendAndWait(new SaveLCApplicationCommand(model.getLcApplicationId()));
     }
 
-    public List<LCView> findMyDraftLCs(String applicantId) {
+    public List<LCView> findMyDraftLCs(ApplicantId applicantId) {
         return queryGateway.query(new MyDraftLCsQuery(applicantId),
                         ResponseTypes.multipleInstancesOf(LCView.class))
                 .join();

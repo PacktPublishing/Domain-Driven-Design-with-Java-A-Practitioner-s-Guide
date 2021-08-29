@@ -28,7 +28,7 @@ public class LCApplicationAggregateTests {
     void shouldPublishLCApplicationIsStarted() {
         fixture.given()
 
-                .when(startApplication("admin", "My Test"))
+                .when(startApplication(ApplicantId.randomId(), "My Test"))
 
                 .expectEventsMatching(exactSequenceOf(
                         messageWithPayload(any(LCApplicationStartedEvent.class)),
@@ -40,7 +40,7 @@ public class LCApplicationAggregateTests {
     void shouldSaveLCApplication() {
         final LCApplicationId id = LCApplicationId.randomId();
         final LCApplicationStartedEvent started = new LCApplicationStartedEvent(id,
-                "test-user", "Test LC", DRAFT);
+                ApplicantId.from("test-user"), "Test LC", DRAFT);
         fixture.given(started)
                 .when(new SaveLCApplicationCommand(id))
                 .expectEvents(new LCApplicationSavedEvent());
