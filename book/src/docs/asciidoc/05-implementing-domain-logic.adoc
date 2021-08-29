@@ -8,7 +8,7 @@ ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/prem
 [quote,Eric Evans]
 To communicate effectively, the code must be based on the same language used to write the requirements—the same language that the developers speak with each other and with domain experts.
 
-In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates.The list of topics to be covered is as follows:
+In the Command Query Responsibility Segregation (CQRS) section, we describe how DDD and CQRS complement each other and how the command side (write requests) is the home of business logic. In this chapter, we will implement the command side API for the LC application using Spring Boot and Axon Framework, JSR-303 Bean Validations and persistence options by contrasting between state-stored vs event-sourced aggregates. The list of topics to be covered is as follows:
 
 * Identifying aggregates
 * Handling commands and emitting events
@@ -16,7 +16,7 @@ In the Command Query Responsibility Segregation (CQRS) section, we describe how 
 * Persisting aggregates
 * Performing validations
 
-By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns.Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
+By the end of this chapter, you would have learned how to implement the core of your system (the domain logic) in a robust, well encapsulated manner. You will also learn how to decouple your domain model from persistence concerns. Finally, you will be able to appreciate how to perform DDD's tactical design using services, repositories, aggregates, entities and value objects.
 
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
@@ -329,7 +329,7 @@ This was a whirlwind introduction to a simple event-driven system. We still need
 
 [#_persisting_aggregates]
 === Persisting aggregates
-When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc.So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
+When working with any system of even moderate complexity, we are required to make interactions durable. That is, interactions need to outlast system restarts, crashes, etc. So the need for persistence is a given. While we should always endeavour to abstract persistence concerns from the rest of the system, our persistence technology choices can have a significant impact on the way we architect our overall solution. We have a couple of choices in terms of how we choose to persist aggregate state that are worth mentioning:
 
 1. State stored
 2. Event sourced
@@ -338,7 +338,7 @@ Let's examine each of these techniques in more detail below:
 
 [#_state_stored_aggregates]
 ==== State stored aggregates
-Saving current values of entities is by far the most popular way to persist state -- thanks to the immense popularity of relational databases and object-relational mapping (ORM) tools like Hibernate.And there is good reason for this ubiquity.Until recently, a majority of enterprise systems used relational databases almost as a default to create business solutions, with ORMs arguably providing a very convenient mechanism to interact with relational databases and their object representations.For example, for our `LCApplication`, it is conceivable that we could use a relational database with a structure that would look something like below:
+Saving current values of entities is by far the most popular way to persist state -- thanks to the immense popularity of relational databases and object-relational mapping (ORM) tools like Hibernate. And there is good reason for this ubiquity. Until recently, a majority of enterprise systems used relational databases almost as a default to create business solutions, with ORMs arguably providing a very convenient mechanism to interact with relational databases and their object representations. For example, for our `LCApplication`, it is conceivable that we could use a relational database with a structure that would look something like below:
 
 .Typical entity relationship model
 [.text-center]
@@ -398,13 +398,13 @@ lc_application }o--|| advising_bank
 lc_application }o--|| issuing_bank
 @enduml
 ....
-Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity.When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_.This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information. We will look at this in more detail below.
+Irrespective of whether we choose to use a relational database or a more modern NoSql store -- for instance, a document store, key-value store, column family store, etc., the style we use to persist information remains more or less the same -- which is to store the current values of the attributes of the said aggregate/entity. When the values of attributes change, we simply overwrite old values with newer ones i.e. we store the current state of aggregates and entities -- hence the name _state stored_. This technique has served us very well over the years, but there is at least one more mechanism that we can use to persist information. We will look at this in more detail below.
 
 [#_event_sourced_aggregates]
 ==== Event sourced aggregates
-Developers have also been relying on logs for a variety of diagnostic purposes for a very long time.Similarly, relational databases have been employing commit logs to store information durably almost since their inception.However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
+Developers have also been relying on logs for a variety of diagnostic purposes for a very long time. Similarly, relational databases have been employing commit logs to store information durably almost since their inception. However, developers' use of logs as a first class persistence solution for structured information in mainstream systems remains extremely rare.
 
-NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time.The diagram here illustrates the structure of a log where records are written sequentially. In essence, a log is an append-only data structure as depicted here:.
+NOTE: A log is an extremely simple, append-only sequence of immutable records ordered by time. The diagram here illustrates the structure of a log where records are written sequentially. In essence, a log is an append-only data structure as depicted here:.
 
 .The log data structure
 [.text-center]
@@ -419,7 +419,7 @@ First                                        Next Record
 +---+---+---+---+---+---+---+---+---+----+----+-=--+
 
 ....
-Writing to a log as compared to a more complex data structure like a table is a relatively simple and fast operation and can handle extremely high volumes of data while providing predictable performance.Indeed, a modern event streaming platform like Kafka makes use of this pattern to scale to support extremely high volumes.We do feel that this can be applied to act as a persistence store when processing commands in mainstream systems because this has benefits beyond the technical advantages listed above.Consider the example of an online order flow below:
+Writing to a log as compared to a more complex data structure like a table is a relatively simple and fast operation and can handle extremely high volumes of data while providing predictable performance. Indeed, a modern event streaming platform like Kafka makes use of this pattern to scale to support extremely high volumes. We do feel that this can be applied to act as a persistence store when processing commands in mainstream systems because this has benefits beyond the technical advantages listed above.Consider the example of an online order flow below:
 
 [cols="2,3,3"]
 |===
