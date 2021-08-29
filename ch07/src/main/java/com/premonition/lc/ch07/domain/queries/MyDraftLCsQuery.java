@@ -1,8 +1,6 @@
 package com.premonition.lc.ch07.domain.queries;
 
 import com.premonition.lc.ch07.domain.ApplicantId;
-import com.premonition.lc.ch07.domain.LCState;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.domain.Pageable;
 

@@ -159,7 +159,7 @@ NOTE: The `@EventHandler` annotation should not be confused with the `@EventSour
 ==== Query side persistence choices
 Segregating the query side this way enables us to choose a persistence technology most appropriate for the problem being solved on the query side. For example, if extreme performance and simple filtering criteria are prime, it may be prudent to choose an in-memory store like Redis or Memcached. If complex search/analytics requirements and large datasets are to be supported, then we may want to consider something like ElasticSearch. Or we may even simply choose to stick with just a relational database. The point we would like to emphasize is that employing CQRS affords a level of flexibility that was previously not available to us.
 
-==== Consuming the query model
+==== Exposing a query API
 Applicants like to view the LCs they created, specifically those in the draft state. Let's look at how we can implement this functionality. Let's start by defining a simple object to capture the query criteria:
 
 [source,java,linenum]
@@ -223,7 +223,13 @@ public class BackendService {
 <1> The Axon framework provides the `QueryGateway` convenience that allows us to invoke the query. For more details on how to use the `QueryGateway`, please refer to the Axon framework documentation.
 <2> We execute the query using the `MyDraftLCsQuery` object to return results.
 
-==== Creating additional query (read) models
+What we looked at above, is an example of a very simple query implementation where we have a single `@QueryHandler` to service the query results. This implementation returns results as a one-time fetch. Let's look at more complex query scenarios.
+
+==== Advanced query scenarios
+Our focus currently is on active LC applications. Maintaining issued LCs happens in a different bounded context of the system. Consider a scenario where we need to provide a consolidated view of currently active LC applications and issued LCs. In such a scenario, it is necessary to obtain this information by querying two distinct sources (ideally in parallel) -- commonly referred to as the https://www.enterpriseintegrationpatterns.com/BroadcastAggregate.html[scatter-gather]footnote:[https://www.enterpriseintegrationpatterns.com/BroadcastAggregate.html] pattern. Please refer to the section on scatter-gather queries in the Axon framework documentation for more details.
+
+In other cases, we may want to remain up to date on dynamically changing data. For example, consider a real-time stock ticker application tracking price changes. One way to implement this is by polling for price changes. A more efficient way to do this is to push price changes as and when they occur -- commonly referred to as the https://www.enterpriseintegrationpatterns.com/PublishSubscribeChannel.html[publish-subscribe]footnote:[https://www.enterpriseintegrationpatterns.com/PublishSubscribeChannel.html] pattern. Please refer to the section on subscription queries in the Axon framework documentation for more details.
+
 
 === Historic event replays
 
