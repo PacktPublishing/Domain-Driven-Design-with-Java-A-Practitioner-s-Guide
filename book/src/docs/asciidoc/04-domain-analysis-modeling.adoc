@@ -54,6 +54,9 @@ Usually the exporter has a pre-existing relationship with this bank.
 NOTE: It is important to note that the same bank can play more than one role for a given transaction.
 In the most complex cases, there can be four distinct banks involved for a transaction (sometimes even more, but we will skip those cases for brevity).
 
+==== The Letter of Credit business
+TODO
+
 ==== The LC issuance application
 
 XYZ Bank has reached out to us in order to automate the process of LC application and issuance.

@@ -230,18 +230,19 @@ Our focus currently is on active LC applications. Maintaining issued LCs happens
 
 In other cases, we may want to remain up to date on dynamically changing data. For example, consider a real-time stock ticker application tracking price changes. One way to implement this is by polling for price changes. A more efficient way to do this is to push price changes as and when they occur -- commonly referred to as the https://www.enterpriseintegrationpatterns.com/PublishSubscribeChannel.html[publish-subscribe]footnote:[https://www.enterpriseintegrationpatterns.com/PublishSubscribeChannel.html] pattern. Please refer to the section on subscription queries in the Axon framework documentation for more details.
 
-
 === Historic event replays
+The example we have looked at thus far allows us to listen to events as they occur. Consider a scenario where we need to build a new query from historic events to satisfy an unanticipated new requirement. This new requirement may necessitate the need to create a new query model or in a more extreme case, a completely new bounded context. Another scenario might be when we may need to correct a bug in the way we had built an existing query model and now need to recreate it from scratch. Given that we have a record of all events that have transpired in the event store, we can use replay events to enable us to construct both new and/or correct existing query models with relative ease.
 
-==== The need for replays
+NOTE: We have used the term _event replay_ in the context of reconstituting state of event-sourced aggregate instances. The event replay mentioned here, although similar in concept, is still very different. In the case of domain object event replay, we work with a single aggregate root instance and only load events for that one instance. In this case though, we will likely work with events that span more than one aggregate.
+
+Let's look at how the different types of replays and how we can use each of them.
 
 ==== Types of replays
+When replaying events, there are at least two types of replays depending on the requirements we need to meet. Let's look at each type in turn:
 
-===== Full event replays
+* *Full event replay* is one where we replay all the events in the event store. This can be used in a scenario where we need to support a completely new bounded context which is dependent on this sub-domain. This can also be used in cases where we need to support a completely new query model or reconstruct an existing, erroneously built query model. Depending on the number of events in the event store, this can be a fairly long and complex process.
 
-===== Partial event replays
-
-===== Adhoc event replays
+* *Partial/Adhoc event replay* is one where we need to replay all the events on a subset of aggregate instances or a subset of events on all aggregate instances or a combination of both. When working with partial event replays, we will need to specify filtering criteria to select subsets of aggregate instances and events. This means that the event store needs to have the flexibility to support these use cases. Using specialized event store solutions (like https://axoniq.io/product-overview/axon[Axon Server]footnote:[https://axoniq.io/product-overview/axon] and https://www.eventstore.com/eventstoredb[EventStoreDB]footnote:[https://www.eventstore.com/eventstoredb] to name a few) can be extremely beneficial.
 
 ==== Event replay considerations
 
@@ -249,3 +250,4 @@ In other cases, we may want to remain up to date on dynamically changing data. F
 
 ===== Optimization techniques
 
+===== Event upcasting
