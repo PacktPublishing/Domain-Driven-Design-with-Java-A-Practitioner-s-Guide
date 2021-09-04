@@ -106,6 +106,7 @@ skinparam State {
 }
 
 state "Software Project" as Project {
+state "Software Project" as Project {
   state S1 as "Low Morale and Motivation"
   state S2 as "Low Code Quality"
   state S3 as "High Technical Debt"
@@ -144,7 +145,7 @@ skinparam monochrome true
 ++ Interoperability
 ++ Manageability
 ++ Recoverability
-**[#darkgray] Usability
+++ Usability
 -- Availability
 -- Capacity
 -- Performance

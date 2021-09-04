@@ -53,6 +53,10 @@ NOTE: Note how there can exist more than one query side component to handle resp
 
 Let's implement each of these steps to see how this works for our LC issuance application.
 
+==== Queries, filters, views and projections
+
+* Query: A request for data from a data source
+
 ==== Tooling choices
 
 In a CQRS application, there is a separation between the command and query side. At this time, this separation is logical in our application because both the command and query side are running as components within the same application process. To illustrate the concepts, we will use conveniences provided by the Axon framework to implement the query side in this chapter. In Chapter 10, we will look at how it may not be necessary to use a specialized framework (like Axon) to implement the query side.
@@ -152,7 +156,7 @@ class LCApplicationStartedEventHandler {
 ....
 <1> To make any method an event listener, we annotate it with the `@EventHandler` annotation.
 <2> The handler method needs to specify the event that we intend to listen to. There are other arguments that are supported for event handlers. Please refer to the Axon framework documentation for more information.
-<3> We finally save the view into an appropriate query store. When persisting this data, we should consider storing it in a form that is optimized for data access. In other words, we want to reduce as much complexity and cognitive load when querying this data.
+<3> We finally save the view/projection into an appropriate query store. When persisting this data, we should consider storing it in a form that is optimized for data access. In other words, we want to reduce as much complexity and cognitive load when querying this data.
 
 NOTE: The `@EventHandler` annotation should not be confused with the `@EventSourcingHandler` annotation which we looked at in chapter 5. The `@EventSourcingHandler` annotation is used to replay events and restore aggregate state when loading event-sourced aggregates on the command side, whereas the `@EventHandler` annotation is used to listen to events outside the context of the aggregate. In other words, the `@EventSourcingHandler` annotation is used exclusively within aggregates, whereas the `@EventHandler` annotation can be used anywhere there is a need to consume domain events. In this case, we are using it to construct a query model.
 
@@ -245,9 +249,56 @@ When replaying events, there are at least two types of replays depending on the 
 * *Partial/Adhoc event replay* is one where we need to replay all the events on a subset of aggregate instances or a subset of events on all aggregate instances or a combination of both. When working with partial event replays, we will need to specify filtering criteria to select subsets of aggregate instances and events. This means that the event store needs to have the flexibility to support these use cases. Using specialized event store solutions (like https://axoniq.io/product-overview/axon[Axon Server]footnote:[https://axoniq.io/product-overview/axon] and https://www.eventstore.com/eventstoredb[EventStoreDB]footnote:[https://www.eventstore.com/eventstoredb] to name a few) can be extremely beneficial.
 
 ==== Event replay considerations
+The ability to replay events and create new query models can be invaluable. However, like everything else, there are considerations that we need to keep in mind when working with replays. Let's examine some of these in more detail:
+
+===== Event store design
+As mentioned in Chapter 5, when working with event-sourced aggregates, we persist immutable events in the persistence store. The primary use-cases that we need to support are:
+
+1. Provide consistent and predictable *write* performance when acting as an append-only store.
+2. Provide consistent and predictable *read* performance when querying for events using the aggregate identifier.
+
+However, replays (especially partial/adhoc) require the event store to support much richer querying capabilities. Consider a scenario where we found an issue where the amount is incorrectly reported for LCs that were approved during a certain time period only for a certain currency. To fix this issue, we need to:
+
+1. Identify affected LCs from the event store.
+2. Fix the issue in the application.
+3. Reset the query store for these affected aggregates
+4. Do a replay of a subset of events for the affected aggregates and reconstruct the query model.
+
+Identifying affected aggregates from the event store can be tricky if we don't support querying capabilities that allow us to introspect the event payload. Even if this kind of adhoc querying were to be supported, these queries can adversely impact command handling performance of the event store. One of the primary reasons to employ CQRS was to make use of query-side stores for such complex read scenarios.
+
+Event replays seem to introduce a chicken and egg problem where the query store has an issue which can only be corrected by querying the event store. A few options to mitigate this issue are discussed here:
+
+* *General purpose store*: Choose an event store that offers predictable performance for both scenarios (command handling and replay querying).
+* *Built-in datastore replication*: Make use of read replicas for event replay querying
+* *Distinct datastores*: Make use of two distinct data stores to solve each problem on its own (for example, use a relational database/key-value store for command handling and a search-optimized document store for event replay querying).
+
+NOTE: Do note that the *distinct datastores* approach for replays is used to satisfy an operational problem as opposed to query-side business use-cases discussed earlier in this chapter. Arguably, it is more complex because the technology team on the command side has to be equipped to maintain more than one database technology.
+
+==== Event design
+Event replays are required to reconstitute state from an event stream. In this article on what it means to be https://martinfowler.com/articles/201701-event-driven.html[event-driven]footnote:[https://martinfowler.com/articles/201701-event-driven.html], Martin Fowler talks about three different styles of events. If we employ the _event carried state transfer_ approach (in Martin's article) to reconstitute state, it might require us to only replay the latest event for a given aggregate, as opposed to replaying all the events for that aggregate in order of occurrence. While this may seem convenient, it also has its downsides:
+
+* All events may now require to carry a lot of additional information that may not be relevant to that event. Assembling all this information when publishing the event can add to the cognitive complexity on the command side.
+* The amount of data that needs to be stored and flow through the wire can increase drastically.
+* On the query side, it can increase cognitive complexity when understanding the structure of the event and processing it.
+
+In a lot of ways, this leads back to the CRUD-based vs task-based approach for APIs discussed in Chapter 5. Our general preference is to design events with as lean a payload as possible. However, your experiences may be different depending on your specific problem or situation.
 
 ===== Application availability
+In an event-driven system, it is common to accumulate an extremely large number of events over a period of time, even in a relatively simple application. Replaying a large number of events can be time-consuming. Let's look at the mechanics of how replays typically work:
+
+1. We suspend listening to new events in preparation for a replay.
+2. Clear the query store for impacted aggregates.
+3. Start an event replay for impacted aggregates.
+4. Resume listening to new events after replay is complete.
+
+Based on the above, while the replay is running (step 3 above), we may not be able to provide reliable answers to queries that are impacted by the replay. This obviously has an impact on application availability. When using event replays, care needs to be taken to ensure that SLOs (service level objectives) are continued to be met.
+
+==== Event handlers with side effects
+When replaying events, we re-trigger event handlers most likely because there was an error in the way we TODO
 
 ===== Optimization techniques
 
-===== Event upcasting
+===== Events as an API
+
+=== Filters and Projections
+
