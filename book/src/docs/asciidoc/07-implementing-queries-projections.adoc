@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: images]
 [.text-justify]
 
-== Implementing Queries and Projections (10 pages)
+== Implementing Queries (10 pages)
 [quote, Anonymous]
 The best view comes after the hardest climb.
 
@@ -52,8 +52,6 @@ The high level sequence on the query side is described here:
 NOTE: Note how there can exist more than one query side component to handle respective scenarios.
 
 Let's implement each of these steps to see how this works for our LC issuance application.
-
-==== Queries, filters, views and projections
 
 * Query: A request for data from a data source
 
@@ -156,7 +154,7 @@ class LCApplicationStartedEventHandler {
 ....
 <1> To make any method an event listener, we annotate it with the `@EventHandler` annotation.
 <2> The handler method needs to specify the event that we intend to listen to. There are other arguments that are supported for event handlers. Please refer to the Axon framework documentation for more information.
-<3> We finally save the view/projection into an appropriate query store. When persisting this data, we should consider storing it in a form that is optimized for data access. In other words, we want to reduce as much complexity and cognitive load when querying this data.
+<3> We finally save the query model into an appropriate query store. When persisting this data, we should consider storing it in a form that is optimized for data access. In other words, we want to reduce as much complexity and cognitive load when querying this data.
 
 NOTE: The `@EventHandler` annotation should not be confused with the `@EventSourcingHandler` annotation which we looked at in chapter 5. The `@EventSourcingHandler` annotation is used to replay events and restore aggregate state when loading event-sourced aggregates on the command side, whereas the `@EventHandler` annotation is used to listen to events outside the context of the aggregate. In other words, the `@EventSourcingHandler` annotation is used exclusively within aggregates, whereas the `@EventHandler` annotation can be used anywhere there is a need to consume domain events. In this case, we are using it to construct a query model.
 
@@ -294,11 +292,51 @@ In an event-driven system, it is common to accumulate an extremely large number 
 Based on the above, while the replay is running (step 3 above), we may not be able to provide reliable answers to queries that are impacted by the replay. This obviously has an impact on application availability. When using event replays, care needs to be taken to ensure that SLOs (service level objectives) are continued to be met.
 
 ==== Event handlers with side effects
-When replaying events, we re-trigger event handlers most likely because there was an error in the way we TODO
+When replaying events, we re-trigger event handlers either to fix logic that was previously erroneous or to support new functionality. Invoking most (if not all) event handlers usually results in some sort of side effect (for example, update a query store). This means that some event handlers may not be running for the first time. To prevent unwanted side effects, it is important to undo the effects of having invoked these event handlers previously or code event handlers in an idempotent manner (for example, by using an _upsert_ instead of a simple insert or an update). The effect of some event handlers can be hard (if not impossible) to undo (for example, invoking a command, sending an email or SMS). In such cases, it might be required to mark such event handlers as being ineligible to run during replay. When using the Axon framework, this is fairly simple to do:
 
-===== Optimization techniques
+[source,java,linenum]
+....
+import org.axonframework.eventhandling.DisallowReplay;
+
+class LCApplicationEventHandlers {
+    @EventHandler
+    @DisallowReplay  // <1>
+    public void on(CardIssuedEvent event) {
+        // Behavior that we don't want replayed
+    }
+}
+....
+<1> The `@DisallowReplay` (or its counterpart `@AllowReplay`) can be used to explicitly mark event handlers ineligible to run during replay.
 
 ===== Events as an API
+In an event-sourced system where events are persisted instead of domain state, it is natural for the structure of events to evolve over a period of time. Consider an example of an `BeneficiaryInformationChangedEvent` that has evolved over a period of time as shown here:
 
-=== Filters and Projections
+.Event evolution
+[.text-center]
+image::cqrs/event-evolution.png[]
 
+Given that the event store is immutable, it is conceivable that we may have one or more combinations of these event versions for a given LC. This can present a number of decisions we will need to make when performing an event replay:
+
+* The producer can simply provide the historic event as it exists in the event store and allow consumers to deal with resolving how to deal with older versions of the event.
+* The producer can upgrade older versions of events to the latest version before exposing it to the consumer.
+* Allow the consumer to specify an explicit version of the event that they are able to work with and upgrade it to that version before exposing it to the consumer.
+* Migrate the events in the event store to the latest version as evolutions occur. This may not be feasible given the immutable promise of events in the event store.
+
+Which approach you choose really depends on your specific context and the maturity of the producer/consumer ecosystem. The axon framework makes provisions for a process they call https://docs.axoniq.io/reference-guide/axon-framework/events/event-versioning#event-upcasting[*event upcasting*]footnote:[https://docs.axoniq.io/reference-guide/axon-framework/events/event-versioning#event-upcasting] that allows upgrading events just-in-time before they are consumed. Please refer to the Axon framework documentation for more details.
+
+In an event-driven system, events are your API. This means that you will need to apply the same rigor that one applies to APIs when making lifecycle management decisions (for example, versioning, deprecation, backwards compatibility, etc.).
+
+=== Summary
+In this chapter we examined how to implement the query side of a CQRS-based system. We looked at how domain events can be consumed in real-time to construct materialized views that can be used to service query APIs. We looked at the different query types that can be used to efficiently access the underlying query models. We rounded off by looking at persistence options for the query side.
+
+Finally, we looked at historic event replays and how it can be used to correct errors or introduce new functionality in an event-driven system.
+
+This chapter should give you a good idea of how to build and evolve the query side of a CQRS-based system to meet changing business requirements while retaining all the business logic on the command side.
+
+In this chapter, we looked at how to consume events in a stateless manner ( where no two event handlers have knowledge of each other's existence). In the next chapter, we will continue to look at how to consume events, but this time in a stateful manner in the form of long-running user transactions (also known as sagas).
+
+=== Questions
+
+* In your context, are you segregating commands and queries (even if the segregation is logical)?
+* What read/query models are you able to come up with?
+* What do you do if you build a query model, and it turns out to be wrong?
