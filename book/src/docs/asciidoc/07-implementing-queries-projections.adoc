@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: images]
 [.text-justify]
 
-== Implementing Queries (10 pages)
+== Implementing Queries
 [quote, Anonymous]
 The best view comes after the hardest climb.
 
