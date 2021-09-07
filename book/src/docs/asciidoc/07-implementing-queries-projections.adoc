@@ -53,8 +53,6 @@ NOTE: Note how there can exist more than one query side component to handle resp
 
 Let's implement each of these steps to see how this works for our LC issuance application.
 
-* Query: A request for data from a data source
-
 ==== Tooling choices
 
 In a CQRS application, there is a separation between the command and query side. At this time, this separation is logical in our application because both the command and query side are running as components within the same application process. To illustrate the concepts, we will use conveniences provided by the Axon framework to implement the query side in this chapter. In Chapter 10, we will look at how it may not be necessary to use a specialized framework (like Axon) to implement the query side.
