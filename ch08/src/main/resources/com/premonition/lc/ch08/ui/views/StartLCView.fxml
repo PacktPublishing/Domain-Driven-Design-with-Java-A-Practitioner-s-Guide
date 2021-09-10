@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane id="start-lc" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.premonition.lc.ch08.ui.views.StartLCView">
+    <Button id="cancel-button" fx:id="cancelButton" cancelButton="true" layoutX="480.0" layoutY="321.0"
+            mnemonicParsing="false" text="Cancel" textAlignment="CENTER">
+        <font>
+            <Font size="24.0" />
+        </font>
+    </Button>
+    <Button id="start-button" fx:id="startButton" defaultButton="true" layoutX="390.0" layoutY="321.0"
+            onAction="#start" mnemonicParsing="false" text="Start" textAlignment="CENTER">
+        <font>
+            <Font size="24.0" />
+        </font>
+    </Button>
+    <TextField id="client-reference" fx:id="clientReference" layoutX="240.0" layoutY="182.0"
+               prefHeight="26.0" prefWidth="298.0" promptText="Enter a friendly name!">
+        <font>
+            <Font size="24.0" />
+        </font>
+    </TextField>
+    <Label layoutX="117.0" layoutY="188.0" text="Reference: ">
+        <font>
+            <Font size="24.0" />
+        </font>
+    </Label>
+   <Label layoutX="100.0" layoutY="92.0" prefHeight="29.0" prefWidth="440.0"
+          text="Start by choosing an easy to remember" textAlignment="CENTER">
+      <font>
+         <Font size="24.0" />
+      </font>
+   </Label>
+   <Label layoutX="154.0" layoutY="128.0" prefHeight="29.0" prefWidth="292.0" text="reference for your new LC!" textAlignment="CENTER">
+      <font>
+         <Font size="24.0" />
+      </font>
+   </Label>
+</Pane>
