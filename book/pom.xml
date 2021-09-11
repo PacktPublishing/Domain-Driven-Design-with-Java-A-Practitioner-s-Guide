@@ -48,46 +48,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>generate-docx</id>
-            <activation>
-                <file>
-                    <exists>/usr/local/bin/pandoc</exists>
-                </file>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <configuration>
-                            <workingDirectory>${project.build.directory}/generated-docs</workingDirectory>
-                            <executable>pandoc</executable>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>generate-docx</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>
-                                        <argument>-f</argument>
-                                        <argument>docbook</argument>
-                                        <argument>-t</argument>
-                                        <argument>docx</argument>
-                                        <argument>05-implementing-domain-logic.xml</argument>
-                                        <argument>-o</argument>
-                                        <argument>05-implementing-domain-logic.docx</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

@@ -193,20 +193,6 @@
                     </configuration>
                     <executions>
                         <execution>
-                            <id>generate-docbook</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>process-asciidoc</goal>
-                            </goals>
-                            <configuration>
-                                <backend>docbook</backend>
-                                <attributes>
-                                    <toc/>
-                                    <toclevels>3</toclevels>
-                                </attributes>
-                            </configuration>
-                        </execution>
-                        <execution>
                             <id>generate-html</id>
                             <phase>generate-resources</phase>
                             <goals>
