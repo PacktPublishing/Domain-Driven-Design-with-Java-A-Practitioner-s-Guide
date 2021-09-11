@@ -13,10 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class LCApplicationId implements Serializable {
+public class ProductId implements Serializable {
+
     private UUID id;
 
-    public static LCApplicationId randomId() {
-        return new LCApplicationId(UUID.randomUUID());
+    public static ProductId randomId() {
+        return new ProductId(UUID.randomUUID());
     }
 }

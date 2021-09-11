@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: images]
 == Long-Running User Flows (10 pages)
 [quote, Daniel Reardon]
 In the long run, the pessimist may be proven right, but the optimist has a better time on the trip.
@@ -5,6 +6,10 @@ In the long run, the pessimist may be proven right, but the optimist has a bette
 Not all capabilities can be implemented in the form of a simple request-response interaction, requiring the management of complex state and interactions either with external systems or human-centric operations or both. In other cases, there may be a need to perform business logic at a certain time in the future. In this chapter, we will look at implementing both long-running user operations (sagas) and deadlines. We will also look at how we can keep track of the overall flow using log aggregation and distributed tracing. We will round off by looking at when/whether to choose explicit orchestrations components or implicit choreography.
 
 === Continuing our design journey
+
+.Recap of eventstorming session
+[.text-center]
+image::event-storming/05-query-models.png[]
 
 === Implementing Sagas
 

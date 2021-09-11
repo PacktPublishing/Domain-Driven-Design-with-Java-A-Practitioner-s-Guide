@@ -4,10 +4,16 @@ import com.premonition.lc.ch08.domain.ApplicantId;
 import com.premonition.lc.ch08.domain.LCApplicationId;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @Data
 public class StartNewLCApplicationCommand {
+    @NotNull
     private final ApplicantId applicantId;
+    @NotNull
     private final LCApplicationId id;
+    @Size(min = 4)
     private final String clientReference;
 
     private StartNewLCApplicationCommand(ApplicantId applicantId,

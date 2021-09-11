@@ -76,17 +76,5 @@ public class LCDetailsView implements FxmlView<LCDetailsViewModel> {
     }
 
     public void save(ActionEvent event) {
-        new Service<Void>() {
-
-            @Override
-            protected Task<Void> createTask() {
-                return new Action() {
-                    @Override
-                    protected void action() {
-                        viewModel.save();
-                    }
-                };
-            }
-        }.start();
     }
 }

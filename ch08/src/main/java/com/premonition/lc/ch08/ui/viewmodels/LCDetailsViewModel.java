@@ -3,6 +3,7 @@ package com.premonition.lc.ch08.ui.viewmodels;
 import com.premonition.lc.ch08.ui.models.LCDetailsModel;
 import com.premonition.lc.ch08.ui.scopes.LCScope;
 import com.premonition.lc.ch08.ui.services.BackendService;
+import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +26,7 @@ public class LCDetailsViewModel implements ViewModel {
         basics = new LCBasicsViewModel();
     }
 
+    @Initialize
     public void initialize() {
         this.setClientReference(lcScope.getClientReference());
     }
@@ -46,10 +48,6 @@ public class LCDetailsViewModel implements ViewModel {
     }
     public StringProperty stageTitleProperty() {
         return new SimpleStringProperty("LC Issuance");
-    }
-
-    public void save() {
-        service.saveLC(this.getModel());
     }
 
     public void exit() {
