@@ -29,9 +29,36 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LCApplicationAggregateTests {
 
-    private static final Money THOUSAND_DOLLARS = Money.of(1000, getCurrency("USD"));
     public static final Money FIVE_THOUSAND_DOLLARS = Money.of(5000, getCurrency("USD"));
+    private static final Money THOUSAND_DOLLARS = Money.of(1000, getCurrency("USD"));
     private FixtureConfiguration<LCApplication> fixture;
+
+    private static Item item() {
+        return Item
+                .builder()
+                .productId(ProductId.randomId())
+                .quantity(2)
+                .build();
+    }
+
+    private static Merchandise merchandise() {
+        return merchandise(Set.of(item(), item()));
+    }
+
+    private static Merchandise merchandise(Set<Item> items) {
+        return Merchandise
+                .builder()
+                .items(items)
+                .build();
+    }
+
+    private static ChangeMerchandiseCommand changeMerchandise(LCApplicationId id, Merchandise merchandise) {
+        return ChangeMerchandiseCommand
+                .builder()
+                .id(id)
+                .merchandise(merchandise)
+                .build();
+    }
 
     @BeforeEach
     void setUp() {
@@ -91,7 +118,7 @@ public class LCApplicationAggregateTests {
                         new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
                         new MerchandiseChangedEvent(id, merchandise()))
                 .when(new SubmitLCApplicationCommand(id))
-                .expectEvents(new LCApplicationSubmittedEvent(id));
+                .expectEvents(new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS));
     }
 
     @Test
@@ -110,7 +137,7 @@ public class LCApplicationAggregateTests {
                                 "My LC", LCState.DRAFT),
                         new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
                         new MerchandiseChangedEvent(id, merchandise()),
-                        new LCApplicationSubmittedEvent(id))
+                        new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS))
                 .when(new SubmitLCApplicationCommand(id))
                 .expectException(LCApplicationAlreadySubmittedException.class);
     }
@@ -134,7 +161,7 @@ public class LCApplicationAggregateTests {
                                 "My LC", LCState.DRAFT),
                         new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
                         new MerchandiseChangedEvent(id, merchandise()),
-                        new LCApplicationSubmittedEvent(id))
+                        new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS))
                 .when(changeMerchandise(id, merchandise()))
                 .expectException(LCApplicationAlreadySubmittedException.class);
     }
@@ -148,32 +175,5 @@ public class LCApplicationAggregateTests {
                                 new LCAmountChangedEvent(id, THOUSAND_DOLLARS))
                         .when(changeMerchandise(id, merchandise(Set.of())))
         );
-    }
-
-    private static Item item() {
-        return Item
-                .builder()
-                .productId(ProductId.randomId())
-                .quantity(2)
-                .build();
-    }
-
-    private static Merchandise merchandise() {
-        return merchandise(Set.of(item(), item()));
-    }
-
-    private static Merchandise merchandise(Set<Item> items) {
-        return Merchandise
-                .builder()
-                .items(items)
-                .build();
-    }
-
-    private static ChangeMerchandiseCommand changeMerchandise(LCApplicationId id, Merchandise merchandise) {
-        return ChangeMerchandiseCommand
-                .builder()
-                .id(id)
-                .merchandise(merchandise)
-                .build();
     }
 }

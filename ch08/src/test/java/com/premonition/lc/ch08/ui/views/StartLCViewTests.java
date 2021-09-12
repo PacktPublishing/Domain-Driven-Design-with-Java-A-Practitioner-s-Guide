@@ -2,8 +2,8 @@ package com.premonition.lc.ch08.ui.views;
 
 import com.premonition.lc.ch08.domain.ApplicantId;
 import com.premonition.lc.ch08.domain.LCApplicationId;
-import com.premonition.lc.ch08.ui.services.BackendService;
 import com.premonition.lc.ch08.ui.scopes.LoggedInUserScope;
+import com.premonition.lc.ch08.ui.services.BackendService;
 import com.premonition.lc.ch08.utilities.RunInUiThread;
 import com.premonition.lc.ch08.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -25,7 +25,6 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;

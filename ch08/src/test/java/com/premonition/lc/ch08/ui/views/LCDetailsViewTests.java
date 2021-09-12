@@ -2,8 +2,8 @@ package com.premonition.lc.ch08.ui.views;
 
 import com.premonition.lc.ch08.domain.LCApplicationId;
 import com.premonition.lc.ch08.ui.scopes.LCScope;
-import com.premonition.lc.ch08.ui.services.BackendService;
 import com.premonition.lc.ch08.ui.scopes.LoggedInUserScope;
+import com.premonition.lc.ch08.ui.services.BackendService;
 import com.premonition.lc.ch08.utilities.UITest;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -33,7 +33,7 @@ public class LCDetailsViewTests {
 
     @Autowired
     private ApplicationContext context;
-    private LCApplicationId lcApplicationId = LCApplicationId.randomId();
+    private final LCApplicationId lcApplicationId = LCApplicationId.randomId();
 
     @Init
     public void init() {

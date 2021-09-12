@@ -26,12 +26,6 @@ class StartLCViewModelTests {
 
     private StartLCViewModel viewModel;
 
-    @BeforeEach
-    void before() {
-        viewModel = new StartLCViewModel(4, service);
-        viewModel.setLoggedInUser(new LoggedInUserScope("admin"));
-    }
-
     @Parameters(name = "{index}: For client reference \"{0}\" start disabled should be {1}")
     public static Stream<Arguments> data() {
         return Stream.of(
@@ -43,6 +37,12 @@ class StartLCViewModelTests {
                 Arguments.of("1234", false),
                 Arguments.of("12345", false)
         );
+    }
+
+    @BeforeEach
+    void before() {
+        viewModel = new StartLCViewModel(4, service);
+        viewModel.setLoggedInUser(new LoggedInUserScope("admin"));
     }
 
     @ParameterizedTest

@@ -5,12 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.money.MonetaryAmount;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LCApplicationSubmittedEvent {
+public class LCApplicationApprovedEvent {
     private LCApplicationId lcApplicationId;
-    private MonetaryAmount amount;
 }

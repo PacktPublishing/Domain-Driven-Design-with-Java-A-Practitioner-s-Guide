@@ -76,7 +76,7 @@ public class LCApplication {
         assertPositive(amount);
         assertMerchandise(merchandise);
         assertInDraft(state);
-        AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id));
+        AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id, amount));
     }
 
     @EventSourcingHandler

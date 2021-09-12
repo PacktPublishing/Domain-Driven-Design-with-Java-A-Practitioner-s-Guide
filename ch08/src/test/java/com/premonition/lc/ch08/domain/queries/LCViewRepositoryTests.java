@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 
 import java.util.EnumSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DataJpaTest
 class LCViewRepositoryTests {
 
