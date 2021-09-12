@@ -15,10 +15,9 @@ import java.util.List;
 @Component
 public class MainViewModel implements ViewModel {
 
+    private final BackendService service;
     @InjectScope
     private LoggedInUserScope userScope;
-
-    private final BackendService service;
 
     public MainViewModel(BackendService service) {
         this.service = service;

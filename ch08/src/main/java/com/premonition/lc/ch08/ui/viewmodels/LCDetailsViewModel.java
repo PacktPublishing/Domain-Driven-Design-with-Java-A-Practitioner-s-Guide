@@ -46,6 +46,7 @@ public class LCDetailsViewModel implements ViewModel {
     public LCBasicsViewModel getBasics() {
         return basics;
     }
+
     public StringProperty stageTitleProperty() {
         return new SimpleStringProperty("LC Issuance");
     }
@@ -53,6 +54,7 @@ public class LCDetailsViewModel implements ViewModel {
     public void exit() {
 
     }
+
     private LCDetailsModel getModel() {
         return new LCDetailsModel(lcScope.getLcApplicationId(), getClientReference());
     }

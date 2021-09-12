@@ -8,7 +8,6 @@ import com.premonition.lc.ch08.domain.sagas.events.ApplicantValidatedEvent;
 import com.premonition.lc.ch08.domain.sagas.events.ProductLegalityValidatedEvent;
 import com.premonition.lc.ch08.domain.sagas.events.ProductValueValidatedEvent;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.deadline.annotation.DeadlineHandler;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.SagaLifecycle;
@@ -24,15 +23,14 @@ import java.time.Duration;
 @Saga
 public class AutoApprovalSaga {
 
-    static final String AUTO_APPROVAL_EXPIRY = "auto_approval_expiry";
     public static final Duration EXPIRY_DURATION = Duration.ofDays(30);
+    static final String AUTO_APPROVAL_EXPIRY = "auto_approval_expiry";
+    private static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
+            = Money.of(10000, Monetary.getCurrency("USD"));
     private boolean productValueValidated;
     private boolean productLegalityValidated;
     private boolean applicantValidated;
     private MonetaryAmount amount;
-    private static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
-            = Money.of(10000, Monetary.getCurrency("USD"));
-
     @Autowired
     private transient CommandGateway gateway;
 

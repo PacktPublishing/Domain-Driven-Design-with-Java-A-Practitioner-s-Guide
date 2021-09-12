@@ -43,6 +43,23 @@ public class LCApplication {
                 command.getApplicantId(), command.getClientReference(), LCState.DRAFT));
     }
 
+    private static void assertInDraft(LCState state) {
+        Assert.assertThat(state, LCState::isDraft, LCApplicationAlreadySubmittedException::new);
+    }
+
+    private static void assertMerchandise(Merchandise merchandise) {
+        Assert.assertThat(merchandise, Objects::nonNull, LCMerchandiseMissingException::new);
+    }
+
+    private static void assertPositive(MonetaryAmount amount) throws LCAmountMissingException {
+        Assert.assertThat(amount, Objects::nonNull, LCAmountMissingException::new);
+        Assert.assertThat(amount, LCApplication::isPositive, LCAmountInvalidException::new);
+    }
+
+    private static boolean isPositive(MonetaryAmount amount) {
+        return amount.isGreaterThan(Money.of(0, amount.getCurrency()));
+    }
+
     @EventSourcingHandler
     private void on(LCApplicationStartedEvent event) {
         this.id = event.getId();
@@ -72,7 +89,7 @@ public class LCApplication {
     }
 
     @CommandHandler
-    public void on(SubmitLCApplicationCommand command)  {
+    public void on(SubmitLCApplicationCommand command) {
         assertPositive(amount);
         assertMerchandise(merchandise);
         assertInDraft(state);
@@ -82,22 +99,5 @@ public class LCApplication {
     @EventSourcingHandler
     void on(LCApplicationSubmittedEvent event) {
         this.state = LCState.SUBMITTED;
-    }
-
-    private static void assertInDraft(LCState state) {
-        Assert.assertThat(state, LCState::isDraft, LCApplicationAlreadySubmittedException::new);
-    }
-
-    private static void assertMerchandise(Merchandise merchandise) {
-        Assert.assertThat(merchandise, Objects::nonNull, LCMerchandiseMissingException::new);
-    }
-
-    private static void assertPositive(MonetaryAmount amount) throws LCAmountMissingException {
-        Assert.assertThat(amount, Objects::nonNull, LCAmountMissingException::new);
-        Assert.assertThat(amount, LCApplication::isPositive, LCAmountInvalidException::new);
-    }
-
-    private static boolean isPositive(MonetaryAmount amount) {
-        return amount.isGreaterThan(Money.of(0, amount.getCurrency()));
     }
 }

@@ -16,7 +16,7 @@ public class LCApplicationStartedEventHandler {
     @EventHandler
     public void on(LCApplicationStartedEvent event) {
         final LCView lcView = new LCView(event.getId(), event.getApplicantId(),
-                                event.getClientReference(), event.getState());
+                event.getClientReference(), event.getState());
         repository.save(lcView);
         log.info("New LC with client reference '{}' started!", event.getClientReference());
     }
