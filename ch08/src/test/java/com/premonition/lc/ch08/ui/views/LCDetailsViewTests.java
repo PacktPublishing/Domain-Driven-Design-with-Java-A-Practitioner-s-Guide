@@ -28,12 +28,11 @@ import static org.testfx.api.FxAssert.verifyThat;
 @UITest
 public class LCDetailsViewTests {
 
+    private final LCApplicationId lcApplicationId = LCApplicationId.randomId();
     @MockBean
     private BackendService service;
-
     @Autowired
     private ApplicationContext context;
-    private final LCApplicationId lcApplicationId = LCApplicationId.randomId();
 
     @Init
     public void init() {
