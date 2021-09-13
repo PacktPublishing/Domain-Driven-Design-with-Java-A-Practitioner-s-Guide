@@ -3,10 +3,7 @@ package com.premonition.lc.ch08.domain;
 import com.premonition.lc.ch08.domain.commands.ChangeLCAmountCommand;
 import com.premonition.lc.ch08.domain.commands.ChangeMerchandiseCommand;
 import com.premonition.lc.ch08.domain.commands.SubmitLCApplicationCommand;
-import com.premonition.lc.ch08.domain.events.LCAmountChangedEvent;
-import com.premonition.lc.ch08.domain.events.LCApplicationStartedEvent;
-import com.premonition.lc.ch08.domain.events.LCApplicationSubmittedEvent;
-import com.premonition.lc.ch08.domain.events.MerchandiseChangedEvent;
+import com.premonition.lc.ch08.domain.events.*;
 import com.premonition.lc.ch08.domain.exceptions.LCAmountMissingException;
 import com.premonition.lc.ch08.domain.exceptions.LCApplicationAlreadySubmittedException;
 import org.axonframework.messaging.interceptors.BeanValidationInterceptor;
@@ -17,6 +14,7 @@ import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Set;
 
 import static com.premonition.lc.ch08.domain.commands.StartNewLCApplicationCommand.startApplication;
@@ -118,7 +116,20 @@ public class LCApplicationAggregateTests {
                         new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
                         new MerchandiseChangedEvent(id, merchandise()))
                 .when(new SubmitLCApplicationCommand(id))
-                .expectEvents(new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS));
+                .expectEvents(new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS))
+                .expectScheduledDeadlineWithName(Duration.ofDays(30), LCApplication.LC_APPROVAL_DEADLINE);
+    }
+
+    @Test
+    void shouldNotifyApprovers30DaysAfterSubmission() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()),
+                        new SubmitLCApplicationCommand(id))
+                .whenThenTimeElapses(Duration.ofDays(30))
+                .expectNoScheduledDeadlines();
     }
 
     @Test

@@ -4,28 +4,34 @@ import com.premonition.lc.ch08.domain.commands.ChangeLCAmountCommand;
 import com.premonition.lc.ch08.domain.commands.ChangeMerchandiseCommand;
 import com.premonition.lc.ch08.domain.commands.StartNewLCApplicationCommand;
 import com.premonition.lc.ch08.domain.commands.SubmitLCApplicationCommand;
-import com.premonition.lc.ch08.domain.events.LCAmountChangedEvent;
-import com.premonition.lc.ch08.domain.events.LCApplicationStartedEvent;
-import com.premonition.lc.ch08.domain.events.LCApplicationSubmittedEvent;
-import com.premonition.lc.ch08.domain.events.MerchandiseChangedEvent;
+import com.premonition.lc.ch08.domain.events.*;
 import com.premonition.lc.ch08.domain.exceptions.LCAmountInvalidException;
 import com.premonition.lc.ch08.domain.exceptions.LCAmountMissingException;
 import com.premonition.lc.ch08.domain.exceptions.LCApplicationAlreadySubmittedException;
 import com.premonition.lc.ch08.domain.exceptions.LCMerchandiseMissingException;
+import lombok.extern.log4j.Log4j2;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.common.Assert;
+import org.axonframework.deadline.DeadlineManager;
+import org.axonframework.deadline.annotation.DeadlineHandler;
+import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.javamoney.moneta.Money;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 import javax.money.MonetaryAmount;
+import java.time.Duration;
 import java.util.Objects;
 
 @Aggregate
+@Log4j2
 public class LCApplication {
 
+    public static final String LC_APPROVAL_DEADLINE = "lcApprovalDeadline";
     @AggregateIdentifier
     private LCApplicationId id;
     private LCState state;
@@ -89,11 +95,23 @@ public class LCApplication {
     }
 
     @CommandHandler
-    public void on(SubmitLCApplicationCommand command) {
+    public void on(SubmitLCApplicationCommand command, DeadlineManager deadlineManager) {
         assertPositive(amount);
         assertMerchandise(merchandise);
         assertInDraft(state);
         AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id, amount));
+        deadlineManager.schedule(Duration.ofDays(30), LC_APPROVAL_DEADLINE, id);
+    }
+
+    @DeadlineHandler(deadlineName = LC_APPROVAL_DEADLINE)
+    public void on(LCApplicationId lcApplicationId) {
+        AggregateLifecycle.apply(new ApprovalDeadlineReachedEvent(lcApplicationId));
+    }
+
+    @EventHandler
+    public void on(ApprovalDeadlineReachedEvent event) {
+            log.info("***LC Approval Deadline Reached for LC id: " + event.getId());
+        //Notify LC approvers to review the application and make decision
     }
 
     @EventSourcingHandler

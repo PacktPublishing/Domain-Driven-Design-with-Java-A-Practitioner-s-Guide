@@ -15,16 +15,12 @@ import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.spring.stereotype.Saga;
 import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
-import java.time.Duration;
 
 @Saga
 public class AutoApprovalSaga {
 
-    public static final Duration EXPIRY_DURATION = Duration.ofDays(30);
-    static final String AUTO_APPROVAL_EXPIRY = "auto_approval_expiry";
     private static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
             = Money.of(10000, Monetary.getCurrency("USD"));
     private boolean productValueValidated;
