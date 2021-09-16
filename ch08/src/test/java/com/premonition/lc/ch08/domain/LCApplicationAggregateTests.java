@@ -127,7 +127,7 @@ public class LCApplicationAggregateTests {
                         new MerchandiseChangedEvent(id, merchandise()))
                 .andGivenCommands(new SubmitLCApplicationCommand(id))
                 .whenThenTimeElapses(Duration.ofDays(30))
-                .expectEvents(new ApprovalDeadlineReachedEvent(id));
+                .expectEvents(new LCApprovalDeadlineReachedEvent(id));
     }
 
     @Test

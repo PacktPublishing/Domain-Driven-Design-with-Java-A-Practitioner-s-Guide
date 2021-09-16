@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApprovalDeadlineReachedEvent {
+public class LCApprovalDeadlineReachedEvent {
     private LCApplicationId id;
 }

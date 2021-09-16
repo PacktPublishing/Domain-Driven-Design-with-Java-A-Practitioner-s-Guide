@@ -119,7 +119,7 @@ public class LCApplication {
     @DeadlineHandler(deadlineName = LC_APPROVAL_DEADLINE)
     public void onApprovalDeadline(LCApplicationId lcApplicationId) {
         if (isSubmitted()) {
-            AggregateLifecycle.apply(new ApprovalDeadlineReachedEvent(lcApplicationId));
+            AggregateLifecycle.apply(new LCApprovalDeadlineReachedEvent(lcApplicationId));
         }
     }
 
@@ -135,6 +135,6 @@ public class LCApplication {
 
     @EventSourcingHandler
     void on(LCApplicationDeclinedEvent event) {
-        this.state = LCState.REJECTED;
+        this.state = LCState.DECLINED;
     }
 }

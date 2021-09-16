@@ -3,7 +3,7 @@ package com.premonition.lc.ch08.domain;
 public enum LCState {
     DRAFT,
     SUBMITTED,
-    APPROVED, REJECTED;
+    APPROVED, DECLINED;
 
     public boolean isNotDraft() {
         return this != DRAFT;
