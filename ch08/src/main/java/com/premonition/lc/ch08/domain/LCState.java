@@ -13,4 +13,7 @@ public enum LCState {
         return this == DRAFT;
     }
 
+    public boolean isSubmitted() {
+        return this == SUBMITTED;
+    }
 }

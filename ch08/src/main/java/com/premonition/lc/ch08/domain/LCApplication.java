@@ -1,27 +1,18 @@
 package com.premonition.lc.ch08.domain;
 
-import com.premonition.lc.ch08.domain.commands.ChangeLCAmountCommand;
-import com.premonition.lc.ch08.domain.commands.ChangeMerchandiseCommand;
-import com.premonition.lc.ch08.domain.commands.StartNewLCApplicationCommand;
-import com.premonition.lc.ch08.domain.commands.SubmitLCApplicationCommand;
+import com.premonition.lc.ch08.domain.commands.*;
 import com.premonition.lc.ch08.domain.events.*;
-import com.premonition.lc.ch08.domain.exceptions.LCAmountInvalidException;
-import com.premonition.lc.ch08.domain.exceptions.LCAmountMissingException;
-import com.premonition.lc.ch08.domain.exceptions.LCApplicationAlreadySubmittedException;
-import com.premonition.lc.ch08.domain.exceptions.LCMerchandiseMissingException;
+import com.premonition.lc.ch08.domain.exceptions.*;
 import lombok.extern.log4j.Log4j2;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.common.Assert;
 import org.axonframework.deadline.DeadlineManager;
 import org.axonframework.deadline.annotation.DeadlineHandler;
-import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.javamoney.moneta.Money;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 
 import javax.money.MonetaryAmount;
 import java.time.Duration;
@@ -51,6 +42,14 @@ public class LCApplication {
 
     private static void assertInDraft(LCState state) {
         Assert.assertThat(state, LCState::isDraft, LCApplicationAlreadySubmittedException::new);
+    }
+
+    private boolean isSubmitted() {
+        return state.isSubmitted();
+    }
+
+    private static void assertInSubmitted(LCState state) {
+        Assert.assertThat(state, LCState::isSubmitted, LCApplicationNotInSubmittedStateException::new);
     }
 
     private static void assertMerchandise(Merchandise merchandise) {
@@ -99,23 +98,43 @@ public class LCApplication {
         assertPositive(amount);
         assertMerchandise(merchandise);
         assertInDraft(state);
-        AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id, amount));
         deadlineManager.schedule(Duration.ofDays(30), LC_APPROVAL_DEADLINE, id);
+        AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id, amount));
+    }
+
+    @CommandHandler
+    public void on(ApproveLCApplicationCommand command, DeadlineManager deadlineManager) {
+        assertInSubmitted(state);
+        deadlineManager.cancelAll(LC_APPROVAL_DEADLINE);
+        AggregateLifecycle.apply(new LCApplicationApprovedEvent(id));
+    }
+
+    @CommandHandler
+    public void on(DeclineLCApplicationCommand command, DeadlineManager deadlineManager) {
+        assertInSubmitted(state);
+        deadlineManager.cancelAll(LC_APPROVAL_DEADLINE);
+        AggregateLifecycle.apply(new LCApplicationDeclinedEvent(id));
     }
 
     @DeadlineHandler(deadlineName = LC_APPROVAL_DEADLINE)
-    public void on(LCApplicationId lcApplicationId) {
-        AggregateLifecycle.apply(new ApprovalDeadlineReachedEvent(lcApplicationId));
-    }
-
-    @EventHandler
-    public void on(ApprovalDeadlineReachedEvent event) {
-            log.info("***LC Approval Deadline Reached for LC id: " + event.getId());
-        //Notify LC approvers to review the application and make decision
+    public void onApprovalDeadline(LCApplicationId lcApplicationId) {
+        if (isSubmitted()) {
+            AggregateLifecycle.apply(new ApprovalDeadlineReachedEvent(lcApplicationId));
+        }
     }
 
     @EventSourcingHandler
     void on(LCApplicationSubmittedEvent event) {
         this.state = LCState.SUBMITTED;
+    }
+
+    @EventSourcingHandler
+    void on(LCApplicationApprovedEvent event) {
+        this.state = LCState.APPROVED;
+    }
+
+    @EventSourcingHandler
+    void on(LCApplicationDeclinedEvent event) {
+        this.state = LCState.REJECTED;
     }
 }

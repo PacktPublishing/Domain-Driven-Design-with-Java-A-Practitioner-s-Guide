@@ -1,8 +1,6 @@
 package com.premonition.lc.ch08.domain;
 
-import com.premonition.lc.ch08.domain.commands.ChangeLCAmountCommand;
-import com.premonition.lc.ch08.domain.commands.ChangeMerchandiseCommand;
-import com.premonition.lc.ch08.domain.commands.SubmitLCApplicationCommand;
+import com.premonition.lc.ch08.domain.commands.*;
 import com.premonition.lc.ch08.domain.events.*;
 import com.premonition.lc.ch08.domain.exceptions.LCAmountMissingException;
 import com.premonition.lc.ch08.domain.exceptions.LCApplicationAlreadySubmittedException;
@@ -126,8 +124,22 @@ public class LCApplicationAggregateTests {
         fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
                                 "My LC", LCState.DRAFT),
                         new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
-                        new MerchandiseChangedEvent(id, merchandise()),
-                        new SubmitLCApplicationCommand(id))
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .whenThenTimeElapses(Duration.ofDays(30))
+                .expectEvents(new ApprovalDeadlineReachedEvent(id));
+    }
+
+    @Test
+    void shouldNotNotifyApprovers30DaysAfterSubmissionIfNotInSubmittedState() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(
+                        new SubmitLCApplicationCommand(id),
+                        new ApproveLCApplicationCommand(id))
                 .whenThenTimeElapses(Duration.ofDays(30))
                 .expectNoScheduledDeadlines();
     }
@@ -186,5 +198,57 @@ public class LCApplicationAggregateTests {
                                 new LCAmountChangedEvent(id, THOUSAND_DOLLARS))
                         .when(changeMerchandise(id, merchandise(Set.of())))
         );
+    }
+
+    @Test
+    void shouldAllowApprovingOfSubmittedLC() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .when(new ApproveLCApplicationCommand(id))
+                .expectEvents(new LCApplicationApprovedEvent(id))
+                .expectNoScheduledDeadlines();
+    }
+
+    @Test
+    void shouldAllowDecliningOfSubmittedLC() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .when(new DeclineLCApplicationCommand(id))
+                .expectEvents(new LCApplicationDeclinedEvent(id))
+                .expectNoScheduledDeadlines();
+    }
+
+    @Test
+    void shouldNotAllowApprovingOfLCNotInSubmittedState() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()),
+                        new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS),
+                        new LCApplicationDeclinedEvent(id))
+                .when(new ApproveLCApplicationCommand(id))
+                .expectNoEvents();
+    }
+
+    @Test
+    void shouldNotAllowDecliningOfLCNotInSubmittedState() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()),
+                        new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS),
+                        new LCApplicationApprovedEvent(id))
+                .when(new DeclineLCApplicationCommand(id))
+                .expectNoEvents();
     }
 }
