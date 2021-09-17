@@ -18,16 +18,21 @@ import javax.money.MonetaryAmount;
 import java.time.Duration;
 import java.util.Objects;
 
+import static com.premonition.lc.ch08.domain.LCApprovalPendingNotification.first;
+
 @Aggregate
 @Log4j2
 public class LCApplication {
 
-    public static final String LC_APPROVAL_DEADLINE = "lcApprovalDeadline";
+    public static final Duration LC_APPROVAL_REMINDER_THRESHOLD = Duration.ofDays(10);
+    static final String LC_APPROVAL_PENDING_REMINDER = "LC_APPROVAL_REMINDER";
+    private static final int MAX_APPROVAL_REMINDERS = 2;
     @AggregateIdentifier
     private LCApplicationId id;
     private LCState state;
     private MonetaryAmount amount;
     private Merchandise merchandise;
+    private int approvalReminders;
 
     @SuppressWarnings("unused")
     private LCApplication() {
@@ -42,10 +47,6 @@ public class LCApplication {
 
     private static void assertInDraft(LCState state) {
         Assert.assertThat(state, LCState::isDraft, LCApplicationAlreadySubmittedException::new);
-    }
-
-    private boolean isSubmitted() {
-        return state.isSubmitted();
     }
 
     private static void assertInSubmitted(LCState state) {
@@ -98,29 +99,37 @@ public class LCApplication {
         assertPositive(amount);
         assertMerchandise(merchandise);
         assertInDraft(state);
-        deadlineManager.schedule(Duration.ofDays(30), LC_APPROVAL_DEADLINE, id);
+        deadlineManager.schedule(LC_APPROVAL_REMINDER_THRESHOLD, LC_APPROVAL_PENDING_REMINDER, first(id));
         AggregateLifecycle.apply(new LCApplicationSubmittedEvent(id, amount));
     }
 
     @CommandHandler
     public void on(ApproveLCApplicationCommand command, DeadlineManager deadlineManager) {
         assertInSubmitted(state);
-        deadlineManager.cancelAll(LC_APPROVAL_DEADLINE);
+        deadlineManager.cancelAllWithinScope(LC_APPROVAL_PENDING_REMINDER);
         AggregateLifecycle.apply(new LCApplicationApprovedEvent(id));
     }
 
     @CommandHandler
     public void on(DeclineLCApplicationCommand command, DeadlineManager deadlineManager) {
         assertInSubmitted(state);
-        deadlineManager.cancelAll(LC_APPROVAL_DEADLINE);
+        deadlineManager.cancelAllWithinScope(LC_APPROVAL_PENDING_REMINDER);
         AggregateLifecycle.apply(new LCApplicationDeclinedEvent(id));
     }
 
-    @DeadlineHandler(deadlineName = LC_APPROVAL_DEADLINE)
-    public void onApprovalDeadline(LCApplicationId lcApplicationId) {
-        if (isSubmitted()) {
-            AggregateLifecycle.apply(new LCApprovalDeadlineReachedEvent(lcApplicationId));
+    @DeadlineHandler(deadlineName = LC_APPROVAL_PENDING_REMINDER)
+    public void on(LCApprovalPendingNotification notification, DeadlineManager deadlineManager) {
+        if (approvalReminders < MAX_APPROVAL_REMINDERS) {
+            deadlineManager.schedule(LC_APPROVAL_REMINDER_THRESHOLD, LC_APPROVAL_PENDING_REMINDER, notification.next());
+            AggregateLifecycle.apply(new LCApprovalPendingEvent(id));
+        } else {
+            AggregateLifecycle.apply(new LCApprovalPastDueEvent(id));
         }
+    }
+
+    @EventSourcingHandler
+    void on(LCApprovalPendingEvent event) {
+        approvalReminders++;
     }
 
     @EventSourcingHandler

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.Set;
 
+import static com.premonition.lc.ch08.domain.LCApplication.LC_APPROVAL_PENDING_REMINDER;
+import static com.premonition.lc.ch08.domain.LCApprovalPendingNotification.first;
 import static com.premonition.lc.ch08.domain.commands.StartNewLCApplicationCommand.startApplication;
 import static javax.money.Monetary.getCurrency;
 import static org.axonframework.test.matchers.Matchers.andNoMore;
@@ -115,11 +117,39 @@ public class LCApplicationAggregateTests {
                         new MerchandiseChangedEvent(id, merchandise()))
                 .when(new SubmitLCApplicationCommand(id))
                 .expectEvents(new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS))
-                .expectScheduledDeadlineWithName(Duration.ofDays(30), LCApplication.LC_APPROVAL_DEADLINE);
+                .expectScheduledDeadlineWithName(Duration.ofDays(10), LC_APPROVAL_PENDING_REMINDER);
     }
 
     @Test
-    void shouldNotifyApprovers30DaysAfterSubmission() {
+    void shouldTriggerApprovalPendingEventTenDaysAfterSubmission() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .whenThenTimeElapses(Duration.ofDays(10))
+                .expectEvents(new LCApprovalPendingEvent(id))
+                .expectDeadlinesMet(first(id))
+                .expectScheduledDeadlineWithName(Duration.ofDays(10), LC_APPROVAL_PENDING_REMINDER);
+    }
+
+    @Test
+    void shouldTriggerApprovalPendingEventTwentyDaysAfterSubmission() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .whenThenTimeElapses(Duration.ofDays(20))
+                .expectEvents(new LCApprovalPendingEvent(id), new LCApprovalPendingEvent(id))
+                .expectDeadlinesMet(first(id), first(id).next())
+                .expectScheduledDeadlineWithName(Duration.ofDays(10), LC_APPROVAL_PENDING_REMINDER);
+    }
+
+    @Test
+    void shouldTriggerApprovalPendingEventThirtyDaysAfterSubmission() {
         final LCApplicationId id = LCApplicationId.randomId();
         fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
                                 "My LC", LCState.DRAFT),
@@ -127,7 +157,11 @@ public class LCApplicationAggregateTests {
                         new MerchandiseChangedEvent(id, merchandise()))
                 .andGivenCommands(new SubmitLCApplicationCommand(id))
                 .whenThenTimeElapses(Duration.ofDays(30))
-                .expectEvents(new LCApprovalDeadlineReachedEvent(id));
+                .expectEvents(new LCApprovalPendingEvent(id),
+                        new LCApprovalPendingEvent(id),
+                        new LCApprovalPastDueEvent(id))
+                .expectDeadlinesMet(first(id), first(id).next(), first(id).next().next())
+                .expectNoScheduledDeadlines();
     }
 
     @Test
