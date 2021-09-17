@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProductLegalityValidatedEvent implements Decisionable {
+public class ProductLegalityValidatedEvent {
     private LCApplicationId lcApplicationId;
     private ProductId productId;
     private Decision decision;
