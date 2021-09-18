@@ -1,4 +1,4 @@
-package com.premonition.lc.ch08.domain.events;
+package com.premonition.lc.ch08.domain.events.outbound;
 
 import com.premonition.lc.ch08.domain.ApplicantId;
 import com.premonition.lc.ch08.domain.LCApplicationId;

@@ -9,7 +9,7 @@ To accomplish a difficult task, one must first make it easy.
 
 The essence of Domain Driven Design(DDD) is a lot about capturing the business process and user intent a lot more closely. In the previous chapter, we designed a set of APIs without paying a lot of attention to how those APIs would get consumed by its eventual users. In this chapter, we will design the GUI for the LC application using the https://openjfx.com/[JavaFX]footnote:[https://openjfx.com/] framework. As part of that, we will examine how this approach of designing APIs in isolation can cause an impedance mismatch between the producers and the consumers. We will examine the consequences of this _impedance mismatch_ and how task-based UIs can help cope with this mismatch a lot better.
 
-In this chapter,we will implement the UI for LC Application and wire up the integration to the backend APIs.  The list of topics to be covered is as follows:
+In this chapter, we will implement the UI for LC Application and wire up the integration to the backend APIs.  The list of topics to be covered is as follows:
 
 * API styles
 * UI design patterns

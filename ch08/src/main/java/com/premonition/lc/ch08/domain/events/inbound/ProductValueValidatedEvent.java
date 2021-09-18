@@ -1,5 +1,6 @@
-package com.premonition.lc.ch08.domain.sagas.events;
+package com.premonition.lc.ch08.domain.events.inbound;
 
+import com.premonition.lc.ch08.domain.Decision;
 import com.premonition.lc.ch08.domain.LCApplicationId;
 import com.premonition.lc.ch08.domain.ProductId;
 import lombok.AllArgsConstructor;

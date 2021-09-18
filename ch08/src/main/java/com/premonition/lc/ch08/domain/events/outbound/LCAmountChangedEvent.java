@@ -1,13 +1,17 @@
-package com.premonition.lc.ch08.domain.events;
+package com.premonition.lc.ch08.domain.events.outbound;
 
 import com.premonition.lc.ch08.domain.LCApplicationId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.money.MonetaryAmount;
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class LCApprovalPendingEvent {
+@NoArgsConstructor
+public class LCAmountChangedEvent {
     private LCApplicationId id;
+    private MonetaryAmount amount;
+
 }

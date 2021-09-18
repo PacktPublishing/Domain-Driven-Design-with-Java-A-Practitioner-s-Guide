@@ -1,7 +1,7 @@
 package com.premonition.lc.ch08.domain;
 
 import com.premonition.lc.ch08.domain.commands.*;
-import com.premonition.lc.ch08.domain.events.*;
+import com.premonition.lc.ch08.domain.events.outbound.*;
 import com.premonition.lc.ch08.domain.exceptions.LCAmountMissingException;
 import com.premonition.lc.ch08.domain.exceptions.LCApplicationAlreadySubmittedException;
 import org.axonframework.messaging.interceptors.BeanValidationInterceptor;

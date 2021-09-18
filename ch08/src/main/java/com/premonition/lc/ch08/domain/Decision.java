@@ -1,4 +1,4 @@
-package com.premonition.lc.ch08.domain.sagas.events;
+package com.premonition.lc.ch08.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

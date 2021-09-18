@@ -1,7 +1,7 @@
 package com.premonition.lc.ch08.domain;
 
 import com.premonition.lc.ch08.domain.commands.*;
-import com.premonition.lc.ch08.domain.events.*;
+import com.premonition.lc.ch08.domain.events.outbound.*;
 import com.premonition.lc.ch08.domain.exceptions.*;
 import lombok.extern.log4j.Log4j2;
 import org.axonframework.commandhandling.CommandHandler;

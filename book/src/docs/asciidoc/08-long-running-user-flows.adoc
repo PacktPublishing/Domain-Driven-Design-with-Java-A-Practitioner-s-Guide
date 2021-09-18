@@ -1,9 +1,29 @@
 ifndef::imagesdir[:imagesdir: images]
+
+[.text-justify]
 == Long-Running User Flows (10 pages)
 [quote, Daniel Reardon]
 In the long run, the pessimist may be proven right, but the optimist has a better time on the trip.
 
-Not all capabilities can be implemented in the form of a simple request-response interaction, requiring the management of complex state and interactions either with external systems or human-centric operations or both. In other cases, there may be a need to perform business logic at a certain time in the future. In this chapter, we will look at implementing both long-running user operations (sagas) and deadlines. We will also look at how we can keep track of the overall flow using log aggregation and distributed tracing. We will round off by looking at when/whether to choose explicit orchestrations components or implicit choreography.
+In the previous chapters, we have looked at handling commands and queries within the context of a single aggregate. All the scenarios we have looked at thus far, have been limited to a single interaction. However, not all capabilities can be implemented in the form of a simple request-response interaction, requiring coordination across multiple external systems or human-centric operations or both. In other cases, there may be a need to react to triggers that are indeterministic (those that may only occur conditionally) and/or be time-bound (**deadline**). This may require managing business transactions across multiple bounded contexts that may run over a long duration of time, while continuing to maintain consistency (**saga**).
+
+There are at least two common patterns to implement the saga pattern:
+
+* *Explicit orchestration*: A designated component acts as a centralized coordinator -- where the system relies on the coordinator to react to domain events to manage the flow.
+* *Implicit choreography*: No single component is required to act as a centralized coordinator -- where the components simply react to domain events in other components to manage the flow.
+
+By the end of this chapter, you will have learned how to implement sagas using both techniques. You will also have learnt how to handle exceptions using retries, compensating actions and deadlines. You will finally be able to appreciate when/whether to choose an explicit orchestrator or simply stick to implicit choreography without resorting to the use of potentially expensive distributed transactions.
+
+=== Technical requirements
+* JDK 1.8+ (We have used Java 17 to compile sample sources)
+* Spring Boot 2.4.x
+* mvvmFX 1.8 (https://sialcasa.github.io/mvvmFX/)
+* JUnit 5.7.x (Included with spring boot)
+* TestFX (for UI testing)
+* OpenJFX Monocle (for headless UI testing)
+* Project Lombok (To reduce verbosity)
+* Axon server to act as an event store
+* Maven 3.x
 
 === Continuing our design journey
 
@@ -11,12 +31,44 @@ Not all capabilities can be implemented in the form of a simple request-response
 [.text-center]
 image::event-storming/05-query-models.png[]
 
-=== Implementing Sagas
+=== Implementing sagas
 
-=== Taking Care of Deadlines
+==== Orchestration
 
-=== Distributed Exception Handling
+==== Choreography
 
-=== Keeping Track of the Overall Flow
+==== Orchestration versus choreography
 
-=== Deciding between Orchestration and Choreography
+=== Handling distributed exceptions
+
+==== Types of exceptions
+===== Business exceptions
+===== System exceptions
+
+==== Recovery
+===== Automated recovery
+===== Manual recovery
+
+===== Compensating actions
+===== Retries
+
+=== Handling deadlines
+
+=== Summary
+
+=== Questions
+
+=== Further reading
+
+[cols="3,3,6"]
+|===
+|Title |Author |Location
+
+|Example
+|Author
+|https://www.example.com
+
+|Example
+|Author
+|https://www.example.com
+|===

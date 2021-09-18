@@ -1,6 +1,6 @@
 package com.premonition.lc.ch08.domain.queries;
 
-import com.premonition.lc.ch08.domain.events.LCApplicationStartedEvent;
+import com.premonition.lc.ch08.domain.events.outbound.LCApplicationStartedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.axonframework.eventhandling.EventHandler;
