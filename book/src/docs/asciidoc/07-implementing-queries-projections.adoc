@@ -14,14 +14,10 @@ When working with query models, we construct models by listening to events as th
 
 === Technical requirements
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
-* JavaFX SDK 16 and SceneBuilder
 * Spring Boot 2.4.x
-* mvvmFX 1.8 (https://sialcasa.github.io/mvvmFX/)
+* Axon framework 4.5.3
 * JUnit 5.7.x (Included with spring boot)
-* TestFX (for UI testing)
-* OpenJFX Monocle (for headless UI testing)
 * Project Lombok (To reduce verbosity)
-* Axon server to act as an event store
 * Maven 3.x
 
 === Continuing our design journey

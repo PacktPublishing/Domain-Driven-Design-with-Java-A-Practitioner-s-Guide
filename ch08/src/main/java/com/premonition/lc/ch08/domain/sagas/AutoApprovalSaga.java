@@ -4,7 +4,7 @@ import com.premonition.lc.ch08.domain.LCApplicationId;
 import com.premonition.lc.ch08.domain.commands.ApproveLCApplicationCommand;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationApprovedEvent;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationSubmittedEvent;
-import com.premonition.lc.ch08.domain.events.inbound.ApplicantValidatedEvent;
+import com.premonition.lc.ch08.domain.events.inbound.ApplicantCreditValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductLegalityValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductValueValidatedEvent;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -39,7 +39,7 @@ public class AutoApprovalSaga {
     }
 
     @SagaEventHandler(associationProperty = "lcApplicationId")
-    public void on(ApplicantValidatedEvent event) {
+    public void on(ApplicantCreditValidatedEvent event) {
         if (!event.getDecision().isValid()) {
             SagaLifecycle.end();
         } else {

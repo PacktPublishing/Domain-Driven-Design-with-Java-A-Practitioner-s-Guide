@@ -6,7 +6,7 @@ import com.premonition.lc.ch08.domain.ProductId;
 import com.premonition.lc.ch08.domain.commands.ApproveLCApplicationCommand;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationApprovedEvent;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationSubmittedEvent;
-import com.premonition.lc.ch08.domain.events.inbound.ApplicantValidatedEvent;
+import com.premonition.lc.ch08.domain.events.inbound.ApplicantCreditValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductLegalityValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductValueValidatedEvent;
 import org.axonframework.test.saga.SagaTestFixture;
@@ -36,7 +36,7 @@ class AutoApprovalSagaTests {
         final ApplicantId applicantId = ApplicantId.randomId();
         final ProductId productId = ProductId.randomId();
 
-        final ApplicantValidatedEvent applicant = ApplicantValidatedEvent.rejected(lcApplicationId, applicantId, "Rejected!");
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.rejected(lcApplicationId, applicantId, "Rejected!");
         final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
         final ProductValueValidatedEvent value = ProductValueValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
         return Stream.of(
@@ -52,7 +52,7 @@ class AutoApprovalSagaTests {
         final ProductId productId = ProductId.randomId();
 
         final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, THOUSAND_DOLLARS);
-        final ApplicantValidatedEvent applicant = ApplicantValidatedEvent.approved(lcApplicationId, applicantId);
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
         final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
         final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
 
@@ -69,7 +69,7 @@ class AutoApprovalSagaTests {
         final ProductId productId = ProductId.randomId();
 
         final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, FIFTY_THOUSAND_DOLLARS);
-        final ApplicantValidatedEvent applicant = ApplicantValidatedEvent.approved(lcApplicationId, applicantId);
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
         final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
         final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
 
@@ -131,7 +131,7 @@ class AutoApprovalSagaTests {
         final ProductId productId = ProductId.randomId();
 
         final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, THOUSAND_DOLLARS);
-        final ApplicantValidatedEvent applicant = ApplicantValidatedEvent.approved(lcApplicationId, applicantId);
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
         final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
         final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
 
