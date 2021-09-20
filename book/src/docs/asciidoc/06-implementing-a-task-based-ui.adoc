@@ -12,7 +12,6 @@ The essence of Domain Driven Design(DDD) is a lot about capturing the business p
 In this chapter, we will implement the UI for LC Application and wire up the integration to the backend APIs.  The list of topics to be covered is as follows:
 
 * API styles
-* UI design patterns
 * Implementing the UI
 
 At the end of the chapter, you will learn how to employ DDD principles to help you build robust user experiences that are simple and intuitive. You will also learn why it may be prudent to design your backend interfaces (APIs) from the perspective of the consumer.
@@ -214,7 +213,11 @@ In our current design, the implications of this change are far reaching for both
 
 |===
 
-As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. Which style you use will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
+As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. Which style you use will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. Our preference is to design interfaces as task-based where possible, because they result in more intuitive interfaces that better express the problem domain.
+
+
+
+In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
 
 This is a chapter on evolving the user interface, however, we have spent a lot of time discussing the backend APIs. Moreover, the same principles apply when designing graphical user interfaces as well. Let's revert back to creating the user interface for the LC application.
 
@@ -335,65 +338,18 @@ public class App extends MvvmfxSpringApplication { // <1>
 
 NOTE: Please refer to the ch06 directory of the accompanying source code repository for the complete example.
 
-=== UI Design Patterns
+=== Implementing the UI
+
 When working with user interfaces, it is fairly customary to use one of these presentation patterns:
 
 * Model-View-Controller (MVC)
 * Model-View-Presenter (MVP)
 * Model-View-ViewModel (MVVM)
 
-Each of these patterns enable us to produce code that is loosely coupled, testable and maintainable. Let's briefly examine each of these in more detail here:
-
-==== Model View Controller (MVC)
-This is arguably the oldest, most popular when implementing user interfaces, given that it has been in existence since the early 1970s. The pattern breaks the app into three components:
-
-.MVC design pattern
-[.text-center]
-image::ui-patterns/mvc.png[]
-
-The pattern comprises the following components:
-
-* *Model*: responsible to house the business logic and managing the state of the application.
-* *View*: responsible for presenting data to the user.
-* *Controller*: responsible to act as a glue between the model and the view. It is also responsible for handling user interactions, data management, networking and validation.
-
-NOTE: There are different schools of thought when it comes where concerns such as data fetching, persistence and related network interactions need to live. Some implementations (such as the active recordfootnote:[https://martinfowler.com/eaaCatalog/activeRecord.html] pattern) advocate making use of the model to house this logic. In other cases, the controller delegates to a repositoryfootnote:[https://martinfowler.com/eaaCatalog/repository.html] to interact with dumb models. Which variation you prefer to use comes down to personal tastes.
-
-==== Model View Presenter (MVP)
-MVP is a refinement of the MVC design pattern that originated in the early 1990s. Here, the `presenter` acts as a middleman between the `view` and the `model`. A high level visual of how this pattern is implemented is shown here:
-
-.MVP design pattern
-[.text-center]
-image::ui-patterns/mvp.png[]
-
-The pattern comprises the following components:
-
-* *Model*: responsible to house the business logic and managing the state of the application.
-* *View*: responsible for presenting data to the user and notifying the presenter about user interactions.
-* *Presenter*: responsible for handling user interactions on behalf of the view. The presenter usually interacts with the view through an interface that the view implements. This allows for easier unit testing of the presenter independent of the view. The presenter interacts with the model for updates and read operations.
-
-==== Model View View-Model (MVVM)
-Modern UI frameworks started adopting a declarative style to express the view. MVVM was designed to remove all GUI code (code-behind) from the view by making use of binding expressions. This allowed for a cleaner separation of stylistic vs. programming concerns. A high level visual of how this pattern is implemented is shown here:
-
-.MVVM design pattern
-[.text-center]
-image::ui-patterns/mvvm.png[]
-
-The pattern comprises the following components:
-
-* *Model* : responsible to house the business logic and managing the state of the application.
-* *View* : responsible for presenting data to the user and notifying the view-model about user interactions.
-* *View-Model*: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
-
-Now that we understand the mechanics of each of these patterns, let's look at which one to use.
-
-==== Which one: MVC, MVP or MVVM
 The MVC pattern has been around for the longest time. The idea of separating concerns among collaborating model, view and controller objects is a sound one. However, beyond the definition of these objects, actual implementations seem to vary wildly -- with the controller becoming overly complex in a lot of cases. In contrast, MVP and MVVM, while being derivatives of MVC, seem to bring out better separation of concerns between the collaborating objects. MVVM, in particular when coupled with data binding constructs, make for code that is much more readable, maintainable and testable. In this book, we make use of MVVM because it enables test-driven development which is a strong personal preference for us.
 
-=== Implementing the UI
-As discussed in the previous section, the MVVM design pattern provides a robust means to implement the UI. Let's look at each of the components we implement in detail:
+==== Creating a new LC
 
-==== MVVM deep-dive
 Let's consider the example of creating a new LC. To start creation of a new LC, all we need is for the applicant to provide a friendly client reference. This is an easy to remember string of free text. A simple rendition of this UI is shown here:
 
 .Start LC creation screen
