@@ -189,12 +189,17 @@ In our current design, the implications of this change are far reaching for both
 |Scalability
 |[red]#icon:thumbs-down[]#
 |[green]#icon:thumbs-up[]#
-|Task-based interfaces have an advantage because they can provide the ability to independently scale specific features. However, if the fine-grained task-based APIs are used almost all the time in unison, it may be required to re-examine whether the users' intents are accurately captured.
+|Task-based interfaces have an advantage because they can provide the ability to independently scale specific features. However, if the fine-grained task-based interfaces are used almost all the time in unison, it may be required to re-examine whether the users' intents are accurately captured.
 
 |Security
 |[red]#icon:thumbs-down[]#
 |[green]#icon:thumbs-up[]#
 |For task-based interfaces, security is enhanced from the producer's perspective by enabling application of the _principle of least privilegefootnote:[https://en.wikipedia.org/wiki/Principle_of_least_privilege]_.
+
+|Complexity
+|[red]#icon:thumbs-down[]#
+|[green]#icon:thumbs-up[]#
+|Complexity of the system as a whole is proportional to the number of features that need to be implemented. Assuming accidental complexity is avoided in both cases, task-based interfaces allow spreading complexity more or less uniformly across multiple simpler interfaces.
 
 |Latency
 |[green]#icon:thumbs-up[]#
@@ -206,23 +211,28 @@ In our current design, the implications of this change are far reaching for both
 |[red]#icon:thumbs-down[]#
 |For the provider, fine-grained interfaces require a lot more work managing a larger number of interfaces.
 
-|Complexity
-|[gray]#icon:question-circle[]#
-|[gray]#icon:question-circle[]#
-|Complexity of the system as a whole is proportional to the number of features that need to be implemented. Irrespective of API style, this usually remains constant. However, spreading complexity relatively uniformly across multiple simpler interfaces can enable managing complexity a lot more effectively.
-
 |===
 
 As we can see, the decision between CRUD-based and task-based interfaces is nuanced. We are not suggesting that you should choose one over the other. Which style you use will depend on your specific requirements and context. In our experience, task-based interfaces treat user intents as first class citizens and perpetrate the spirit of DDD's ubiquitous language very elegantly. Our preference is to design interfaces as task-based where possible, because they result in more intuitive interfaces that better express the problem domain.
 
+As systems evolve, and the support richer user experiences and multiple channels, CRUD-based seem to require additional translation layers to cater to user experience needs. The visual here depicts a typical layered architecture of a solution that supports multiple user experience channels:
+[.text-center]
+image::ui-patterns/bff.png[]
 
+This set up is usually composed of:
 
-In a lot of scenarios, providing both styles of APIs may work well for consumers, although it may add a certain amount of overhead to the interface provider.
+1. Domain tier comprised of CRUD-based services that simply map closely to database entities.
+2. Composite tier comprised of business capabilities that span more than one core service.
+3. Backend-for-frontend (https://philcalcado.com/2015/09/18/the_back_end_for_front_end_pattern_bff.html[BFF]footnote:[https://philcalcado.com/2015/09/18/the_back_end_for_front_end_pattern_bff.html]) tier comprised of channel-specific APIs.
 
-This is a chapter on evolving the user interface, however, we have spent a lot of time discussing the backend APIs. Moreover, the same principles apply when designing graphical user interfaces as well. Let's revert back to creating the user interface for the LC application.
+Do note that the composite and BFF tiers exist primarily as a means to map backend capabilities to user intent. In an ideal world, where backend APIs reflect user intent closely, the need for translations should be minimal (if at all). Our experience suggests that such a setup causes business logic to get pushed closer to the user channels as opposed to being encapsulated within the confines of well-factored business services. In addition, these tiers cause inconsistent experiences across channels for the same functionality, given that modern teams are structured along tier boundaries.
+
+WARNING: We are not opposed to the use of layered architectures. We recognize that a layered architecture can bring modularity, separation of concerns and other related benefits. However, we are opposed to creating additional tiers merely as a means to compensate for poorly factored core domain APIs.
+
+A well factored API tier can have a profound effect on how great user experiences are built. However, this is a chapter on implementing the user interface. Let's revert to creating the user interface for the LC application.
 
 === Bootstrapping the UI
-We will be building the UI on top of the LC issuance application we created in Chapter 5: Implementing Domain Logic. For detailed instructions, refer to the section on _Bootstrapping the application_. In addition, we will need to add the following dependencies to the `dependencies` section of the Maven `pom.xml` file in the root directory of the project:
+We will be building the UI for the LC issuance application we created in <<#_implementing_domain_logic,Chapter 5: Implementing Domain Logic>>. For detailed instructions, refer to the section on <<#_bootstapping_the_application,__Bootstrapping the application__>>. In addition, we will need to add the following dependencies to the `dependencies` section of the Maven `pom.xml` file in the root directory of the project:
 
 [source,xml,linenum]
 ----
