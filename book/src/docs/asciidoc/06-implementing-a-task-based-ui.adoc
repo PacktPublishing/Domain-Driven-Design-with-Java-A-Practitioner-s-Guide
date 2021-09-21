@@ -369,7 +369,7 @@ The pattern comprises the following components:
 
 * *Model*: responsible to house the business logic and managing the state of the application.
 * *View*: responsible for presenting data to the user and notifying the view-model about user interactions through the view delegate.
-* *View Delegate*: responsible for keeping the view and the view model in sync as changes are made by the user or on the view model.
+* *View Delegate*: responsible for keeping the view and the view model in sync as changes are made by the user or on the view model. It is also responsible for transmitting actions performed on the view to the view model.
 * *View-Model*: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
 
 ==== Creating a new LC
