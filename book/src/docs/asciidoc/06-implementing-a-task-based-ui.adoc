@@ -782,7 +782,7 @@ public class StartLCViewTests {
             .setText(clientReference);                                // <3>
         robot.clickOn("#start-button");                               // <4>
 
-        Mockito.verify(service).startNewLC("admin", clientReference); // <5>
+        Mockito.verify(service).startNewLC("test-applicant", clientReference); // <5>
 
         verifyThat("#lc-details-screen", isVisible());                // <6>
     }
