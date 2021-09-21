@@ -1,0 +1,66 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Difference Tool</title>
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script lang="javascript">
+
+    function launchHTMLDiff() {
+        var left_tag = $("#left").find(":selected").text();
+        var right_tag = $("#right").find(":selected").text();
+        var html_file_name = $("#file").find(":selected").text();
+        window.open("https://services.w3.org/htmldiff?doc1=https://raw.githubusercontent.com/ddd-book-java/chapters/" + left_tag + "/" + html_file_name + ".html&doc2=https://raw.githubusercontent.com/ddd-book-java/chapters/" + right_tag + "/" + html_file_name + ".html");
+    }
+
+    $(document).ready(function () {
+        var tags_url = "https://api.github.com/repos/ddd-book-java/chapters/tags";
+
+        $.getJSON(tags_url, function (data) {
+            $.each(data, function (index, value) {
+                $('#left').append('<option value="' + value.name + '">' + value.name + '</option>');
+                $('#right').append('<option value="' + value.name + '">' + value.name + '</option>');
+            });
+        });
+
+        var contents_url = "https://api.github.com/repos/ddd-book-java/chapters/contents";
+
+        $.getJSON(contents_url, function (data) {
+            $.each(data, function (index, value) {
+                if (value.name.endsWith(".html")) {
+                    var file_name = value.name.replace(".html", "")
+                    $('#file').append('<option value="' + file_name + '">' + file_name + '</option>');
+                }
+            });
+        });
+
+
+    });
+    //requestUserRepos('facebook');
+</script>
+</head>
+<h1>HTML Difference Tool</h1>
+<body>
+<span>Select Left Tag :</span>
+<br/>
+<select id="left">
+    <option value="">-- Select --</option>
+</select>
+<p/>
+<span>Select Right Tag : </span>
+<br/>
+<select id="right">
+    <option value="">-- Select --</option>
+</select>
+<p/>
+<span>Select HTML File :</span>
+<br/>
+<select id="file">
+    <option value="">-- Select --</option>
+</select>
+<p/>
+<button onclick="launchHTMLDiff()">Show Difference</button>
+</body>
+
+</html>
