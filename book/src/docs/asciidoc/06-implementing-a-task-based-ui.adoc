@@ -356,7 +356,21 @@ When working with user interfaces, it is fairly customary to use one of these pr
 * Model-View-Presenter (MVP)
 * Model-View-ViewModel (MVVM)
 
-The MVC pattern has been around for the longest time. The idea of separating concerns among collaborating model, view and controller objects is a sound one. However, beyond the definition of these objects, actual implementations seem to vary wildly -- with the controller becoming overly complex in a lot of cases. In contrast, MVP and MVVM, while being derivatives of MVC, seem to bring out better separation of concerns between the collaborating objects. MVVM, in particular when coupled with data binding constructs, make for code that is much more readable, maintainable and testable. In this book, we make use of MVVM because it enables test-driven development which is a strong personal preference for us.
+The MVC pattern has been around for the longest time. The idea of separating concerns among collaborating model, view and controller objects is a sound one. However, beyond the definition of these objects, actual implementations seem to vary wildly -- with the controller becoming overly complex in a lot of cases. In contrast, MVP and MVVM, while being derivatives of MVC, seem to bring out better separation of concerns between the collaborating objects. MVVM, in particular when coupled with data binding constructs, make for code that is much more readable, maintainable and testable. In this book, we make use of MVVM because it enables test-driven development which is a strong personal preference for us. Let's look at a quick MVVM primer as implemented in the `mvvmfx` framework.
+
+==== Model View View-Model (MVVM) primer
+Modern UI frameworks started adopting a declarative style to express the view. MVVM was designed to remove all GUI code (code-behind) from the view by making use of binding expressions. This allowed for a cleaner separation of stylistic vs. programming concerns. A high level visual of how this pattern is implemented is shown here:
+
+.MVVM design pattern
+[.text-center]
+image::ui-patterns/mvvm.png[]
+
+The pattern comprises the following components:
+
+* *Model*: responsible to house the business logic and managing the state of the application.
+* *View*: responsible for presenting data to the user and notifying the view-model about user interactions through the view delegate.
+* *View Delegate*: responsible for keeping the view and the view model in sync as changes are made by the user or on the view model.
+* *View-Model*: responsible for handling user interactions on behalf of the view. The view-model interacts with the view using the observer pattern (typically one-way or two-way data binding to make it more convenient). The view-model interacts with the model for updates and read operations.
 
 ==== Creating a new LC
 
@@ -395,8 +409,8 @@ When working with JavaFX, the view can be rendered using a declarative style in 
 
 ....
 <1> The `StartLCView` class acts as the view delegate for the FXML view and is assigned using the `fx:controller` attribute of the root element (`javafx.scene.layout.Pane` in this case).
-<2> In order to reference `client-reference` textbox in the view delegate, we use the `fx:id` annotation -- `clientReference` in this case.
-<3> Similarly, the `start-button` is referenced using `fx:id=startButton` in the view delegate. Furthermore, the `start` method in the view delegate is assigned to handle the default action (the button press event for `javafx.scene.control.Button`).
+<2> In order to reference `client-reference` input field in the view delegate, we use the `fx:id` annotation -- `clientReference` in this case.
+<3> Similarly, the `start-button` is referenced using `fx:id="startButton"` in the view delegate. Furthermore, the `start` method in the view delegate is assigned to handle the default action (the button press event for `javafx.scene.control.Button`).
 
 ===== View delegate
 Next, let's look at the structure of the view delegate `com.premonition.lc.issuance.ui.views.StartLCView`:
