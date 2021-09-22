@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous">
+    <title>Diff Tool</title>
+</head>
+
+<body>
+<div id="contents" class="container w-50 p-3">
+    <h1>Diff Tool</h1>
+    <form id="diff-form" class="needs-validation" novalidate>
+        <div class="row mb-3">
+            <div class="col">
+                <label for="left"><b>Left Tag</b></label>
+                <select id="left" class="form-control">
+                    <option selected disabled value="">Choose...</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="right"><b>Right Tag</b></label>
+                <select id="right" class="form-control">
+                    <option selected disabled value="">Choose...</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="chapter"><b>Select Chapter</b></label>
+                <select id="chapter" class="form-control">
+                    <option selected disabled value="">Choose...</option>
+                </select>
+            </div>
+        </div>
+        <button id="launch-button" type="button" class="btn btn-primary">Submit!</button>
+    </form>
+</div>
+
+<iframe id="results"
+        style="background-color: aqua;width: 100%;position: absolute">
+</iframe>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous">
+</script>
+<script lang="javascript">
+
+    $(document).ready(function () {
+        const tags_url = "https://api.github.com/repos/ddd-book-java/chapters/tags";
+
+        $.getJSON(tags_url, function (data) {
+            console.log("Making request to " + tags_url)
+            $.each(data, function (index, value) {
+                $('#left').append($("<option />").val(value.name).text(value.name));
+                $('#right').append($("<option />").val(value.name).text(value.name));
+            });
+        });
+
+        const contents_url = "https://api.github.com/repos/ddd-book-java/chapters/contents";
+
+        $.getJSON(contents_url, function (data) {
+            $.each(data, function (index, value) {
+                if (value.name.match(/^\d{1,2}.*\.html$/)) {
+                    const file_name = value.name.replace(".html", "");
+                    $('#chapter').append($("<option />").val(file_name).text(file_name));
+                }
+            });
+        });
+
+        function adjust_viewport() {
+            let height = $(window).height() - $('#contents').height() - 32;
+            $("#results").height(height);
+        }
+
+        adjust_viewport();
+        $(window).resize(adjust_viewport);
+
+        $('#launch-button').click(launch);
+        $('#diff-form').on('keypress', launch);
+
+        function launch() {
+            const service_url = "https://services.w3.org/htmldiff";
+            const chapter_url = "https://raw.githubusercontent.com/ddd-book-java/chapters/";
+            const left_path = $("#left").val();
+            const right_path = $("#right").val();
+            const file_name = $("#chapter").val();
+
+            if (!left_path || !right_path || !file_name) {
+                alert('Please choose everything!');
+                return false;
+            }
+
+            function chapter_file(path, file) {
+                return chapter_url + path + "/" + file + ".html";
+            }
+
+            let url = service_url +
+                "?doc1=" + chapter_file(left_path, file_name) +
+                "&doc2=" + chapter_file(right_path, file_name);
+            $('#results').attr('src', url);
+            return false;
+        }
+    });
+
+</script>
+</body>
+</html>
