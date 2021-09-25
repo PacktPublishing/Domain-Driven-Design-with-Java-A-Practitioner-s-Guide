@@ -23,6 +23,8 @@ import javax.money.MonetaryAmount;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.premonition.lc.ch08.domain.sagas.AutoApprovalSaga.AUTO_APPROVAL_THRESHOLD;
+
 class AutoApprovalSagaTests {
 
     private static final Money THOUSAND_DOLLARS = Money.of(1000,
@@ -31,58 +33,18 @@ class AutoApprovalSagaTests {
             Monetary.getCurrency("USD"));
     private SagaTestFixture<AutoApprovalSaga> fixture;
 
-    private static Stream<Arguments> rejectedDecision() {
-        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
-        final ApplicantId applicantId = ApplicantId.randomId();
-        final ProductId productId = ProductId.randomId();
-
-        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.rejected(lcApplicationId, applicantId, "Rejected!");
-        final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
-        final ProductValueValidatedEvent value = ProductValueValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
-        return Stream.of(
-                Arguments.of(lcApplicationId, applicant),
-                Arguments.of(lcApplicationId, legality),
-                Arguments.of(lcApplicationId, value)
-        );
-    }
-
-    private static Stream<Arguments> autoApprove() {
-        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
-        final ApplicantId applicantId = ApplicantId.randomId();
-        final ProductId productId = ProductId.randomId();
-
-        final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, THOUSAND_DOLLARS);
-        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
-        final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
-        final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
-
-        return Stream.of(
-                Arguments.of(lcApplicationId, List.of(submitted, applicant, legality), value),
-                Arguments.of(lcApplicationId, List.of(submitted, applicant, value), legality),
-                Arguments.of(lcApplicationId, List.of(submitted, legality, value), applicant)
-        );
-    }
-
-    private static Stream<Arguments> doNotAutoApproveAndEnd() {
-        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
-        final ApplicantId applicantId = ApplicantId.randomId();
-        final ProductId productId = ProductId.randomId();
-
-        final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, FIFTY_THOUSAND_DOLLARS);
-        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
-        final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
-        final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
-
-        return Stream.of(
-                Arguments.of(lcApplicationId, List.of(submitted, applicant, legality), value),
-                Arguments.of(lcApplicationId, List.of(submitted, applicant, value), legality),
-                Arguments.of(lcApplicationId, List.of(submitted, legality, value), applicant)
-        );
-    }
-
     @BeforeEach
     void setUp() {
         fixture = new SagaTestFixture<>(AutoApprovalSaga.class);
+    }
+
+    @Test
+    void shouldEndSagaIfAmountGreaterThanAutoApprovalThreshold() {
+        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        fixture.givenAggregate(lcApplicationId.toString()).published()
+                .whenPublishingA(
+                        new LCApplicationSubmittedEvent(lcApplicationId, FIFTY_THOUSAND_DOLLARS))
+                .expectActiveSagas(0);
     }
 
     @Test
@@ -102,15 +64,6 @@ class AutoApprovalSagaTests {
                 .whenPublishingA(when)
                 .expectActiveSagas(1)
                 .expectDispatchedCommands(new ApproveLCApplicationCommand(lcApplicationId));
-    }
-
-    @ParameterizedTest(name = "do not auto approve due to threshold {index}")
-    @MethodSource("doNotAutoApproveAndEnd")
-    void shouldNotAutoApprove(LCApplicationId lcApplicationId, List<?> givenEvents, Object when) {
-        fixture.givenAggregate(lcApplicationId.toString()).published(givenEvents.toArray())
-                .whenPublishingA(when)
-                .expectActiveSagas(0)
-                .expectNoDispatchedCommands();
     }
 
     @ParameterizedTest
@@ -141,4 +94,37 @@ class AutoApprovalSagaTests {
                 .expectActiveSagas(0)
                 .expectNoDispatchedCommands();
     }
+
+    private static Stream<Arguments> autoApprove() {
+        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        final ApplicantId applicantId = ApplicantId.randomId();
+        final ProductId productId = ProductId.randomId();
+
+        final LCApplicationSubmittedEvent submitted = new LCApplicationSubmittedEvent(lcApplicationId, THOUSAND_DOLLARS);
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.approved(lcApplicationId, applicantId);
+        final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.approved(lcApplicationId, productId);
+        final ProductValueValidatedEvent value = ProductValueValidatedEvent.approved(lcApplicationId, productId);
+
+        return Stream.of(
+                Arguments.of(lcApplicationId, List.of(submitted, applicant, legality), value),
+                Arguments.of(lcApplicationId, List.of(submitted, applicant, value), legality),
+                Arguments.of(lcApplicationId, List.of(submitted, legality, value), applicant)
+        );
+    }
+
+    private static Stream<Arguments> rejectedDecision() {
+        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        final ApplicantId applicantId = ApplicantId.randomId();
+        final ProductId productId = ProductId.randomId();
+
+        final ApplicantCreditValidatedEvent applicant = ApplicantCreditValidatedEvent.rejected(lcApplicationId, applicantId, "Rejected!");
+        final ProductLegalityValidatedEvent legality = ProductLegalityValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
+        final ProductValueValidatedEvent value = ProductValueValidatedEvent.rejected(lcApplicationId, productId, "Rejected!");
+        return Stream.of(
+                Arguments.of(lcApplicationId, applicant),
+                Arguments.of(lcApplicationId, legality),
+                Arguments.of(lcApplicationId, value)
+        );
+    }
+
 }

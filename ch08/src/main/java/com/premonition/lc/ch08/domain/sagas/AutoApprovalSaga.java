@@ -2,11 +2,11 @@ package com.premonition.lc.ch08.domain.sagas;
 
 import com.premonition.lc.ch08.domain.LCApplicationId;
 import com.premonition.lc.ch08.domain.commands.ApproveLCApplicationCommand;
-import com.premonition.lc.ch08.domain.events.outbound.LCApplicationApprovedEvent;
-import com.premonition.lc.ch08.domain.events.outbound.LCApplicationSubmittedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ApplicantCreditValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductLegalityValidatedEvent;
 import com.premonition.lc.ch08.domain.events.inbound.ProductValueValidatedEvent;
+import com.premonition.lc.ch08.domain.events.outbound.LCApplicationApprovedEvent;
+import com.premonition.lc.ch08.domain.events.outbound.LCApplicationSubmittedEvent;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
@@ -22,12 +22,12 @@ import javax.money.MonetaryAmount;
 @Saga
 public class AutoApprovalSaga {
 
-    private static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
+    static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
             = Money.of(10000, Monetary.getCurrency("USD"));
     private boolean productValueValidated;
     private boolean productLegalityValidated;
     private boolean applicantValidated;
-    private MonetaryAmount amount;
+
     @Autowired
     private transient CommandGateway gateway;
 
@@ -35,7 +35,9 @@ public class AutoApprovalSaga {
     @StartSaga
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(LCApplicationSubmittedEvent event) {
-        amount = event.getAmount();
+        if (event.getAmount().isGreaterThan(AUTO_APPROVAL_THRESHOLD)) {
+            SagaLifecycle.end();
+        }
     }
 
     @SagaEventHandler(associationProperty = "lcApplicationId")
@@ -44,7 +46,7 @@ public class AutoApprovalSaga {
             SagaLifecycle.end();
         } else {
             applicantValidated = true;
-            autoApproveOrEnd(event.getLcApplicationId());
+            autoApproveIfNecessary(event.getLcApplicationId());
         }
     }
 
@@ -54,7 +56,7 @@ public class AutoApprovalSaga {
             SagaLifecycle.end();
         } else {
             productValueValidated = true;
-            autoApproveOrEnd(event.getLcApplicationId());
+            autoApproveIfNecessary(event.getLcApplicationId());
         }
     }
 
@@ -64,17 +66,13 @@ public class AutoApprovalSaga {
             SagaLifecycle.end();
         } else {
             productLegalityValidated = true;
-            autoApproveOrEnd(event.getLcApplicationId());
+            autoApproveIfNecessary(event.getLcApplicationId());
         }
     }
 
-    private void autoApproveOrEnd(LCApplicationId lcApplicationId) {
+    private void autoApproveIfNecessary(LCApplicationId lcApplicationId) {
         if (productValueValidated && applicantValidated && productLegalityValidated) {
-            if (amount.isLessThanOrEqualTo(AUTO_APPROVAL_THRESHOLD)) {
-                gateway.send(new ApproveLCApplicationCommand(lcApplicationId));
-            } else {
-                SagaLifecycle.end();
-            }
+            gateway.send(new ApproveLCApplicationCommand(lcApplicationId));
         }
     }
 
