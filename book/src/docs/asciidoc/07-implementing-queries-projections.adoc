@@ -13,6 +13,8 @@ When working with query models, we construct models by listening to events as th
 * We discover a bug in our query model which requires us to recreate the model from scratch.
 
 === Technical requirements
+To follow the examples in this chapter, you will need access to:
+
 * JDK 1.8+ (We have used Java 16 to compile sample sources)
 * Spring Boot 2.4.x
 * Axon framework 4.5.3
@@ -53,14 +55,14 @@ Let's implement each of these steps to see how this works for our LC issuance ap
 
 In a CQRS application, there is a separation between the command and query side. At this time, this separation is logical in our application because both the command and query side are running as components within the same application process. To illustrate the concepts, we will use conveniences provided by the Axon framework to implement the query side in this chapter. In Chapter 10, we will look at how it may not be necessary to use a specialized framework (like Axon) to implement the query side.
 
-When implementing the query side, we have two concerns to solve for:
-
-1. Consuming domain events and persisting one or more query models.
-2. Exposing the query model as an API.
+When implementing the query side, we have two concerns to solve for as depicted in the following picture :
 
 .Query side dissected
 [.text-center]
 image::cqrs/cqrs-query-side-dissected.png[]
+
+1. Consuming domain events and persisting one or more query models.
+2. Exposing the query model as an API.
 
 Before we start implementing these concerns, let's identify the queries we need to implement for our LC issuance application.
 
