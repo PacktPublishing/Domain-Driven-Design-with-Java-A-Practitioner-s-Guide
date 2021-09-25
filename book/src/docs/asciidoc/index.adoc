@@ -40,7 +40,7 @@ include::05-implementing-domain-logic.adoc[]
 
 include::06-implementing-a-task-based-ui.adoc[]
 
-include::07-implementing-queries-projections.adoc[]
+include::07-implementing-queries.adoc[]
 
 include::08-long-running-user-flows.adoc[]
 
