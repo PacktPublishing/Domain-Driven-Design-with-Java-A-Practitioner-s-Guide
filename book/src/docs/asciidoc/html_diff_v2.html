@@ -16,7 +16,7 @@
 <div id="contents" class="container w-50 p-3">
     <h1>Diff Tool</h1>
     <form id="diff-form" class="needs-validation" novalidate>
-        <div class="row mb-3">
+        <div class="row pb-3">
             <div class="col">
                 <label for="left"><b>Left Tag</b></label>
                 <select id="left" class="form-control">
@@ -36,12 +36,12 @@
                 </select>
             </div>
         </div>
-        <button id="launch-button" type="button" class="btn btn-primary">Submit!</button>
+        <button id="launch-button" type="button" class="btn btn-primary" disabled>Submit!</button>
     </form>
 </div>
 
 <iframe id="results"
-        style="background-color: aqua;width: 100%;position: absolute">
+        style="background-color: #ccc;width: 100%;position: absolute">
 </iframe>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
@@ -82,6 +82,15 @@
 
         $('#launch-button').click(launch);
         $('#diff-form').on('keypress', launch);
+        $('#left,#right,#chapter').each(function() {
+            $(this).change(function() {
+                if ($('#left').val() !== null && $('#right').val() !== null && $('#chapter').val() !== null) {
+                    $('#launch-button').removeAttr('disabled');
+                } else {
+                    $('#launch-button').attr('disabled', 'disabled');
+                }
+            })
+        });
 
         function launch() {
             const service_url = "https://services.w3.org/htmldiff";
