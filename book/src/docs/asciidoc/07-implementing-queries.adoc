@@ -5,17 +5,19 @@ ifndef::imagesdir[:imagesdir: images]
 [quote, Anonymous]
 The best view comes after the hardest climb.
 
-In the section on <<command-query-responsibility-segregation-cqrs,CQRS>>, we described how DDD and CQRS complement each other and how the query side (read models) can be used to create one or more representations of the underlying data. In this chapter, we will dive deeper into how we can construct read optimized representations of the data by listening to domain events. We will also look at persistence options for these read models.
+In the section on <<_cqrs_pattern,CQRS>> from <<_where_does_ddd_fit,Chapter 3 - Where and How Does DDD Fit?>>, we described how DDD and CQRS complement each other and how the query side (read models) can be used to create one or more representations of the underlying data. In this chapter, we will dive deeper into how we can construct read optimized representations of the data by listening to domain events. We will also look at persistence options for these read models.
 
 When working with query models, we construct models by listening to events as they happen. We will examine how to deal with situations where:
 
 * New requirements evolve over a period of time requiring us to build new query models.
 * We discover a bug in our query model which requires us to recreate the model from scratch.
 
+By the end of this chapter, you will learn to appreciate how to build query models by listening to domain events. You will also learn how to purpose build new query models to suit specific read requirements as opposed to being restricted by the data model that was chosen to service commands. You will finally look at how historic event replays work and how you can use it to create new query models to service new requirements.
+
 === Technical requirements
 To follow the examples in this chapter, you will need access to:
 
-* JDK 1.8+ (We have used Java 16 to compile sample sources)
+* JDK 1.8+ (We have used Java 17 to compile sample sources)
 * Spring Boot 2.4.x
 * Axon framework 4.5.3
 * JUnit 5.7.x (Included with spring boot)
