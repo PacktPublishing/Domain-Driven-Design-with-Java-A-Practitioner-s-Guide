@@ -18,4 +18,9 @@ public class LCApplicationId implements Serializable {
     public static LCApplicationId randomId() {
         return new LCApplicationId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return id.toString();
+    }
 }

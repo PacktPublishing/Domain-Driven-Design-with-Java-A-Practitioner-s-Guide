@@ -138,7 +138,12 @@ Non-functional requirements, on the other hand, are those aspects of the system 
 @startmindmap
 skinparam handwritten true
 skinparam monochrome true
-
+<style>
+mindmapDiagram {
+    FontName "Gloria Hallelujah"
+    FontSize 20
+}
+</style>
 *[#lightgray] NFRs
 ++ Extensibility
 ++ Maintainability

@@ -19,4 +19,9 @@ public class ProductId implements Serializable {
     public static ProductId randomId() {
         return new ProductId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return id.toString();
+    }
 }

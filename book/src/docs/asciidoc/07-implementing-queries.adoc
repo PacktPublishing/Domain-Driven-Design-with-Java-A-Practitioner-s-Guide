@@ -61,7 +61,7 @@ When implementing the query side, we have two concerns to solve for as depicted 
 
 .Query side dissected
 [.text-center]
-image::cqrs/cqrs-query-side-dissected.png[]
+image::cqrs/cqrs-query-side-dissected.png[alt='Query side dissected']
 
 1. Consuming domain events and persisting one or more query models.
 2. Exposing the query model as an API.

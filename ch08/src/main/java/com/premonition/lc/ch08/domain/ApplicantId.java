@@ -36,4 +36,9 @@ public class ApplicantId {
     public int hashCode() {
         return Objects.hash(applicantId);
     }
+
+    @Override
+    public String toString() {
+        return applicantId.toString();
+    }
 }

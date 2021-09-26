@@ -20,4 +20,11 @@ public class Decision {
     public static Decision rejected(String remarks) {
         return new Decision(false, remarks);
     }
+
+    @Override
+    public String toString() {
+        return "valid=" +
+                valid +
+                (valid ? "" : ", remarks=" + remarks);
+    }
 }
