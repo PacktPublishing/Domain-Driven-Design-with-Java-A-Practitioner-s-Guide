@@ -9,6 +9,7 @@ import com.premonition.lc.ch08.domain.events.inbound.ProductLegalityValidatedEve
 import com.premonition.lc.ch08.domain.events.inbound.ProductValueValidatedEvent;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationApprovedEvent;
 import com.premonition.lc.ch08.domain.events.outbound.LCApplicationSubmittedEvent;
+import org.axonframework.test.saga.FixtureConfiguration;
 import org.axonframework.test.saga.SagaTestFixture;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,18 +25,16 @@ import javax.money.MonetaryAmount;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.premonition.lc.ch08.domain.sagas.AutoApprovalSaga.AUTO_APPROVAL_THRESHOLD;
+import static com.premonition.lc.ch08.domain.sagas.AutoApprovalSaga.AUTO_APPROVAL_THRESHOLD_AMOUNT;
 
 @DisplayName("Auto approval saga")
 class AutoApprovalSagaTests {
 
     private static final Money THOUSAND_DOLLARS = Money.of(1000,
             Monetary.getCurrency("USD"));
-    private static final MonetaryAmount FIFTY_THOUSAND_DOLLARS = Money.of(50_000,
-            Monetary.getCurrency("USD"));
     private static final Money ONE_DOLLAR = Money.of(1,
             Monetary.getCurrency("USD"));
-    private SagaTestFixture<AutoApprovalSaga> fixture;
+    private FixtureConfiguration fixture;
 
     @BeforeEach
     void setUp() {
@@ -45,12 +44,12 @@ class AutoApprovalSagaTests {
     @Nested
     @DisplayName("life cycle")
     class LifeCycleTests {
-        @DisplayName("should start when LC is submitted and amount is")
+        @DisplayName("should start when LC is submitted and amount is"  )
         @ParameterizedTest(name = "{1} auto approval threshold")
         @MethodSource("autoApprovalThreshold")
         void shouldStartSagaOnSubmit(MonetaryAmount amount, String thresholdForTestTitle) {
             final LCApplicationId lcApplicationId = LCApplicationId.randomId();
-            fixture.givenAggregate(lcApplicationId.toString()).published()
+            fixture.givenNoPriorActivity()
                     .whenPublishingA(
                             new LCApplicationSubmittedEvent(lcApplicationId, amount))
                     .expectActiveSagas(1);
@@ -70,11 +69,11 @@ class AutoApprovalSagaTests {
 
         @Test
         @DisplayName("should end immediately if amount is greater than auto approval threshold")
-        void shouldEndSagaIfAmountGreaterThanAutoApprovalThreshold() {
+        void shouldEndSagaImmediatelyIfAmountGreaterThanAutoApprovalThreshold() {
             final LCApplicationId lcApplicationId = LCApplicationId.randomId();
-            fixture.givenAggregate(lcApplicationId.toString()).published()
+            fixture.givenNoPriorActivity()
                     .whenPublishingA(
-                            new LCApplicationSubmittedEvent(lcApplicationId, FIFTY_THOUSAND_DOLLARS))
+                            new LCApplicationSubmittedEvent(lcApplicationId, AUTO_APPROVAL_THRESHOLD_AMOUNT.add(ONE_DOLLAR)))
                     .expectActiveSagas(0);
         }
 
@@ -96,10 +95,11 @@ class AutoApprovalSagaTests {
             );
         }
 
+
         private static Stream<Arguments> autoApprovalThreshold() {
             return Stream.of(
-                    Arguments.of(AUTO_APPROVAL_THRESHOLD.subtract(ONE_DOLLAR), "lesser than"),
-                    Arguments.of(AUTO_APPROVAL_THRESHOLD, "equal to")
+                    Arguments.of(AUTO_APPROVAL_THRESHOLD_AMOUNT.subtract(ONE_DOLLAR), "lesser than"),
+                    Arguments.of(AUTO_APPROVAL_THRESHOLD_AMOUNT, "equal to")
             );
         }
     }
@@ -112,7 +112,8 @@ class AutoApprovalSagaTests {
     @MethodSource("autoApprove")
     @DisplayName("should auto approve on")
     void shouldAutoApprove(LCApplicationId lcApplicationId, List<?> givenEvents, Object when, String eventTypeName) {
-        fixture.givenAggregate(lcApplicationId.toString()).published(givenEvents.toArray())
+        fixture.givenAggregate(lcApplicationId.toString())
+                .published(givenEvents.toArray())
                 .whenPublishingA(when)
                 .expectActiveSagas(1)
                 .expectDispatchedCommands(new ApproveLCApplicationCommand(lcApplicationId));

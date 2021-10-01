@@ -31,7 +31,7 @@ image::sagas/event-storming-auto-approval-saga.png[]
 
 As depicted in the visual above, some aspects of Letter of Credit (LC) application processing happens outside our current bounded context), before the trade finance manager makes a decision to either approve or decline the application as listed here:
 
-1. Product value is validated for correctness
+1. Product value is validated
 2. Product legality is validated
 3. Applicant's credit worthiness is validated
 
@@ -67,8 +67,8 @@ LC approval can proceed only after *all* of these functions have completed. Furt
 
 As shown in the event storming artifact, the `LC Application` aggregate is able to handle an `ApproveLCApplicationCommand`, which results in a LCApplicationApprovedEvent`. To auto-approve, this command needs to be invoked automatically when all the conditions mentioned earlier are satisfied. We are building an event-driven system, and we can see that each of these validations produce events when their respective actions complete. There are at least two ways to implement this functionality:
 
-1. Orchestration: where a single component in the system coordinates the state of the flow and triggers subsequent actions as necessary.
-2. Choreography: where actions in the flow are triggered without requiring an explicit coordinating component.
+1. *Orchestration*: where a single component in the system coordinates the state of the flow and triggers subsequent actions as necessary.
+2. *Choreography*: where actions in the flow are triggered without requiring an explicit coordinating component.
 
 Let's examine these methods in more detail:
 
@@ -79,11 +79,44 @@ When implementing sagas using an orchestrating component, the system looks simil
 [.text-center]
 image::sagas/auto-approval-saga-orchestrator.png[]
 
-The orchestrator starts tracking the flow when the LC application is submitted. It will then need to wait for each of the `ProductValueValidatedEvent`, `ProductLegalityValidatedEvent` and `ApplicantCreditValidatedEvent` events to occur and decide if it is appropriate to trigger the `ApproveLCApplicationCommand`. Finally, the saga lifecycle ends unconditionally when the LC application is approved. There are other conditions that may cause the saga to end abruptly. We will examine those scenarios in detail later. It is pertinent to note that there will be a *distinct* auto-approval saga instance for each LC application that gets submitted. Let's look at how to implement this functionality using the Axon framework:
+The orchestrator starts tracking the flow when the LC application is submitted. It will then need to wait for each of the `ProductValueValidatedEvent`, `ProductLegalityValidatedEvent` and `ApplicantCreditValidatedEvent` events to occur and decide if it is appropriate to trigger the `ApproveLCApplicationCommand`. Finally, the saga lifecycle ends unconditionally when the LC application is approved. There are other conditions that may cause the saga to end abruptly. We will examine those scenarios in detail later. It is pertinent to note that there will be a *distinct* auto-approval saga instance for each LC application that gets submitted. Let's look at how to implement this functionality using the Axon framework. As usual, let's test drive this functionality that a new auto approval saga instance is created when an LC application is submitted:
 
 [source,java,linenum]
 ....
-import org.axonframework.modelling.saga.EndSaga;
+import org.axonframework.test.saga.FixtureConfiguration;
+import org.axonframework.test.saga.SagaTestFixture;
+
+class AutoApprovalSagaTests {
+
+    private FixtureConfiguration fixture;                                       // <1>
+
+    @BeforeEach
+    void setUp() {
+        fixture = new SagaTestFixture<>(AutoApprovalSaga.class);                // <1>
+    }
+
+    @Test
+    void shouldStartSagaOnSubmit() {
+        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        fixture.givenNoPriorActivity()                                          // <2>
+                .whenPublishingA(                                               // <3>
+                        new LCApplicationSubmittedEvent(lcApplicationId,
+                            AUTO_APPROVAL_THRESHOLD_AMOUNT
+                               .subtract(ONE_DOLLAR)))
+                .expectActiveSagas(1);                                          // <4>
+    }
+
+}
+....
+<1> We make use of the Axon provided `FixtureConfiguration` and `SagaTestFixture` that allow us to test saga functionality.
+<2> Given no prior activity has occurred (from the perspective of the saga)
+<3> When a `LCApplicationSubmittedEvent` is published
+<4> We expect one active saga to exist
+
+The implementation to make this test pass looks like:
+
+[source,java,linenum]
+....
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.spring.stereotype.Saga;
@@ -92,41 +125,167 @@ import org.axonframework.spring.stereotype.Saga;
 public class AutoApprovalSaga {
 
     @SagaEventHandler(associationProperty = "lcApplicationId") // <2>
-    public void on(ApplicantCreditValidatedEvent event) {
-        //
-    }
-
-    @SagaEventHandler(associationProperty = "lcApplicationId") // <2>
-    public void on(ProductValueValidatedEvent event) {
-        //
-    }
-
-    @SagaEventHandler(associationProperty = "lcApplicationId") // <2>
-    public void on(ProductLegalityValidatedEvent event) {
-        //
-    }
-
-    @SagaEventHandler(associationProperty = "lcApplicationId") // <2>
     @StartSaga                                                 // <3>
     public void on(LCApplicationSubmittedEvent event) {
-        //
-    }
-
-    @SagaEventHandler(associationProperty = "lcApplicationId") // <3>
-    @EndSaga                                                   // <4>
-    public void on(LCApplicationApprovedEvent event) {
         //
     }
 }
 ....
 <1> When working with Axon and Spring, the orchestrator is annotated with the `@Saga` annotation to mark it as a spring bean. In order to track each submitted LC application, the `@Saga` annotation is prototype-scoped (as opposed to singleton-scoped), to allow creation of multiple saga instances. Please refer to the Axon and Spring documentation for more information.
-<2> The saga listens to relevant events happening in the system to keep track of the flow (as denoted by the `@SagaEventHandler` annotation). Conceptually, the `@SagaEventHandler` annotation is very similar to the `@EventHandler` annotation that we discussed previously. However, in contrast to the `@EventHandler` which are singletons, a distinct instance of the saga is created for each LC application. This distinction is established by the value of the `associationProperty` attribute. In this example, the `associationProperty` looks for the `lcApplicationId` attribute in the incoming event's payload.
-<3> In the case of the `AutoApprovalSaga`, the `LCApplicationSubmittedEvent` marks the beginning of the saga lifecycle (as denoted by the `@StartSaga` annotation).
-<4> The saga ends unconditionally when the `LCApplicationApprovedEvent` occurs (as denoted by the `@EndSaga` annotation). As mentioned previously, it is possible to end sagas conditionally as well. We will look at how we can do this later in this section.
+<2> The saga listens to the `LCApplicationSubmittedEvent` to keep track of the flow (as denoted by the `@SagaEventHandler` annotation). Conceptually, the `@SagaEventHandler` annotation is very similar to the `@EventHandler` annotation that we discussed previously in <<_creating_the_query_model,Chapter 7>>. However, the `@SagaEventHandler` annotation is used specifically for event listeners within a saga. The `associationProperty` attribute on the `@SagaEventHandler` annotation causes this event handler method to get invoked only for the saga with matching value of the `lcApplicationId` attribute in the event payload. Also, the `@SagaEventHandler` is a transaction boundary. Every time such a method completes successfully, the Axon framework commits a transaction, thereby allowing it to keep track of state stored in the saga. We will look at this in more detail shortly.
+<3> Every saga needs to have at least one `@SagaEventHandler` method that is also annotated with the `@StartSaga` annotation to denote the beginning of the saga.
 
-NOTE: The Axon framework uses the term *saga* for its orchestrator-based implementation, whereas we have used the term saga to denote the pattern of tracking long-running transactions.
+We have a requirement that an LC cannot be auto-approved if its amount exceeds the threshold (USD 10000 in our case). The test for this scenario looks like:
+
+[source,java,linenum]
+....
+class AutoApprovalSagaTests {
+    //...
+
+    @Test
+    void shouldEndSagaImmediatelyIfAmountGreaterThanAutoApprovalThreshold() {
+        final LCApplicationId lcApplicationId = LCApplicationId.randomId();
+        fixture.givenAggregate(lcApplicationId.toString()).published()
+                .whenPublishingA(
+                        new LCApplicationSubmittedEvent(lcApplicationId,
+                            AUTO_APPROVAL_THRESHOLD_AMOUNT.add(ONE_DOLLAR))) // <1>
+                .expectActiveSagas(0);                                       // <2>
+    }
+}
+....
+<1> When the LC amount exceeds the auto approval threshold amount
+<2> We expect no active sagas to exist for that LC
+
+The implementation to satisfy this condition looks like this:
+[source,java,linenum]
+....
+import org.axonframework.modelling.saga.SagaLifecycle;
+
+@Saga
+public class AutoApprovalSaga {
+
+    @SagaEventHandler(associationProperty = "lcApplicationId")
+    @StartSaga
+    public void on(LCApplicationSubmittedEvent event) {
+        if (AUTO_APPROVAL_THRESHOLD_AMOUNT.isLessThan(event.getAmount())) { // <1>
+            SagaLifecycle.end();                                            // <2>
+        }
+    }
+}
+....
+<1> We check for the condition of the LC amount being greater than the threshold amount
+<2> If so, we end the saga using the framework provided `SagaLifecycle.end()` method. Here we end the saga programmatically. It is also possible to declaratively end the saga as well using the `@EndSaga` annotation when the `LCApplicationApprovedEvent` occurs. Please refer to the full code examples included with this chapter for more information.
+
+We need to auto-approve the saga if all of `ApplicantCreditValidatedEvent`, `ProductLegalityValidatedEvent` and `ProductValueValidatedEvent` have all occurred successfully.
+
+[source,java,linenum]
+....
+class AutoApprovalSagaTests {
+
+    @Test
+    void shouldAutoApprove() {
+        // Initialization code removed for brevity
+
+        fixture.givenAggregate(lcApplicationId.toString())
+            .published(submitted, legalityValidated, valueValidated)        // <1>
+                .whenPublishingA(applicantValidated)                        // <2>
+                .expectActiveSagas(1)                                       // <3>
+                .expectDispatchedCommands(
+                        new ApproveLCApplicationCommand(lcApplicationId));  // <4>
+    }
+}
+....
+<1> Given that the LC application has been submitted and the `ProductValueValidatedEvent` and the `ProductLegalityValidatedEvent` have occurred successfully.
+<2> When the `ApplicantCreditValidatedEvent` is published
+<3> We expect one active saga instance AND
+<4> We expect the `ApproveLCApplicationCommand` to be dispatched for that LC
+
+The implementation for this looks like:
+[source,java,linenum]
+....
+class AutoApprovalSaga {
+
+    private boolean productValueValidated;                              // <1>
+    private boolean productLegalityValidated;                           // <1>
+    private boolean applicantValidated;                                 // <1>
+
+    @Autowired
+    private transient CommandGateway gateway;                           // <2>
+
+    // Other event handlers omitted for brevity
+
+    @SagaEventHandler(associationProperty = "lcApplicationId")
+    public void on(ApplicantCreditValidatedEvent event) {               // <3>
+        if (event.getDecision().isRejected()) {                         // <4>
+            SagaLifecycle.end();
+        } else {
+            this.applicantValidated = true;                             // <5>
+            if (productValueValidated && productLegalityValidated) {    // <6>
+                LCApplicationId id = event.getLcApplicationId();
+                gateway.send(ApproveLCApplicationCommand.with(id));     // <7>
+            }
+        }
+    }
+
+    // Other event handlers omitted for brevity
+}
+....
+<1> As mentioned previously, sagas can maintain state. In this case, we are maintaining three boolean variables, each to denote the occurrence of the respective event.
+<2> We have declared the Axon `CommandGateway` as a `transient` member because we need it to dispatch commands, but not be persisted along with other saga state.
+<3> This event handler intercepts the `ApplicantCreditValidatedEvent` for the specific LC application (as denoted by the `associationProperty` in the @SagaEventHandler annotation).
+<4> If the decision from the `ApplicantCreditValidatedEvent` is rejected, we end the saga immediately.
+<5> Otherwise, we _remember_ the fact that the applicant's credit has been validated.
+<6> We then check to see if the product's value and legality have already been validated.
+<7> If so, we issue the command to auto-approve the LC.
+
+NOTE: The logic in the `ProductValueValidatedEvent` and `ProductLegalityValidatedEvent` is very similar to that in the saga event handler for the `ApplicantCreditValidatedEvent`. We have omitted it here for brevity. Please refer to the source code for this chapter for the full example along with the tests.
+
+Finally, we can end the saga when we receive the LCApplicationApprovedEvent for this application.
+
+[source,java,linenum]
+....
+class AutoApprovalSagaTests {
+    @Test
+    @DisplayName("should end saga after auto approval")
+    void shouldEndSagaAfterAutoApproval() {
+        // Initialization code omitted for brevity
+
+        fixture.givenAggregate(lcApplicationId.toString())
+                .published(
+                    submitted, applicantValidated,
+                    legalityValidated, valueValidated)                             // <1>
+                .whenPublishingA(new LCApplicationApprovedEvent(lcApplicationId))  // <2>
+                .expectActiveSagas(0)                                              // <3>
+                .expectNoDispatchedCommands();                                     // <4>
+    }
+}
+....
+<1> Given that the LC has been submitted and all the validations have been completed successfully.
+<2> When a `LCApplicationApprovedEvent` is published.
+<3> We expect zero active sagas to be running.
+<4> And we also expect to not dispatch any commands.
+
+The above implementation should give you a good idea of how to implement a saga orchestrator. Now let's look at how we can do this without the use of an explicit orchestrator.
 
 ==== Choreography
+Saga orchestrators keep track of the current state of the flow, usually making use of some kind of data store. Another way to implement this functionality is without using any stateful component. Logically, this looks like the setup shown in the diagram here:
+
+.Saga implementation using choreography
+image::sagas/auto-approval-saga-choreography.png[alt="Saga implementation using choreography"]
+
+As you can see, there is no single component that tracks the saga lifecycle. However, to make the auto-approval decision, each of these stateless event handlers need to have knowledge of the same three events having occurred:
+
+1. Product value is validated
+2. Product legality is validated
+3. Applicant's credit worthiness is validated
+
+Given that the event listeners themselves are stateless, there are at least two ways to provide this information to them:
+
+1. Each of the events carry this information in their respective payloads.
+2. The event listeners query the source systems (in this case, the product and applicant bounded contexts respectively).
+3. The LC application bounded context maintains a query model to keep track of these events having occurred.
+
+Just like in the orchestrator example, when all events have occurred and the LC amount is below the specified threshold, these event listeners can issue the `ApproveLCApplicationCommand`.
 
 ==== Orchestration versus choreography
 

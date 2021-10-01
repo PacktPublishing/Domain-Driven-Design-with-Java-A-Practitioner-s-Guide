@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
 public class Decision {
-    private boolean valid;
+    private boolean approved;
     private String remarks;
 
     public static Decision accepted() {
@@ -21,10 +21,14 @@ public class Decision {
         return new Decision(false, remarks);
     }
 
+    public boolean isRejected() {
+        return !approved;
+    }
+
     @Override
     public String toString() {
         return "valid=" +
-                valid +
-                (valid ? "" : ", remarks=" + remarks);
+                approved +
+                (approved ? "" : ", remarks=" + remarks);
     }
 }

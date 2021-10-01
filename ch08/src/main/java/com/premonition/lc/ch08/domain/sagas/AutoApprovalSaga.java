@@ -22,7 +22,7 @@ import javax.money.MonetaryAmount;
 @Saga
 public class AutoApprovalSaga {
 
-    static final MonetaryAmount AUTO_APPROVAL_THRESHOLD
+    static final MonetaryAmount AUTO_APPROVAL_THRESHOLD_AMOUNT
             = Money.of(10000, Monetary.getCurrency("USD"));
     private boolean productValueValidated;
     private boolean productLegalityValidated;
@@ -35,14 +35,14 @@ public class AutoApprovalSaga {
     @StartSaga
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(LCApplicationSubmittedEvent event) {
-        if (event.getAmount().isGreaterThan(AUTO_APPROVAL_THRESHOLD)) {
+        if (AUTO_APPROVAL_THRESHOLD_AMOUNT.isLessThan(event.getAmount())) {
             SagaLifecycle.end();
         }
     }
 
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(ApplicantCreditValidatedEvent event) {
-        if (!event.getDecision().isValid()) {
+        if (event.getDecision().isRejected()) {
             SagaLifecycle.end();
         } else {
             applicantValidated = true;
@@ -52,7 +52,7 @@ public class AutoApprovalSaga {
 
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(ProductValueValidatedEvent event) {
-        if (!event.getDecision().isValid()) {
+        if (event.getDecision().isRejected()) {
             SagaLifecycle.end();
         } else {
             productValueValidated = true;
@@ -62,7 +62,7 @@ public class AutoApprovalSaga {
 
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(ProductLegalityValidatedEvent event) {
-        if (!event.getDecision().isValid()) {
+        if (event.getDecision().isRejected()) {
             SagaLifecycle.end();
         } else {
             productLegalityValidated = true;
