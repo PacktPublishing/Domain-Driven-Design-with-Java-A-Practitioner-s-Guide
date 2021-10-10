@@ -1,7 +1,8 @@
 ifndef::imagesdir[:imagesdir: images]
+:icons: font
 
 [.text-justify]
-== Long-Running User Flows (10 pages)
+== Long-Running Workflows
 [quote, Daniel Reardon]
 In the long run, the pessimist may be proven right, but the optimist has a better time on the trip.
 
@@ -12,7 +13,7 @@ There are at least two common patterns to implement the saga pattern:
 * *Explicit orchestration*: A designated component acts as a centralized coordinator -- where the system relies on the coordinator to react to domain events to manage the flow.
 * *Implicit choreography*: No single component is required to act as a centralized coordinator -- where the components simply react to domain events in other components to manage the flow.
 
-By the end of this chapter, you will have learned how to implement sagas using both techniques. You will also have learnt how to handle exceptions using retries, compensating actions and deadlines. You will finally be able to appreciate when/whether to choose an explicit orchestrator or simply stick to implicit choreography without resorting to the use of potentially expensive distributed transactions.
+By the end of this chapter, you will have learned how to implement sagas using both techniques. You will also have learnt how to work with deadlines when no explicit events occur within the system. You will finally be able to appreciate when/whether to choose an explicit orchestrator or simply stick to implicit choreography without resorting to the use of potentially expensive distributed transactions.
 
 === Technical requirements
 * JDK 1.8+ (We have used Java 17 to compile sample sources)
@@ -265,6 +266,25 @@ class AutoApprovalSagaTests {
 <3> We expect zero active sagas to be running.
 <4> And we also expect to not dispatch any commands.
 
+===== Pros
+
+* *Complex workflows*: Having an explicit orchestrator can be very helpful when dealing with flows that involve multiple participants and have a lot of conditionals because the orchestrator can keep track of the overall progress in a fine-grained manner.
+
+* *Testing*: As we have seen in the implementation above, testing flow logic in isolation is relatively straightforward.
+
+* *Debugging*: Given that we have a single coordinator, debugging the current state of the flow can be relatively easier.
+
+* *Handling exceptions*: Given that the orchestrator has fine-grained control of the flow, recovering gracefully from exceptions can be easier.
+
+* *System knowledge*: Components in different bounded contexts do not need to have knowledge of each other's internals (e.g. commands and events) to progress the flow.
+
+* *Cyclic dependencies*: Having a central coordinator allows avoiding accidental cyclic dependencies between components.
+
+===== Cons
+* *Single point of failure*: From an operational perspective, orchestrators can become single points of failure because they are the only ones that have knowledge of the flow. This means that these components need to exhibit higher resilience characteristics as compared to other components.
+
+* *Leaking of domain logic*: In an ideal world, the aggregate will remain the custodian of all domain logic. Given that the orchestrator is also stateful, business logic may inadvertently shift to the orchestrator. Care should be taken to ensure that the orchestrator only has flow-control logic while business invariants remains within the confines of the aggregate.
+
 The above implementation should give you a good idea of how to implement a saga orchestrator. Now let's look at how we can do this without the use of an explicit orchestrator.
 
 ==== Choreography
@@ -287,38 +307,223 @@ Given that the event listeners themselves are stateless, there are at least two 
 
 Just like in the orchestrator example, when all events have occurred and the LC amount is below the specified threshold, these event listeners can issue the `ApproveLCApplicationCommand`.
 
-==== Orchestration versus choreography
+NOTE: We will skip covering code examples for the choreography implementation because this is no different from the material we have covered previously in this and prior chapters.
 
-=== Handling distributed exceptions
+Now that we have looked at how to implement both styles of sagas, let's examine some design decisions that we may need to consider when working with sagas.
 
-==== Types of exceptions
-===== Business exceptions
-===== System exceptions
+===== Pros
 
-==== Recovery
-===== Automated recovery
-===== Manual recovery
+* *Simple workflows*: For simple flows, the choreography approach can be relatively straightforward because it does not require the overhead of an additional coordinating component.
 
-===== Compensating actions
-===== Retries
+* *No single points of failure*: From an operational perspective, there is one less  high resilience component to worry about.
+
+===== Cons
+* *Workflow tracking*: Especially with complex workflows that involve numerous steps and conditionals, tracking and debugging the current state of the flow may become challenging.
+* *Cyclic dependencies*: It is possible to inadvertently introduce cyclic dependencies among components when workflows become gnarly.
+
+Sagas enable applications to maintain data, transactional consistency when more than one bounded context is required to complete the business functionality without having to resort to using https://en.wikipedia.org/wiki/Distributed_transaction[_distributed transactions_]footnote:[https://en.wikipedia.org/wiki/Distributed_transaction]. However, it does introduce a level of complexity to the programming model, especially when it comes to handling failures. We will look at exception handling in a lot more detail when we discuss working with distributed systems in upcoming chapters. Let's look at how to progress flows when there are no explicit stimuli by looking at how deadlines work.
 
 === Handling deadlines
+Thus far, we have looked at events that are caused by human (for example, the applicant submitting an LC application) or system (for example, the auto-approval of an LC application) action. However, in an event-driven system, not all events occur due to an explicit human or system stimulus. Events may need to be emitted due to inactivity over a period of time.
+
+For example, let's examine the case where the bank needs _submitted LC applications_ to be decisioned as quickly as possible. When applications are not acted upon by the trade finance managers within ten calendar days, the system should send them notifications.
+
+To deal with such inactivity, we need a means to trigger system action (read -- emit events) based on the passage of time -- in other words, perform actions when a _deadline_ occurs. Let's look at how to test-drive this functionality.
+
+[source,java,linenum]
+....
+class LCApplicationAggregateTests {
+    //...
+    @Test
+    void shouldCreateSubmissionReminderDeadlineWhenApplicationIsSubmitted() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+
+                .when(new SubmitLCApplicationCommand(id)) // <1>
+                .expectEvents(new LCApplicationSubmittedEvent(id,
+                                THOUSAND_DOLLARS))
+
+                .expectScheduledDeadlineWithName(
+                        Duration.ofDays(10),
+                        LC_APPROVAL_PENDING_REMINDER);    // <2>
+    }
+}
+....
+<1> When the LC application is submitted
+<2> We expect a deadline for the reminder to be scheduled
+
+The implementation for this is fairly straightforward:
+
+[source,java,linenum]
+....
+import org.axonframework.deadline.DeadlineManager;
+
+class LCApplication {
+    //...
+    @CommandHandler
+    public void on(SubmitLCApplicationCommand command,
+                    DeadlineManager deadlineManager) { // <1>
+        assertPositive(amount);
+        assertMerchandise(merchandise);
+        assertInDraft(state);
+        apply(new LCApplicationSubmittedEvent(id, amount));
+
+        deadlineManager.schedule(Duration.ofDays(10),  // <2>
+            "LC_APPROVAL_REMINDER",
+            LCApprovalPendingNotification.first(id));  // <3>
+    }
+    //...
+}
+....
+<1> To allow working with deadlines, the Axon framework provides a `DeadlineManager` that allows working with deadlines. This is injected into the command handler method.
+<2> We use the `deadlineManager` to schedule a named deadline (`"LC_APPROVAL_REMINDER"` in this case) that will expire in 10 days.
+<3> When the deadline is met, it will result in a `LCApprovalPendingNotification` which can be handled just like a command. Except in this case, the behavior is triggered by the passage of time.
+
+If no action is taken for ten days, this is what we expect:
+
+[source,java,linenum]
+....
+class LCApplication {
+
+    @Test
+    void shouldTriggerApprovalPendingEventTenDaysAfterSubmission() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id)) // <1>
+                .whenThenTimeElapses(Duration.ofDays(10))             // <2>
+                .expectDeadlinesMet(
+                        LCApprovalPendingNotification.first(id))      // <3>
+                .expectEvents(new LCApprovalPendingEvent(id));        // <4>
+    }
+}
+....
+<1> Given that the LC application is submitted.
+<2> When the period of ten days elapses.
+<3> The deadline should be met.
+<4> And the `LCApprovalPendingEvent` should be emitted.
+
+Let's look at how to implement this:
+
+[source,java,linenum]
+....
+import org.axonframework.deadline.annotation.DeadlineHandler;
+
+class LCApplication {
+
+    @DeadlineHandler(deadlineName = "LC_APPROVAL_REMINDER")       // <1>
+    public void on(LCApprovalPendingNotification notification) {  // <2>
+
+        AggregateLifecycle.apply(new LCApprovalPendingEvent(id)); // <3>
+
+    }
+}
+....
+<1> Deadlines are handled by annotating handler methods with the `@DeadlineHandler` annotation. Note that the same deadline name used previously is being referenced here.
+<2> This is the deadline handler method and uses the same payload that was passed along when it was scheduled.
+<3> We emit the `LCApprovalPendingEvent` when the deadline occurs.
+
+The deadline handling logic should only be triggered if no action is taken. However, if the LC is either approved or rejected within a duration of ten days, none of this behavior should be triggered:
+
+[source,java,linenum]
+....
+class LCApplicationAggregateTests {
+    //...
+    @Test
+    void shouldNotTriggerPendingReminderIfApplicationIsApprovedWithinTenDays() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id)) // <1>
+
+                .when(new ApproveLCApplicationCommand(id))            // <2>
+                .expectEvents(new LCApplicationApprovedEvent(id))
+                .expectNoScheduledDeadlines();                        // <3>
+    }
+
+    @Test
+    void shouldNotTriggerPendingReminderIfApplicationIsDeclinedWithinTenDays() {
+        // Test code is very similar. Excluded for brevity
+    }
+
+}
+....
+<1> Given that the LC application is submitted
+<2> When it is approved within a duration of ten days (in this case, almost immediately)
+<3> We expect no scheduled deadlines
+
+And the implementation for this looks like:
+
+[source,java,linenum]
+....
+class LCApplication {
+    //...
+    @CommandHandler
+    public void on(ApproveLCApplicationCommand command,
+                   DeadlineManager deadlineManager) {
+        assertInSubmitted(state);
+        AggregateLifecycle.apply(new LCApplicationApprovedEvent(id));
+        deadlineManager.cancelAllWithinScope("LC_APPROVAL_REMINDER"); // <1>
+    }
+
+    @CommandHandler
+    public void on(DeclineLCApplicationCommand command,
+                   DeadlineManager deadlineManager) {
+        assertInSubmitted(state);
+        AggregateLifecycle.apply(new LCApplicationDeclinedEvent(id));
+        deadlineManager.cancelAllWithinScope("LC_APPROVAL_REMINDER"); // <1>
+    }
+
+    //...
+}
+....
+<1> We cancel all the deadlines with the name `LC_APPROVAL_REMINDER` (in this case, we only have one deadline with that name) within the scope of this aggregate.
 
 === Summary
+In this chapter, we examined how to work with long-running workflows using sagas and the different styles we can use to implement them. We also looked at the implications of using explicit orchestration versus implicit choreography. We finally looked at how we can handle deadlines when there are no user-initiated actions.
+
+You should have learnt how sagas can act as a first-class citizen in addition to aggregates when designing a system that makes use of domain-driven design principles.
+
+In the next chapter, we will look at how we can interact with external systems while respecting bounded context boundaries between core and peripheral systems.
 
 === Questions
 
+* Are you seeing the need to implement long-running workflows in your current ecosystem?
+* Do you see yourself picking one style over the other most of the time?
+* Are you using external deadline handlers (for instance, batch jobs) in your existing systems as opposed to embedding time-based logic in the core?
+
+
 === Further reading
 
-[cols="3,3,6"]
+[cols="5,3,6"]
 |===
 |Title |Author |Location
 
-|Example
-|Author
-|https://www.example.com
+|Saga persistence and event-driven architectures
+|Udi Dahan
+|https://udidahan.com/2009/04/20/saga-persistence-and-event-driven-architectures/
 
-|Example
-|Author
-|https://www.example.com
+|Sagas solve stupid transaction timeouts
+|Udi Dahan
+|https://udidahan.com/2008/06/23/sagas-solve-stupid-transaction-timeouts/
+
+|Microservices -- when to react vs. orchestrate
+|Andrew Bonham
+|https://medium.com/capital-one-tech/microservices-when-to-react-vs-orchestrate-c6b18308a14c
+
+|Saga orchestration for microservices using the outbox pattern
+|Gunnar Morling
+|https://www.infoq.com/articles/saga-orchestration-outbox/
+
+|Patterns for distributed transactions within a microservices architecture
+|Keyang Xiang
+|https://developers.redhat.com/blog/2018/10/01/patterns-for-distributed-transactions-within-a-microservices-architecture
+
 |===

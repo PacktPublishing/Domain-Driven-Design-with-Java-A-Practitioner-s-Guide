@@ -10,5 +10,45 @@ We now have a working application which is bundled as a single package. In this 
 
 === Understanding the Costs of Distribution
 
+=== Handling exceptions
+[quote,Werner Vogels, CTO -- Amazon Web Services]
+Everything fails all the time.
+
+Unexpected failures in software systems are bound to happen. Instead of expending all our energies trying to prevent them from occurring, it is prudent to embrace and design for failure as well. Let's look at the scenario in the `AutoApprovalSaga` and identify things that can fail:
+
+[source,java,linenum]
+....
+class AutoApprovalSaga {
+    //...
+    @SagaEventHandler(associationProperty = "lcApplicationId")
+    public void on(ProductLegalityValidatedEvent event) {
+        //..
+        productLegalityValidated = true;
+        if (productValueValidated && applicantValidated) {
+               gateway.send(new ApproveLCApplicationCommand(lcApplicationId)); // <1>
+        }
+    }
+}
+....
+<1> When dispatching commands, we have a few styles of interaction with the target system (in this case, the LC application bounded context):
+
+* *Fire and forget*: This is the style we have used currently. This style works best when system scalability is a prime concern. On the flip side, this approach may not be the most reliable because we do not have definitive knowledge of the outcome.
+* *Wait infinitely*: We wait infinitely for the dispatch and handling of the `ApproveLCApplicationCommand`.
+* *Wait with timeout*: We wait for a certain amount of time before concluding that the handling of the command has likely failed.
+
+Which interaction style should we use? While this decision appears to be a simple one, it has quite a few, far-reaching consequences:
+
+* If command dispatching itself fails, the `CommandGateway#send` method will fail with an exception. Given that the CommandGateway is an infrastructure component, this will happen because of technical reasons (like network blips, etc.)
+* If the command handling for the `ApproveLCApplicationCommand` fails, and we will not know about it because the `#send` method does not wait for handling to complete. One way to mitigate that problem is to wait for the command to be handled using the `CommandGateway#sendAndWait` method. However, this variation waits infinitely for the handler to complete -- which can be a scalability concern.
+* We can choose to only wait
+
+
+==== Recovery
+===== Automated recovery
+===== Manual recovery
+
+===== Compensating actions
+===== Retries
+
 === Testing the Overall System
 

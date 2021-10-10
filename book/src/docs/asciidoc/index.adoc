@@ -29,7 +29,7 @@ include::02-ddd-mechanics.adoc[]
 
 include::03-does-ddd-fit.adoc[]
 
-= Part 2: Implementing DDD in the Real World
+= Part 2: Implementing DDD in the real world
 
 [partintro]
 In Part 2, we will implement a real-world application using JVM-based technologies such as Vaadin, Spring Boot, Axon Framework, Cadence, among others.
@@ -42,7 +42,7 @@ include::06-implementing-a-task-based-ui.adoc[]
 
 include::07-implementing-queries.adoc[]
 
-include::08-long-running-user-flows.adoc[]
+include::08-long-running-workflows.adoc[]
 
 include::09-integrating-wth-external-systems.adoc[]
 

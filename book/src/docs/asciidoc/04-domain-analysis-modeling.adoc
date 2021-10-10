@@ -2,7 +2,7 @@ ifndef::imagesdir[:imagesdir: images]
 [#_domain_analysis_and_modeling]
 [.text-justify]
 
-== Domain Analysis and Modeling
+== Domain analysis and modeling
 
 [quote,Chinese Proverb]
 He who asks a question remains a fool for five minutes. He who does not ask remains a fool forever.

@@ -31,7 +31,6 @@ public class AutoApprovalSaga {
     @Autowired
     private transient CommandGateway gateway;
 
-
     @StartSaga
     @SagaEventHandler(associationProperty = "lcApplicationId")
     public void on(LCApplicationSubmittedEvent event) {

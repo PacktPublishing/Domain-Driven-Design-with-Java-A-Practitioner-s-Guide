@@ -177,8 +177,8 @@ In our current design, the implications of this change are far reaching for both
 |Characteristic |CRUD-based |Task-based|Commentary
 
 |Usability
-|[red]#icon:thumbs-down[]#
-|[green]#icon:thumbs-up[]#
+|icon:thumbs-down[role=red]
+|icon:thumbs-up[role=green]
 |Task-based interfaces tend to provide more fine-grained controls that capture user intent a lot more explicitly, making them naturally more usable -- especially in cases where the domain is complex.
 
 |Reusability

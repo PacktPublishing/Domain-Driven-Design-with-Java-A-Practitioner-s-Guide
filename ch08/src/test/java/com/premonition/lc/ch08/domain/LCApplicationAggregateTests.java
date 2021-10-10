@@ -129,8 +129,46 @@ public class LCApplicationAggregateTests {
                         new MerchandiseChangedEvent(id, merchandise()))
                 .andGivenCommands(new SubmitLCApplicationCommand(id))
                 .whenThenTimeElapses(Duration.ofDays(10))
+                .expectDeadlinesMet(LCApprovalPendingNotification.first(id))
                 .expectEvents(new LCApprovalPendingEvent(id))
-                .expectDeadlinesMet(first(id))
+                .expectScheduledDeadlineWithName(Duration.ofDays(10), LC_APPROVAL_PENDING_REMINDER);
+    }
+
+    @Test
+    void shouldNotTriggerPendingReminderIfApplicationIsApprovedWithinTenDays() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .when(new ApproveLCApplicationCommand(id))
+                .expectEvents(new LCApplicationApprovedEvent(id))
+                .expectNoScheduledDeadlines();
+    }
+
+    @Test
+    void shouldNotTriggerPendingReminderIfApplicationIsDeclinedWithinTenDays() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .andGivenCommands(new SubmitLCApplicationCommand(id))
+                .when(new DeclineLCApplicationCommand(id))
+                .expectEvents(new LCApplicationDeclinedEvent(id))
+                .expectNoScheduledDeadlines();
+    }
+
+    @Test
+    void shouldCreateSubmissionReminderDeadlineWhenApplicationIsSubmitted() {
+        final LCApplicationId id = LCApplicationId.randomId();
+        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
+                                "My LC", LCState.DRAFT),
+                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
+                        new MerchandiseChangedEvent(id, merchandise()))
+                .when(new SubmitLCApplicationCommand(id))
+                .expectEvents(new LCApplicationSubmittedEvent(id, THOUSAND_DOLLARS))
                 .expectScheduledDeadlineWithName(Duration.ofDays(10), LC_APPROVAL_PENDING_REMINDER);
     }
 
@@ -244,19 +282,6 @@ public class LCApplicationAggregateTests {
                 .andGivenCommands(new SubmitLCApplicationCommand(id))
                 .when(new ApproveLCApplicationCommand(id))
                 .expectEvents(new LCApplicationApprovedEvent(id))
-                .expectNoScheduledDeadlines();
-    }
-
-    @Test
-    void shouldAllowDecliningOfSubmittedLC() {
-        final LCApplicationId id = LCApplicationId.randomId();
-        fixture.given(new LCApplicationStartedEvent(id, ApplicantId.randomId(),
-                                "My LC", LCState.DRAFT),
-                        new LCAmountChangedEvent(id, THOUSAND_DOLLARS),
-                        new MerchandiseChangedEvent(id, merchandise()))
-                .andGivenCommands(new SubmitLCApplicationCommand(id))
-                .when(new DeclineLCApplicationCommand(id))
-                .expectEvents(new LCApplicationDeclinedEvent(id))
                 .expectNoScheduledDeadlines();
     }
 
