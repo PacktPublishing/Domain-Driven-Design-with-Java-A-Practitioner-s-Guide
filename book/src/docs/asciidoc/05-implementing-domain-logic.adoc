@@ -84,6 +84,7 @@ spring init \
       --package-name com.example.api \
       --force
 ....
+NOTE: The entire command is split into multiple lines for better readability. Unix based operating systems requires us to use backslash("\") character to split the command into multiple lines. If you are using Windows OS, then please make sure to replace the backslash character with grave accent("`") character before running the command.
 
 This should create a file named `lc-issuance-api.zip` in the current directory. Unzip this file to a location of your choice and add a dependency on the Axon framework in the `dependencies` section of the `pom.xml` file:
 
