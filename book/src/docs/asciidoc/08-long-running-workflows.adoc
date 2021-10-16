@@ -16,12 +16,16 @@ There are at least two common patterns to implement the saga pattern:
 By the end of this chapter, you will have learned how to implement sagas using both techniques. You will also have learnt how to work with deadlines when no explicit events occur within the system. You will finally be able to appreciate when/whether to choose an explicit orchestrator or simply stick to implicit choreography without resorting to the use of potentially expensive distributed transactions.
 
 === Technical requirements
+To follow the examples in this chapter, you will need access to:
+
 * JDK 1.8+ (We have used Java 17 to compile sample sources)
 * Spring Boot 2.4.x
 * Axon framework 4.5.3
 * JUnit 5.7.x (Included with spring boot)
 * Project Lombok (To reduce verbosity)
 * Maven 3.x
+
+NOTE: Please refer to the ch06 directory of the book's accompanying source code repository for complete working examples.
 
 === Continuing our design journey
 In <<_domain_analysis_and_modeling,Chapter 4 - Domain analysis and modeling>>, we discussed eventstorming as a lightweight method to clarify business flows. As a reminder, this is the output produced from our eventstorming session:
@@ -44,7 +48,7 @@ From an overall system perspective, it is pertinent to note that the product ana
 
 NOTE: In this context, we are using the term *_long-running_* to denote a complex business process that takes several steps to complete. As these steps occur, the process transitions from one state to another. In other words, we are referring to a https://en.wikipedia.org/wiki/state_machine[*state machine*]footnote:[https://en.wikipedia.org/wiki/state_machine]. This is not to be confused with a long-running software process (for example, a complex SQL query or an image processing routine) that is computationally intensive.
 
-As is evident, the LC auto-approval functionality is an example of a long-running business process where _some thing_ in our system needs to keep track of the fact that these independent events have occurred before proceeding further.  Such functionality can be implemented using the saga pattern. Let's look at how we can do this.
+As is evident from the diagram above, the LC auto-approval functionality is an example of a long-running business process where _some thing_ in our system needs to keep track of the fact that these independent events have occurred before proceeding further.  Such functionality can be implemented using the saga pattern. Let's look at how we can do this.
 
 === Implementing sagas
 Before we delve into how we can implement this auto-approval functionality, let's take a look at how this works from a logical perspective as shown here:
@@ -177,7 +181,7 @@ public class AutoApprovalSaga {
 <1> We check for the condition of the LC amount being greater than the threshold amount
 <2> If so, we end the saga using the framework provided `SagaLifecycle.end()` method. Here we end the saga programmatically. It is also possible to declaratively end the saga as well using the `@EndSaga` annotation when the `LCApplicationApprovedEvent` occurs. Please refer to the full code examples included with this chapter for more information.
 
-We need to auto-approve the saga if all of `ApplicantCreditValidatedEvent`, `ProductLegalityValidatedEvent` and `ProductValueValidatedEvent` have all occurred successfully.
+We need to auto-approve the saga if all of `ApplicantCreditValidatedEvent`, `ProductLegalityValidatedEvent` and `ProductValueValidatedEvent` have occurred successfully. The test to verify this functionality is shown here:
 
 [source,java,linenum]
 ....
@@ -266,8 +270,9 @@ class AutoApprovalSagaTests {
 <3> We expect zero active sagas to be running.
 <4> And we also expect to not dispatch any commands.
 
-===== Pros
+Now that we have looked at how to implement sagas using an orchestrator, let's examine some design decisions that we may need to consider when working with them.
 
+===== Pros
 * *Complex workflows*: Having an explicit orchestrator can be very helpful when dealing with flows that involve multiple participants and have a lot of conditionals because the orchestrator can keep track of the overall progress in a fine-grained manner.
 
 * *Testing*: As we have seen in the implementation above, testing flow logic in isolation is relatively straightforward.
@@ -309,7 +314,7 @@ Just like in the orchestrator example, when all events have occurred and the LC 
 
 NOTE: We will skip covering code examples for the choreography implementation because this is no different from the material we have covered previously in this and prior chapters.
 
-Now that we have looked at how to implement both styles of sagas, let's examine some design decisions that we may need to consider when working with sagas.
+Now that we have looked at how to implement the choreography style of sagas, let's examine some design decisions that we may need to consider when working with them.
 
 ===== Pros
 
@@ -321,7 +326,7 @@ Now that we have looked at how to implement both styles of sagas, let's examine 
 * *Workflow tracking*: Especially with complex workflows that involve numerous steps and conditionals, tracking and debugging the current state of the flow may become challenging.
 * *Cyclic dependencies*: It is possible to inadvertently introduce cyclic dependencies among components when workflows become gnarly.
 
-Sagas enable applications to maintain data, transactional consistency when more than one bounded context is required to complete the business functionality without having to resort to using https://en.wikipedia.org/wiki/Distributed_transaction[_distributed transactions_]footnote:[https://en.wikipedia.org/wiki/Distributed_transaction]. However, it does introduce a level of complexity to the programming model, especially when it comes to handling failures. We will look at exception handling in a lot more detail when we discuss working with distributed systems in upcoming chapters. Let's look at how to progress flows when there are no explicit stimuli by looking at how deadlines work.
+Sagas enable applications to maintain data and transactional consistency when more than one bounded context is required to complete the business functionality without having to resort to using https://en.wikipedia.org/wiki/Distributed_transaction[_distributed transactions_]footnote:[https://en.wikipedia.org/wiki/Distributed_transaction]. However, it does introduce a level of complexity to the programming model, especially when it comes to handling failures. We will look at exception handling in a lot more detail when we discuss working with distributed systems in upcoming chapters. Let's look at how to progress flows when there are no explicit stimuli by looking at how deadlines work.
 
 === Handling deadlines
 Thus far, we have looked at events that are caused by human (for example, the applicant submitting an LC application) or system (for example, the auto-approval of an LC application) action. However, in an event-driven system, not all events occur due to an explicit human or system stimulus. Events may need to be emitted due to inactivity over a period of time.
