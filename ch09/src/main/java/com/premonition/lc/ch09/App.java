@@ -1,7 +1,7 @@
-package com.premonition.lc.ch08;
+package com.premonition.lc.ch09;
 
-import com.premonition.lc.ch08.ui.scopes.LoggedInUserScope;
-import com.premonition.lc.ch08.ui.views.MainView;
+import com.premonition.lc.ch09.ui.scopes.LoggedInUserScope;
+import com.premonition.lc.ch09.ui.views.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.spring.MvvmfxSpringApplication;
 import javafx.application.Application;
@@ -13,7 +13,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.axonframework.config.Configuration;
 import org.axonframework.config.ConfigurationScopeAwareProvider;
-import org.axonframework.config.Configurer;
 import org.axonframework.deadline.DeadlineManager;
 import org.axonframework.deadline.SimpleDeadlineManager;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -63,5 +62,4 @@ public class App extends MvvmfxSpringApplication {
                 .scopeAwareProvider(new ConfigurationScopeAwareProvider(config))
                 .build();
     }
-
 }

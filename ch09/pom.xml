@@ -8,9 +8,9 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ddd-book-java-ch08</artifactId>
-	<name>Implementing Domain-Driven Design with Java - Chapter 8</name>
-	<description>Chapter 8 - Sample Application - LC Issuance - App</description>
+	<artifactId>ddd-book-java-ch09</artifactId>
+	<name>Implementing Domain-Driven Design with Java - Chapter 9</name>
+	<description>Chapter 9 - Sample Application - LC Issuance - App</description>
 	<properties>
 		<java.version>17</java.version>
 		<axon-framework.version>4.5.3</axon-framework.version>
@@ -154,7 +154,7 @@
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>${javafx-maven-plugin.version}</version>
 				<configuration>
-					<mainClass>com.premonition.lc.ch08.App</mainClass>
+					<mainClass>com.premonition.lc.ch09.App</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
