@@ -25,7 +25,7 @@ To follow the examples in this chapter, you will need access to:
 * Project Lombok (To reduce verbosity)
 * Maven 3.x
 
-NOTE: Please refer to the ch06 directory of the book's accompanying source code repository for complete working examples.
+NOTE: Please refer to the ch08 directory of the book's accompanying source code repository for complete working examples.
 
 === Continuing our design journey
 In <<_domain_analysis_and_modeling,Chapter 4 - Domain analysis and modeling>>, we discussed eventstorming as a lightweight method to clarify business flows. As a reminder, this is the output produced from our eventstorming session:
