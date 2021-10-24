@@ -37,6 +37,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ddd-book-java-ch08</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ddd-book-java-ch09</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <defaultGoal>process-resources</defaultGoal>
