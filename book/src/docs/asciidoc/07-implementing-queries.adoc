@@ -24,6 +24,8 @@ To follow the examples in this chapter, you will need access to:
 * Project Lombok (To reduce verbosity)
 * Maven 3.x
 
+NOTE: Please refer to the ch07 directory of the book's accompanying source code repository for complete working examples.
+
 === Continuing our design journey
 In <<_domain_analysis_and_modeling,Chapter 4 - Domain analysis and modeling>>, we discussed eventstorming as a lightweight method to clarify business flows. As a reminder, this is the output produced from our eventstorming session:
 
@@ -91,7 +93,7 @@ cloud "Queries\n" {
 @enduml
 ....
 
-The queries marked in green, all require us to expose a collection of LCs in various states. To represent this, we can create an `LCView` as shown here:
+The queries marked in green (in the output from eventstorming session), all require us to expose a collection of LCs in various states. To represent this, we can create an `LCView` as shown here:
 
 The `LCView` class is an extremely simple object devoid of any logic.
 [source,java,linenum]
@@ -176,7 +178,7 @@ public class MyDraftLCsQuery {
 }
 ....
 
-Let's implement the query to retrieve the results for these criteria:
+Let's implement the query using spring's repository pattern to retrieve the results for these criteria:
 
 [source,java,linenum]
 ....
@@ -201,6 +203,8 @@ public interface LCViewRepository extends JpaRepository<LCView, LCApplicationId>
 <1> This is the dynamic spring data finder method we will use to query the database.
 <2> The `@QueryHandler` annotation provided by Axon framework routes query requests to the respective handler.
 <3> Finally, we invoke the finder method to return results.
+
+NOTE: In the above example, we have implemented the `QueryHandler` method within the `Repository` itself for brevity. The `QueryHandler` can be placed elsewhere as well.
 
 To connect this to the UI, we add a new method in the `BackendService` (originally introduced in Chapter 6) to invoke the query as shown here:
 
@@ -234,7 +238,7 @@ In other cases, we may want to remain up to date on dynamically changing data. F
 === Historic event replays
 The example we have looked at thus far allows us to listen to events as they occur. Consider a scenario where we need to build a new query from historic events to satisfy an unanticipated new requirement. This new requirement may necessitate the need to create a new query model or in a more extreme case, a completely new bounded context. Another scenario might be when we may need to correct a bug in the way we had built an existing query model and now need to recreate it from scratch. Given that we have a record of all events that have transpired in the event store, we can use replay events to enable us to construct both new and/or correct existing query models with relative ease.
 
-NOTE: We have used the term _event replay_ in the context of reconstituting state of event-sourced aggregate instances. The event replay mentioned here, although similar in concept, is still very different. In the case of domain object event replay, we work with a single aggregate root instance and only load events for that one instance. In this case though, we will likely work with events that span more than one aggregate.
+NOTE: We have used the term _event replay_ in the context of reconstituting state of event-sourced aggregate instances (discussed in <<_event_sourced_aggregates,event-sourced aggregates>> in <<_implementing_domain_logic,Chapter 5>>). The event replay mentioned here, although similar in concept, is still very different. In the case of domain object event replay, we work with a single aggregate root instance and only load events for that one instance. In this case though, we will likely work with events that span more than one aggregate.
 
 Let's look at how the different types of replays and how we can use each of them.
 
@@ -288,7 +292,7 @@ In an event-driven system, it is common to accumulate an extremely large number 
 3. Start an event replay for impacted aggregates.
 4. Resume listening to new events after replay is complete.
 
-Based on the above, while the replay is running (step 3 above), we may not be able to provide reliable answers to queries that are impacted by the replay. This obviously has an impact on application availability. When using event replays, care needs to be taken to ensure that SLOs (service level objectives) are continued to be met.
+Based on the above, while the replay is running (step 3 above), we may not be able to provide reliable answers to queries that are impacted by the replay. This obviously has an impact on application availability. When using event replays, care needs to be taken to ensure that https://sre.google/sre-book/service-level-objectives/[SLOs]footnote:[https://sre.google/sre-book/service-level-objectives] (service level objectives) are continued to be met.
 
 ==== Event handlers with side effects
 When replaying events, we re-trigger event handlers either to fix logic that was previously erroneous or to support new functionality. Invoking most (if not all) event handlers usually results in some sort of side effect (for example, update a query store). This means that some event handlers may not be running for the first time. To prevent unwanted side effects, it is important to undo the effects of having invoked these event handlers previously or code event handlers in an idempotent manner (for example, by using an _upsert_ instead of a simple insert or an update). The effect of some event handlers can be hard (if not impossible) to undo (for example, invoking a command, sending an email or SMS). In such cases, it might be required to mark such event handlers as being ineligible to run during replay. When using the Axon framework, this is fairly simple to do:
