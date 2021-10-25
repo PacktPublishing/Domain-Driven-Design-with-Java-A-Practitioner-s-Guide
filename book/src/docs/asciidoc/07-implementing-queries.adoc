@@ -334,7 +334,7 @@ In this chapter we examined how to implement the query side of a CQRS-based syst
 
 This chapter should give you a good idea of how to build and evolve the query side of a CQRS-based system to meet changing business requirements while retaining all the business logic on the command side.
 
-In this chapter, we looked at how to consume events in a stateless manner ( where no two event handlers have knowledge of each other's existence). In the next chapter, we will continue to look at how to consume events, but this time in a stateful manner in the form of long-running user transactions (also known as sagas).
+Thus far, we have looked at how to consume events in a stateless manner (where no two event handlers have knowledge of each other's existence), in the next chapter, we will continue to look at how to consume events, but this time in a stateful manner in the form of long-running user transactions (also known as sagas).
 
 === Questions
 
