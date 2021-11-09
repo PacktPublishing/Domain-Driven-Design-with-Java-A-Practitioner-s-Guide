@@ -329,11 +329,11 @@ Now that we have looked at how to implement the choreography style of sagas, let
 Sagas enable applications to maintain data and transactional consistency when more than one bounded context is required to complete the business functionality without having to resort to using https://en.wikipedia.org/wiki/Distributed_transaction[_distributed transactions_]footnote:[https://en.wikipedia.org/wiki/Distributed_transaction]. However, it does introduce a level of complexity to the programming model, especially when it comes to handling failures. We will look at exception handling in a lot more detail when we discuss working with distributed systems in upcoming chapters. Let's look at how to progress flows when there are no explicit stimuli by looking at how deadlines work.
 
 === Handling deadlines
-Thus far, we have looked at events that are caused by human (for example, the applicant submitting an LC application) or system (for example, the auto-approval of an LC application) action. However, in an event-driven system, not all events occur due to an explicit human or system stimulus. Events may need to be emitted due to inactivity over a period of time.
+Thus far, we have looked at events that are caused by human (for example, the applicant submitting an LC application) or system (for example, the auto-approval of an LC application) action. However, in an event-driven system, not all events occur due to an explicit human or system stimulus. Events may need to be emitted either due to inactivity over a period of time, or on a recurring schedule based on prevailing conditions.
 
-For example, let's examine the case where the bank needs _submitted LC applications_ to be decisioned as quickly as possible. When applications are not acted upon by the trade finance managers within ten calendar days, the system should send them notifications.
+For example, let's examine the case where the bank needs _submitted LC applications_ to be decisioned as quickly as possible. When applications are not acted upon by the trade finance managers within ten calendar days, the system should send them reminders.
 
-To deal with such inactivity, we need a means to trigger system action (read -- emit events) based on the passage of time -- in other words, perform actions when a _deadline_ occurs. Let's look at how to test-drive this functionality.
+To deal with such inactivity, we need a means to trigger system action (read -- emit events) based on the passage of time -- in other words, perform actions when a _deadline_ expires. In a happy path scenario, we expect either the user or the system to take certain action. In such cases, we will also need to account for cases we will need to cancel t the trigger scheduled to occur on deadline expiry. Let's look at how to test-drive this functionality.
 
 [source,java,linenum]
 ....
@@ -431,7 +431,7 @@ class LCApplication {
 ....
 <1> Deadlines are handled by annotating handler methods with the `@DeadlineHandler` annotation. Note that the same deadline name used previously is being referenced here.
 <2> This is the deadline handler method and uses the same payload that was passed along when it was scheduled.
-<3> We emit the `LCApprovalPendingEvent` when the deadline occurs.
+<3> We emit the `LCApprovalPendingEvent` when the deadline expires.
 
 The deadline handling logic should only be triggered if no action is taken. However, if the LC is either approved or rejected within a duration of ten days, none of this behavior should be triggered:
 
