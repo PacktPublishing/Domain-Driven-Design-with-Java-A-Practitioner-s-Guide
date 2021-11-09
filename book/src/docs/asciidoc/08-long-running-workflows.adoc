@@ -333,7 +333,7 @@ Thus far, we have looked at events that are caused by human (for example, the ap
 
 For example, let's examine the case where the bank needs _submitted LC applications_ to be decisioned as quickly as possible. When applications are not acted upon by the trade finance managers within ten calendar days, the system should send them reminders.
 
-To deal with such inactivity, we need a means to trigger system action (read -- emit events) based on the passage of time -- in other words, perform actions when a _deadline_ expires. In a happy path scenario, we expect either the user or the system to take certain action. In such cases, we will also need to account for cases we will need to cancel t the trigger scheduled to occur on deadline expiry. Let's look at how to test-drive this functionality.
+To deal with such inactivity, we need a means to trigger system action (read -- emit events) based on the passage of time -- in other words, perform actions when a _deadline_ expires. In a happy path scenario, we expect either the user or the system to take certain action. In such cases, we will also need to account for cases we will need to cancel the trigger scheduled to occur on deadline expiry. Let's look at how to test-drive this functionality.
 
 [source,java,linenum]
 ....
