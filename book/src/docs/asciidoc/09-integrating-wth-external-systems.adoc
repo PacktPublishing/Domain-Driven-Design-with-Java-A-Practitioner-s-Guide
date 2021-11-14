@@ -8,25 +8,73 @@ Thus far, we have used DDD to implement a robust core for our application. Howev
 === Technical Requirements
 
 === Continuing our design journey
+From our eventstorming session, we have arrived at four bounded contexts for our application as depicted here:
 
-image::event-storming/06-bounded-contexts.png[]
+[.text-center]
+[plantuml,lc-application]
+....
+@startuml
+skinparam CloudFontName "Gloria Hallelujah"
+skinparam handwritten true
+
+cloud "LC Issuance" as issuance {
+  cloud LC
+}
+cloud "LC Application Processing" {
+  cloud "LC Application" as App {
+    cloud Merchandise as p1
+    cloud Applicant
+  }
+}
+cloud Compliance {
+  cloud Product as p2
+}
+cloud "Customer Onboarding" as onboarding {
+  cloud Customer as customer
+}
+LC <-> App
+p1 <-> p2
+Applicant <--> customer
+
+@enduml
+....
+
+
+.A simple context map for the LC application
+[.text-center]
+image::lc-application-context-map.png[]
 
 === Integration mechanisms
 
-==== Shared kernel versus separate ways
+==== Symmetric relationship patterns
 
-==== Producer-consumer versus conformist
+===== Partnership
 
-==== Open host service
+===== Shared kernel
 
-==== Anti-corruption layer
+===== Separate ways
 
-=== Implementing consumer-driven contracts
+==== Asymmetric relationship patterns
 
-=== Exposing a REST-based API
-Currently, we have a set of commands and an ability to handle them. However, there isn't an entry point to invoke these commands externally. Let's expose these via a ReSTful interface.
+===== Conformist
 
-=== Exposing an events-based API
+===== Anti-corruption layer
+
+===== Open host service
+
+=== Implementation patterns
+
+==== Data-based
+
+==== API-based
+
+===== HTTP-based APIs
+
+===== Message-based APIs
+
+==== Shared code artifacts
+
+==== Enforcing contracts
 
 === Legacy Application Migration Patterns
 

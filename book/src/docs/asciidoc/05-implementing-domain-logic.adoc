@@ -137,12 +137,15 @@ Commands are always directed to an aggregate (the root entity) for processing (h
 
 [#_identifying_aggregates]
 ==== Identifying aggregates
-Looking at the output of the eventstorming session of our LC (Letter of Credit) application, one potential grouping can be as follows:
+Looking at the output of the eventstorming session of our LC (Letter of Credit) application, one potential grouping of commands can be as follows:
 
 .First cut attempt at aggregate design
 image::aggregate-design/aggregate-design-01.png[]
 
-At first glance, it appears that we have four potential entities to handle these commands:
+Before we arrive at aggregates, the grouping above allows us to identify entities. Some or all of these entities may be aggregates (For a more detailed explanation on the difference between <<_aggregates,aggregates>> and <<_entities,entities>>, please refer to <<_mechanics_of_domain_driven_design,Chapter 2>>
+).
+
+At first glance, it appears that we have four potential aggregates to handle these commands:
 
 .Potential aggregates at first glance
 [.text-center]
@@ -151,36 +154,77 @@ At first glance, it appears that we have four potential entities to handle these
 @startuml
 skinparam handwritten true
 skinparam CloudFontName "Gloria Hallelujah"
+cloud {
 cloud "LC Application"
 cloud Product
 cloud Applicant
 cloud LC
+}
 @enduml
 ....
 
-At first glance, each of these entities may be classified as aggregates in our solution. Here, the `LC Application` feels like a reasonably good choice for aggregate, given that we are building a solution to manage LC applications. However, do the others make sense to be classified as such? The `Product` and `Applicant` look like potential entities, but we need to ask ourselves if we will need to operate on these outside of the purview of the `LC Application`. If the answer is a *yes*, then `Product` and `Applicant` _may_ be classified as aggregates. But both `Product` and `Applicant` do not seem to require being operated on without an enveloping `LC Application` within this bounded context. It feels that way because both product and applicant details are required to be provided as part of the LC application process. At least from what we know of the process thus far, this seems to be true. This means we are left with two potential aggregates -- `LC` and `LC Application`.
+However, it is a bit more nuanced than that. Before we conclude this conversation on aggregates, let's also examine our current organizational structures because they can and will play a very influential role in how we choose aggregates. When implementing the solution, these organizational structures decompose into bounded contexts, so let's also examine how that works.
 
-.Slightly refined aggregate structure
+==== Discovering bounded contexts
+Our current organization is segregated to handle the business functions outlined here:
+
+[.text-center]
+[plantuml,lc-application]
+....
+@startuml
+skinparam monochrome true
+skinparam CloudFontName "Gloria Hallelujah"
+skinparam handwritten true
+cloud {
+    cloud "LC Issuance" as issuance
+    cloud "LC Application Processing"
+    cloud Compliance
+    cloud "Customer Onboarding"
+}
+@enduml
+....
+
+As a starting point, we can use these business functions as natural boundaries to act as <<_bounded_contexts,bounded contexts>> for our solution. We may evolve this design in the future as we gain more understanding of the problem and the solution, but for now, this will suffice. Aggregates live within the confines of a single bounded context, so we need to correlate the two concepts. Let's look at how this works.
+
+==== Correlating aggregates to bounded contexts
+If we examine the lifecycle of the letter of credit (LC) as a whole, we notice the structure outlined here. Each of these bounded contexts work with the same entities, but call them by different names making use of their own ubiquitous language.
+
 [.text-center]
 [plantuml,lc-application]
 ....
 @startuml
 skinparam CloudFontName "Gloria Hallelujah"
 skinparam handwritten true
-cloud "LC Application" as App {
-  cloud Product
-  cloud Applicant
+
+cloud "LC Issuance" as issuance {
+  cloud LC
 }
-cloud LC
+cloud "LC Application Processing" {
+  cloud "LC Application" as App {
+    cloud Merchandise as p1
+    cloud Applicant
+  }
+}
+cloud Compliance {
+  cloud Product as p2
+}
+cloud "Customer Onboarding" as onboarding {
+  cloud Customer as customer
+}
+LC <-> App
+p1 <-> p2
+Applicant <--> customer
 
 @enduml
 ....
 
-When we look at the output of our eventstorming session, the `LC Application` transitions to become an `LC` much later in the lifecycle. Let's work on the `LC Application` right now, and suspend further analysis on the need for the `LC` aggregate to a later time.
+Notice how the `Customer` in the Customer Onboarding bounded context is called an `Applicant` in the LC Application Processing context. Similarly, Compliance works with a `Product` entity, whereas LC Application Processing calls it `Merchandise`. Within the LC Application Processing bounded context, we always work within the purview of an `LC Application`, not directly with either the `Applicant` or the `Merchandise`. This leads us to the conclusion (at least for now), that the `Applicant` and `Merchandise` entities are not aggregates within the LC Application Processing context. The `LC Application` entity acts as the *aggregate* for this bounded context. Furthermore, it is at the root of the aggregate hierarchy, hence it is termed as the *aggregate root*.
 
-NOTE: For a more detailed explanation of the differences between aggregates, aggregate roots, entities and value objects, refer to Chapter 2, The Mechanics of Domain-Driven Design.
+CAUTION: The terms aggregate and aggregate root are sometimes used interchangeably to mean the same thing. While both aggregates and aggregate roots handle commands, only one aggregate can exist as the root in a given context, and it encapsulates access to its child aggregates.
 
-Let's start writing our first command to see how this manifests itself in code.
+It is important to note that entities may be required to be treated as aggregates in a different bounded context and this kind of treatment is entirely context dependent.
+
+When we look at the output of our eventstorming session, the `LC Application` transitions to become an `LC` much later in the lifecycle in the Issuance context. Our focus right now is to optimize and automate the LC application flow of the overall issuance process. Now that we have settled on working with the `LC Application` aggregate (root), let's start writing our first command to see how this manifests itself in code.
 
 ==== Test-driving the system
 While we have a reasonably good conceptual understanding of the system, we are still in the process of refining this understanding. Test-driving the system allows us to exercise our understanding by acting as the first client of the solution that we are producing.

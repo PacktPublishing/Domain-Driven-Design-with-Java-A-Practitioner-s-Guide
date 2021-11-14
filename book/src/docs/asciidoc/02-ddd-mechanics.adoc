@@ -1,9 +1,10 @@
+[#_mechanics_of_domain_driven_design]
 == The Mechanics of Domain-Driven Design (30 Pages)
 
 [quote,Creighton Abrams]
 When eating an elephant, take one bite at a time.
 
-As mentioned in the previous chapter, many things can put a project off course. In this chapter, we look at how DDD gives us a set of tenets and techniques to arrive at a collective understanding of the problem at hand in the face of ambiguity, break it down into manageable chunks and translate it into reliably working software.
+As mentioned in the previous chapter, many things can put a project off course.In this chapter, we look at how DDD gives us a set of tenets and techniques to arrive at a collective understanding of the problem at hand in the face of ambiguity, break it down into manageable chunks and translate it into reliably working software.
 
 === Understanding the Problem
 
@@ -30,6 +31,18 @@ Anemic domain models
 
 ==== Context Maps
 
+[#_bounded_contexts]
 ==== Bounded Contexts
 
+
 === Implementing the Solution
+
+[#_entities]
+==== Entities
+
+
+==== Value objects
+
+[#_aggregates]
+==== Aggregates
+
