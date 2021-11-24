@@ -1,6 +1,7 @@
 ifndef::imagesdir[:imagesdir: images]
 ifndef::sourcedir[:sourcedir: ../../../../lc-issuance-api/src/test/java/com/premonition/lc/issuance/domain]
 [.text-justify]
+:icons: font
 
 [#_implementing_domain_logic]
 == Implementing Domain Logic
@@ -187,36 +188,9 @@ cloud {
 As a starting point, we can use these business functions as natural boundaries to act as <<_bounded_contexts,bounded contexts>> for our solution. We may evolve this design in the future as we gain more understanding of the problem and the solution, but for now, this will suffice. Aggregates live within the confines of a single bounded context, so we need to correlate the two concepts. Let's look at how this works.
 
 ==== Correlating aggregates to bounded contexts
-If we examine the lifecycle of the letter of credit (LC) as a whole, we notice the structure outlined here. Each of these bounded contexts work with the same entities, but call them by different names making use of their own ubiquitous language.
+If we examine the lifecycle of the letter of credit (LC) as a whole, we notice the structure outlined here. Each of these bounded contexts work with the same entities, but call them by different names making use of their own ubiquitous language. The context map for the system looks like this:
 
-[.text-center]
-[plantuml,lc-application]
-....
-@startuml
-skinparam CloudFontName "Gloria Hallelujah"
-skinparam handwritten true
-
-cloud "LC Issuance" as issuance {
-  cloud LC
-}
-cloud "LC Application Processing" {
-  cloud "LC Application" as App {
-    cloud Merchandise as p1
-    cloud Applicant
-  }
-}
-cloud Compliance {
-  cloud Product as p2
-}
-cloud "Customer Onboarding" as onboarding {
-  cloud Customer as customer
-}
-LC <-> App
-p1 <-> p2
-Applicant <--> customer
-
-@enduml
-....
+include::images/context-map.adoc[]
 
 Notice how the `Customer` in the Customer Onboarding bounded context is called an `Applicant` in the LC Application Processing context. Similarly, Compliance works with a `Product` entity, whereas LC Application Processing calls it `Merchandise`. Within the LC Application Processing bounded context, we always work within the purview of an `LC Application`, not directly with either the `Applicant` or the `Merchandise`. This leads us to the conclusion (at least for now), that the `Applicant` and `Merchandise` entities are not aggregates within the LC Application Processing context. The `LC Application` entity acts as the *aggregate* for this bounded context. Furthermore, it is at the root of the aggregate hierarchy, hence it is termed as the *aggregate root*.
 
