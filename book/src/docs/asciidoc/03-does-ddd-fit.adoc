@@ -44,4 +44,7 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 
 * *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern. For query-side use cases, we create models as needed that are distinct from the command-side model. This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-=== Serverless Architecture
+=== Serverless architecture
+
+[#_big_ball_of_mud]
+=== Big ball of mud

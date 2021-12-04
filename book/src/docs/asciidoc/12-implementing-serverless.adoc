@@ -9,3 +9,5 @@ In this chapter, we will migrate the components developed thus far to adopt a se
 === Serverless Persistence
 
 === Next Steps
+
+=== Legacy Application Migration Patterns
