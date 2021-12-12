@@ -1,5 +1,7 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
+:toc:
+:toclevels: 4
 
 [.text-justify]
 == Integrating with External Systems
@@ -190,6 +192,7 @@ It may also be that concepts that are core to the supplier's context leaks into 
 This may result in these bounded contexts being very tightly coupled with each other.
 And if a need arises to switch to another supplier or support multiple suppliers, the cost of change may be prohibitively expensive.
 
+[#_anti_corruption_layer_acl]
 ===== Anti-corruption layer (ACL)
 
 There may be scenarios where a customer may need to collaborate with the supplier, but may want to shield itself from the supplier's ubiquitous language and models.
@@ -332,21 +335,119 @@ This style of integration may be required when there is an asymmetric relationsh
 ====== Potential pitfalls
 If we choose to use database views, we may continue to suffer from the noisy neighbor effect. On the other hand, if we choose to create physically disparate replicas, we will need to incur the cost of additional operational complexity. More importantly, the consumers remain tightly coupled to the supplier's domain models and ubiquitous language.
 
+Next, let's look at some ways to make the most of data-based integrations.
+
+===== Increasing effectiveness
+When sharing data, the schema (the structure of the database) acts as a means to enforce contracts, especially when using databases that require specifying a formal structure (for example, relational databases). When multiple parties are involved, managing the schema can become a challenge.
+
+To mitigate undesirable changes, teams sharing data may want to consider the use of a schema migration tool. Relational databases work well with tools like https://www.liquibase.org/[liquibase]footnote:[https://www.liquibase.org/] or https://flywaydb.org/[flyway]footnote:[https://flywaydb.org/]. When working with databases that do not formally enforce a schema, it may be best to avoid employing this style of integration, especially when working in  symmetric relationships where ownership is unclear.
+
+In any case, if using one of the shared data styles of integration is unavoidable, teams may want to strongly consider employing one or more techniques mentioned in https://databaserefactoring.com/[refactoring databases] to make it more manageable.
+
 ==== Code-based
+In this style of integration, teams coordinate by sharing code artifacts, either directly in the form of source code and/or binaries. At a high level, there are two forms:
 
-===== Code sharing
+1. Sharing source code
+2. Sharing binaries
 
-===== Code libraries
+We describe each of these here:
 
-====== Stored procedures
+===== Sharing source code
+A fairly common practice within organizations is to share source code with the objective of promoting reuse and standardization. This may include utilities (like logging, authentication, etc.), build/deployment scripts, data transfer objects, etc. In other words, any piece of source code where the cost of duplication is seen to be higher than reuse.
 
-==== API-based
+====== When to use
+Depending on the relationship type (symmetric/asymmetric), teams sharing code may have varied levels of influence in how the shared artifacts evolve. This works well in a symmetric relationship, both teams are empowered to make changes compatible with each other. Similarly, in an asymmetric relationship, the supplier may accept changes from customers, while retaining ownership and control of the shared artifacts. This also tends to work well in case of non-core, infrequently changing code artifacts. Sharing source code also enables higher levels of transparency and visibility into the internals of the shared artifacts (case in point - open source software).
 
-===== Request-response APIs
+====== Potential pitfalls
+Sharing code artifacts means that individual teams take on responsibility to make sure that the process of converting source code into binary executables is uniform and compatible with requirements for all parties. This may include code conventions, static quality checks, tests (presence or lack thereof), compilation/build flags, versioning, etc. When a relatively large number of teams are involved, maintaining this form of compatibility may become burdensome.
 
-===== Publish-subscribe APIs
+===== Sharing binary artifacts
+Another relatively common practice is to share artifacts at the binary level. In this scenario, the consumers may or may not have direct access to source code artifacts. Examples include third party libraries, client SDKs, API documentation, etc. This form of integration is fairly common when the relationship between the coordinating parties is asymmetric. The supplier of the library has a clear ownership of maintaining the lifecycle of the shared artifacts.
 
-==== Enforcing contracts
+====== When to use
+Sharing just binary artifacts may be necessary when the supplier is unable/unwilling to share source artifacts, possibly because they may be proprietary and/or part of the supplier's intellectual property. Because the supplier takes ownership of the _build_ process, it behooves the supplier to produce artifacts that are compatible with most potential consumers. Hence, this works well when the supplier is willing to do that. On the other hand, it requires that the customer place high levels of https://www.thoughtworks.com/en-us/insights/podcasts/technology-podcasts/securing-software-supply-chain[trust]footnote:[https://www.thoughtworks.com/en-us/insights/podcasts/technology-podcasts/securing-software-supply-chain] in the supplier's https://blog.sonatype.com/software-supply-chain-a-definition-and-introductory-guide[software supply chain]footnote:[https://blog.sonatype.com/software-supply-chain-a-definition-and-introductory-guide] when producing these artifacts.
+
+====== Potential pitfalls
+Integration through the use of binary artifact sharing reduces the visibility into the build process of the shared artifacts for the consumers. If consumers rely on slow-moving suppliers, this can become untenable. For example, if a critical security bug is discovered in the shared binary, the consumer is solely reliant on the supplier to remediate. This can be a huge risk if such dependencies are in critical, business-differentiating aspects of the solution (especially in the core subdomain). This risk can be exacerbated without the use of appropriate <<_anti_corruption_layer_acl,anti-corruption layers>> (ACLs) and/or service level agreements (SLAs).
+
+[#_increasing_effectiveness_code_based]
+===== Increasing effectiveness
+When sharing code artifacts, it becomes a lot more important to be explicit in how changes are made while continuing to maintain high levels of quality -- especially when multiple teams are involved. Let's examine some of these techniques in more detail:
+
+1. *Static analysis*: This can be as simple as adhering to a set of coding standards using a tool like https://checkstyle.sourceforge.io/[checkstyle]. More importantly, these tools can be used to conform to a set of naming conventions to allow the firmer use of the ubiquitous language throughout the codebase. In addition, tools like https://spotbugs.github.io/[spotbugs], https://pmd.github.io/[PMD/CPD] can be used to statically analyze code for the presence of bugs and duplicate code.
+
+2. *Code architecture tests*: While static inspection tools are effective at operating at the level of a single compilation unit, runtime inspection can take this one level further to identify package cycles, dependency checks, inheritance trees, etc. to apply lightweight architecture governance. The use of tools like https://github.com/clarkware/jdepend[JDepend] and https://www.archunit.org/[ArchUnit] can help here.
+
+3. *Unit tests*: When working with shared codebases, team members are looking to make changes in a safe and reliable manner. The presence of a comprehensive suite of fast-running unit tests can go a long way to wards increasing confidence. We strongly recommend employing test-driven design to further maximize creating a codebase that is well-designed and one that enables easier refactoring.
+
+4. *Code reviews*: While automation can go a long way, augmenting the process where a human reviews changes can be highly effective for multiple reasons. This can take the form of offline reviews (using pull requests) or active peer reviews (using paired programming). All of these techniques serve to enhance collective understanding, thereby reducing risk when changes are made.
+
+5. *Documentation*: Needless to say, well-structured documentation can be invaluable when making contributions and also when consuming binary code artifacts. Teams will be well advised to proliferate the use of the ubiquitous language by striving to write self-documenting code all throughout to maximize benefits derived.
+
+6. *Dependency management*: When sharing binary code artifacts, managing dependencies can become fairly complicated due to having too many dependencies, long dependency chains, conflicting/cyclic dependencies, etc. Teams should strive to reduce afferent (incoming) coupling as much as possible to mitigate the problems described above.
+
+7. *Versioning*: In addition to minimizing the amount of afferent coupling, using an explicit versioning strategy can go a long way towards making dependency management easier. We strongly recommend considering the use of a technique like https://semver.org/[semantic versioning] for shared code artifacts.
+
+==== IPC-based
+In this style of integration, the bounded contexts exchange messages using some form of inter-process communication (IPC) to interact with each other. This may take the form of synchronous or asynchronous communication.
+
+===== Synchronous messaging
+Synchronous messaging is a style of communication where the sender of the request waits for a response from the receiver, which implies that the sender and the receiver need to be active for this style to work. Usually, this form of communication is point-to-point. HTTP is one of the commonly used protocols for this style of communication.
+
+.Synchronous messaging
+[.text-center]
+image::integration-patterns/synchronous-messaging.png[]
+
+NOTE: Please take a look at the HTTP APIs for the commands used during LC application processing included with the code examples for this chapter.
+
+====== When to use
+This form of integration is used when the customer is interested in the supplier's response to the request. The response is then used to determine whether the request was successful or not. Given that the customer needs to wait for the response, it is advisable to use this style of messaging for low latency operations. This form of integration is popular when exposing public APIs over the internet (for example, https://docs.github.com/en/rest[Github's REST API]footnote:[https://docs.github.com/en/rest]).
+
+====== Potential pitfalls
+When using synchronous messaging, the customer's ability to scale is heavily dependent on the supplier to satisfy the customer's requirements. On the flip side, customers making requests at too high a rate may compromise the supplier's ability to serve customers in a predictable manner. If there is a chain of synchronous messaging, the probability of cascading failure becomes much higher.
+
+===== Asynchronous messaging
+Asynchronous messaging is a style of communication where the sender does not wait for an explicit response from the receiver.
+
+NOTE: We are using the terms sender and receiver, instead of customer and supplier because they both can play either role of sender or receiver.
+
+This is typically achieved by introducing an intermediary in the form of a message channel. The presence of the intermediary enables both one-to-one and one-to-many modes of communication. Typically, the intermediary can take the form of a shared filesystem, database or a queueing system.
+
+.Asynchronous messaging
+[.text-center]
+image::integration-patterns/asynchronous-messaging.png[]
+
+NOTE: Please take a look at the event APIs for the commands used during LC application processing included with the code examples for this chapter.
+
+====== When to use
+This form of integration is used when the sender does not care about receiving an *immediate* response from the receiver(s), resulting in the respective systems becoming a lot more decoupled from each other. This further enables these systems to scale independently. This also makes it possible to have the same message to be processed by multiple receivers. For example, in our LC application processing system, the `LCApplicationSubmittedEvent` is received by both the _Compliance_ and _Customer Onboarding_ systems.
+
+====== Potential pitfalls
+The introduction of the intermediary component adds complexity to the overall solution. The <<_ignoring_non_functional_requirements,non-functional>> characteristics of the intermediary can have a profound effect on the resilience characteristics of the system as a whole. It can also be tempting to add processing logic to the intermediary, thereby coupling the overall system very tightly to this component. To ensure reliable communication between the sender and the receiver, the intermediary may have to support a variety of enhanced capabilities (such as ordering, producer flow control, durability, transactions, etc.)
+
+===== Increasing effectiveness
+When implementing integration using some form of IPC, a lot of the techniques discussed in the <<_increasing_effectiveness_code_based,code-based implementation>> patterns section continue to apply. As discussed earlier, API documentation plays a significant role in reducing friction for customers. In addition, here are a few more techniques that apply specifically when using IPC-based integration. We outline some of these techniques here:
+
+. *Typed protocols*: When working with this form of integration, it is important to minimize the amount of time taken to gather feedback on structural validations. This is especially important given that the supplier and the customer may be in a constant state of independent evolution. The use of typed protocols such as protocol buffers, Avro, Netflix's Falcor, GraphQL, etc. can make it easier for customers to interact with suppliers while maintaining a lightweight mechanism to validate correctness of requests.
+
+CAUTION: The operative word here is *lightweight*. It is pertinent to note that we are not advising against the use of JSON-based HTTP APIs (typically advertised as being RESTful) which do not enforce the use of an explicit schema. Neither are we promoting the use of (arguably) legacy protocols like SOAP, WSDL, CORBA, etc. Each of these, while being well-meaning suffered from being fairly heavyweight.
+
+[start=2]
+. *Self discovery*: As outlined above, when working with a IPC-based integration mechanism, we should look to reduce the barrier to entry. When working with RESTful APIs, the use of https://en.wikipedia.org/wiki/HATEOAS[HATEOAS]footnote:[https://en.wikipedia.org/wiki/HATEOAS], although difficult for suppliers to implement, can make it easier for customers to understand and consume APIs. In addition, making use of a service registry and/or a schema registry can further reduce consumption friction.
+
+. *Contract tests*: In the spirit of failing fast and shifting left, the practice of contract testing and https://martinfowler.com/articles/consumerDrivenContracts.html[consumer-driven contracts] can further increase the quality and speed of integration. Tools such as https://pact.io/[Pact]footnote:[https://pact.io/] and https://spring.io/projects/spring-cloud-contract[Spring Cloud Contract]footnote:[https://spring.io/projects/spring-cloud-contract] make the adoption of these practices relatively simple.
+
+=== Summary
+In this chapter, we looked at the different types of bounded context relationships. We also examined common integration patterns that can be used when implementing these bounded context relationships.
+
+You should have learnt when specific techniques can be used, potential pitfalls and ideas on how to increase effectiveness when employing these methods.
+
+In the next chapter, we will explore means to distribute these bounded contexts into independently deployable components (in other words, employ a microservices-based architecture).
+
+=== Questions
+. In your ecosystem, can you identify bounded context boundaries and the integration mechanism in use?
+. Will you be able to draw a context map for your system?
+. Will you recommend any changes to the existing styles of integration based on the learnings from this chapter?
 
 === Further reading
 
@@ -358,5 +459,8 @@ If we choose to use database views, we may continue to suffer from the noisy nei
 |Martin Fowler
 |https://martinfowler.com/bliki/IntegrationDatabase.html
 
+|REST APIs must be hypertext-driven
+|Roy T. Fielding
+|https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 
 |===
