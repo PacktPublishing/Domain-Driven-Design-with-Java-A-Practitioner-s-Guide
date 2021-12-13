@@ -44,7 +44,7 @@ include::07-implementing-queries.adoc[]
 
 include::08-long-running-workflows.adoc[]
 
-include::09-integrating-wth-external-systems.adoc[]
+include::09-integrating-with-external-systems.adoc[]
 
 = Part 3: Advanced Patterns
 
