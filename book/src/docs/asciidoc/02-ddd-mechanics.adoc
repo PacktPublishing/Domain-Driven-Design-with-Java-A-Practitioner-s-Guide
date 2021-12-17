@@ -6,43 +6,44 @@ When eating an elephant, take one bite at a time.
 
 As mentioned in the previous chapter, many things can put a project off course.In this chapter, we look at how DDD gives us a set of tenets and techniques to arrive at a collective understanding of the problem at hand in the face of ambiguity, break it down into manageable chunks and translate it into reliably working software.
 
-=== Understanding the Problem
+=== Understanding the problem
 
-==== Problem Space vs. Solution Space
+==== Problem space versus solution space
 
-==== Dealing with Ambiguity
+==== Dealing with ambiguity
 
-=== Arriving at a Shared Understanding
+=== Arriving at a shared understanding
 
-=== Breaking Down the Problem
+=== Modeling a solution
 
-==== What is a Domain?
+==== Strategic design
 
-==== What is a Sub-Domain?
+==== What is a model?
 
-==== The Core Sub-Domain
-
-=== Modeling a Solution
-
-==== What is a Model?
-
+==== Domain models
 [WARNING]
 Anemic domain models
 
-==== Context Maps
+==== Context maps
 
 [#_bounded_contexts]
-==== Bounded Contexts
+==== Bounded contexts
 
 
-=== Implementing the Solution
+=== Implementing the solution
+
+==== Tactical design
 
 [#_entities]
 ==== Entities
-
 
 ==== Value objects
 
 [#_aggregates]
 ==== Aggregates
 
+==== Services
+
+==== Repositories
+
+==== Factories
