@@ -3,9 +3,6 @@ ifndef::imagesdir[:imagesdir: images]
 :figure-caption: Figure {counter:chapter}-
 :xrefstyle: short
 
-:toc:
-:toclevels: 4
-
 [.text-justify]
 == The Rationale for Domain-Driven Design
 
