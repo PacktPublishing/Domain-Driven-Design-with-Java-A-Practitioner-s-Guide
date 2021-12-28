@@ -1,7 +1,5 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
-:toc:
-:toclevels: 4
 
 [.text-justify]
 == Integrating with External Systems
