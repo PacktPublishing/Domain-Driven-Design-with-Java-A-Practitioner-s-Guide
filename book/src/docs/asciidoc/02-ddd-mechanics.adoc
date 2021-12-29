@@ -1,4 +1,8 @@
 ifndef::imagesdir[:imagesdir: images]
+:icons: font
+:toc:
+:toclevels: 4
+
 [#_where_does_ddd_fit]
 [.text-justify]
 [#_mechanics_of_domain_driven_design]
@@ -11,11 +15,113 @@ As mentioned in the previous chapter, many things can render a project to veer o
 The intent of DDD is to decompose complex problems on the basis of clear domain boundaries and the communication between them.
 In this chapter, we look at a set of tenets and techniques to arrive at a collective understanding of the problem at hand in the face of ambiguity, break it down into manageable chunks and translate it into reliably working software.
 
-=== Understanding the problem
+=== Understanding the problem using strategic design
+In this section, let's demystify some commonly used concepts and terms when working with domain-driven design. First and foremost, we need to understand what we mean by the first "D" -- *domain*.
 
-Every decision we take regarding the organization, be it requirements, architecture, code has business and user consequences.
-In order to conceive, architect, design, build and evolve software effectively, our decisions need to aid in creating the optimal business impact.
-This can only be achieved if we have a clear understanding of the problem we intend to solve.
+==== What is a domain?
+The foundational concept when working with domain-driven design is the notion of a domain. But what exactly is a domain? The word https://en.wiktionary.org/wiki/domain[#_domain_#], which has its https://www.etymonline.com/word/domain[origins] in the 1600s to the Old French word _domaine_ (power), Latin word _dominium_ (property, right of ownership) is a rather confusing word. Depending on who, when, where and how it is used, it can mean different things:
+
+.*Domain*: Means many things depending on context
+[link=https://en.wiktionary.org/wiki/domain#Noun,window=_blank]
+image::domain-definition.png[Domain,scaledwidth=75%]
+
+In the context of a business however, the word domain covers the overall scope of its primary activity -- the service it provides to its customers. This is also referred as the *_problem domain_*. For example, Tesla operates in the domain of electric vehicles, Netflix provides online movies and shows, while McDonald's provides fast food. Some companies like Amazon, provide services in more than one domain -- online retail, cloud computing, among others. The domain of a business (at least the successful ones) almost always encompasses fairly complex and abstract concepts. To cope with this complexity, it is usual to decompose these domains into more manageable pieces called subdomains. Let us understand subdomains in more detail next.
+
+==== What is a subdomain?
+At its essence, Domain-driven design provides means to tackle complexity. Engineers do this by breaking down complex problems into more manageable ones. the domain of a business into multiple manageable parts called *subdomains*. This facilitates better understanding and makes it easier to arrive at a solution. For example, the online retail domain may be divided into subdomains such as product, inventory, rewards, shopping cart, order management, payments, shipping, etc. as shown below:
+
+.Subdomains in the Retail domain
+[.text-center]
+[plantuml,domains]
+....
+@startuml
+skinparam CloudFontName "Gloria Hallelujah"
+skinparam monochrome true
+skinparam handwritten true
+cloud "Retail Domain" {
+  cloud Products
+  cloud Inventory
+  cloud Rewards
+  cloud "Shopping Cart"
+  cloud "Online Orders"
+  cloud Payments
+  cloud Fulfillment
+  cloud Identity
+  cloud Auditing
+  cloud "Activity Tracking"
+  cloud "<b>..................." as c2
+}
+@enduml
+....
+
+In certain businesses, subdomains themselves may turn out to become very complex on their own and may require further decomposition. For instance, in the retail example above, it may be required to break the products subdomain into further constituent subdomains such as catalog, search, recommendations, reviews, etc. as shown below:
+
+.Subdomains in the Products subdomain
+[.text-center]
+[plantuml,subdomains]
+....
+@startuml
+skinparam CloudFontName "Gloria Hallelujah"
+skinparam monochrome true
+skinparam handwritten true
+  cloud "Product Subdomain" {
+  cloud Catalog
+  cloud Search
+  cloud Recommendations
+  cloud Reviews
+  cloud "<b>................" as c1
+  cloud "<b>..................." as c2
+}
+@enduml
+....
+Further breakdown of subdomains may be needed until we reach a level of manageable complexity. Domain decomposition is an important aspect of DDD. Let's look at the types of subdomains to understand this better.
+
+==== Types of subdomains
+Breaking down a complex domain into more manageable subdomains is a great thing to do. However, not all subdomains are created equal. With any business, the following three types of subdomains are going to be encountered:
+
+* *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core sub-domains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above,
+* *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence, it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering is the primary focus of this business, catalog management may be a supporting subdomain.
+
+* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution. For the retail example above, the identity, auditing and activity tracking subdomains might fall in that category.
+
+CAUTION: It is important to note that the notion of core vs. supporting vs. generic subdomains is very context specific. What is core for one business may be supporting or generic for another. Identifying and distilling the core domain requires deep understanding and experience of what problem is being attempted to be solved.
+
+Given that the core subdomain establishes most of the business differentiation, it will be prudent to devote the most amount of energy towards maintaining that differentiation. This is illustrated in the core domain chart here:
+
+.Importance of subdomains
+[.text-center]
+image::core-domain-chart.png[]
+
+Over a period of time, it is only natural that competitors will attempt to emulate your successes. Newer, more efficient methods will arise, reducing the complexity involved, disrupting your core. This may cause the notion of what is currently core, to shift and become a supporting or generic capability.
+
+.Core domain erosion
+[.text-center]
+image::core-domain-erosion.png[]
+
+To continue running a successful operation, it is required to constantly innovate in the core. For example, when AWS started the cloud computing business, it only provided simple infrastructure (IaaS) solutions. However, as competitors like Microsoft, Google and others started to catch up, AWS has had to provide several additional value-added services (for example, PaaS, SaaS, etc).
+
+As is evident, this is not just an engineering problem. It requires deep understanding of the underlying business. That's where domain experts can play a significant role.
+
+==== Domain and technical experts
+Any modern software team requires expertise in at least two areas -- the functionality of the domain and the art of translating it into high quality software. At most organizations, these exist as at least two distinct groups of people.
+
+*Domain experts* -- those who have a deep and intimate understanding of the domain. Domain experts are subject-matter experts (SMEs) who have a very strong grasp of the business. Domain experts may have varying degrees of expertise. Some SMEs may choose to specialize in specific subdomains, while others may have a broader understanding of how the overall business works.
+
+*Technical experts* on the other hand, enjoy solving specific, quantifiable computer science problems. Often, technical experts do not feel it worth their while understanding the context of the business they work in. Rather, they seem overly eager to only enhance their technical skills that are a continuation of their learnings in academia.
+
+While the domain experts specify the *why* and the *_what_*, technical experts, (software engineers) largely help realize the *_how_*. Strong collaboration and synergy between both groups is absolutely essential to ensure sustained high performance and success.
+
+==== A divide originating in language
+While strong collaboration between these groups is necessary, it is important to appreciate that these groups of people seem to have distinct motivations and differences in thinking. Seemingly, this may appear to be restricted to simple things like differences in their day-to-day language. However, deeper analysis usually reveals a much larger divide in aspects such as goals, motivations etc. This is illustrated in the picture here:
+
+.Divide originating in language
+[.text-center]
+image::linguistic-divide.png[]
+
+But this is a book primarily focused towards technical experts. Our point is that it is not possible to be successful by just working on technically challenging problems without gaining a sound understanding of the underlying business context.
+
+Every decision we take regarding the organization, be it requirements, architecture, code, etc. has business and user consequences.
+In order to conceive, architect, design, build and evolve software effectively, our decisions need to aid in creating the optimal business impact. As mentioned above, this can only be achieved if we have a clear understanding of the problem we intend to solve.
 This leads us to the realization that there exist two distinct domains when arriving at the solution for a problem:
 
 ==== Problem domain
@@ -78,171 +184,112 @@ class PremiumCheckingAccountFactory {
 }
 ....
 
-This likely appears like a significant leap from a problem domain description, and indeed it is. Before a solution like this can be arrived at, there may need to exist multiple levels of refinement of the problem. As mentioned in the <<_inaccurate_requirements,previous chapter>>, this may lead to inaccuracies in the understanding of the problem, resulting in a solution that may be good, but not one that solves the problem at hand. Let's look at how we can continuously refine our understanding by closing the gap between the problem and the solution domain.
+This likely appears like a significant leap from a problem domain description, and indeed it is. Before a solution like this can be arrived at, there may need to exist multiple levels of refinement of the problem. As mentioned in the <<_inaccurate_requirements,previous chapter>>, this process of refinement is usually messy and may lead to inaccuracies in the understanding of the problem, resulting in a solution that may be good, but not one that solves the problem at hand. Let's look at how we can continuously refine our understanding by closing the gap between the problem and the solution domain.
 
-==== What is a _domain_?
-The foundational concept when working with domain-driven design is the notion of a domain. But what exactly is a domain? The word https://en.wiktionary.org/wiki/domain[#_domain_#], which has its https://www.etymonline.com/word/domain[origins] in the 1600s to the Old French word _domaine_ (power), Latin word _dominium_ (property, right of ownership) is a rather confusing word. Depending on who, when, where and how it is used, it can mean different things:
-
-.*Domain*: Means many things depending on context
-[link=https://en.wiktionary.org/wiki/domain#Noun,window=_blank]
-image::domain-definition.png[Domain,scaledwidth=75%]
-
-In the context of a business however, the word domain covers the overall scope of its primary activity -- the service it provides to its customers. This is also referred as the *_problem domain_*. For example, Tesla operates in the domain of electric vehicles, Netflix provides online movies and shows, while McDonald's provides fast food. Some companies like Amazon, provide services in more than one domain -- online retail, cloud computing, among others. These domains tend to be fairly complex. To cope with this complexity, it is usual to decompose these domains into more manageable pieces called subdomains. We will examine subdomains in more detail in the next chapter.
-
-==== Domain Experts
-To run a successful digital business, you need specialists -- those who have a deep and intimate understanding of the domain. Domain experts are subject-matter experts (SMEs) who have a very strong grasp of the business. Domain experts may have varying degrees of expertise. Some SMEs may choose to specialize in specific subdomains, while others may have a broader understanding of how the overall business works.
-
-Any modern software team requires expertise in at least two areas -- the functionality of the domain and the art of translating it into high quality software. While the domain experts specify the *why* and the *_what_*, technical experts (software developers) specify the *_how_*. Strong contributions and synergy between both groups is absolutely essential to ensure sustained high performance and success.
-
-==== Promoting a Shared Understanding
+==== Promoting a shared understanding using a ubiquitous language
 Previously, we saw how <<_silo_mentality, organizational silos>> can result in valuable information getting diluted. At a credit card company I used to work with, the words plastic, payment instrument, account, PAN (Primary Account Number), BIN (Bank Identification Number), card were all used by different team members to mean the exact same thing - the *_credit card_* when working in the same area of the application. On the other hand, a term like *_user_* would be used to sometimes mean a customer, a relationship manager, a technical customer support employee. To make matters worse, a lot of these muddled use of terms got implemented in code as well. While this might feel like a trivial thing, it had far-reaching consequences. Product experts, architects, developers, all came and went, each regressively contributing to more confusion, muddled designs, implementation and technical debt with every new enhancement -- accelerating the journey towards the dreaded, unmaintainable, http://www.laputan.org/mud/[big ball of mud].
 
 DDD advocates breaking down these artificial barriers, and putting the domain experts and the developers on the same level footing by working collaboratively towards creating what DDD calls a *_ubiquitous language_* -- a shared vocabulary of terms, words, phrases to continuously enhance the collective understanding of the entire team. This phraseology is then used actively in every aspect of the solution: the everyday vocabulary, the designs, the code -- in short by *everyone* and *everywhere*. Consistent use of the common ubiquitous language helps reinforce a shared understanding and  produce solutions that better reflect the mental model of the domain experts.
 
-==== Evolving a Domain Model and a Solution
-The ubiquitous language helps establish a consistent albeit informal lingo among team members. To enhance understanding, this can be further refined into a formal set of abstractions -- a *_domain model_* to represent the solution in software. It is very important to note that this domain model is modeled to fall within the context of a single subdomain for which a solution is being explored, not the entire domain of the business. This boundary is termed as a *_bounded context_* i.e. the ubiquitous language and domain model are only valid within those bounds and context -- not outside of it. This means that the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*.
-
-Care should be taken to retain focus on solving the business problem at hand at all times. Teams will be better served if they expend the same amount of effort modeling business logic as the technical aspects of the solution. To keep accidental complexity in check, it will be best to isolate the infrastructure aspects of the solution from this model. These models can take several forms, including conversations, whiteboard sessions, documentation, diagrams, tests and other forms of architecture fitness functions. It is also important to note that this is *not* a one-time activity. As the business evolves, the domain model and the solution will need to keep up. This can only be achieved through close collaboration between the domain experts and the developers at all times.
-
-[.text-center]
-[plantuml,bounded-context]
-....
-@startuml
-skinparam handwritten true
-skinparam monochrome true
-skinparam CloudFontName "Gloria Hallelujah"
-
-cloud Retail {
-    cloud E-Commerce as ecom {
-        cloud Product as p1
-        cloud Order
-        cloud SKU as s1
-        cloud Customer
-    }
-    cloud Merchandising as merch {
-        cloud Supplier
-        cloud Product as p2
-        cloud Display
-        cloud SKU as s2
-    }
-}
-@enduml
-....
-
-DDD has a catalog of strategic and tactical patterns which accelerate this process of continuous learning. In addition, modern techniques such as https://domainstorytelling.org/[domain storytelling], https://www.eventstorming.com/[event storming], and https://evolutionaryarchitecture.com/[evolutionary architecture] can greatly aid this process of evolving the ubiquitous language and domain model. We will examine all of these in much detail in upcoming chapters,
-
-[IMPORTANT]
-The thrust of DDD is that *one single model* form the bedrock of team communication, design, and implementation. While teams may and will indeed require a variety of means to express the model, it is very important to keep the executable code and the various representations up to date at all times.
-
-==== What is a Subdomain?
-The domain of a business (at least the successful ones) almost always encompasses fairly complex and abstract concepts. With a view to better deal with this complexity, domain-driven design advises decomposing the domain of a business into multiple manageable parts called *subdomains*. This facilitates better understanding and makes it easier to arrive at a solution. For example, the online retail domain may be divided into subdomains such as product, inventory, rewards, shopping cart, order management, payments, shipping, etc. as shown below:
-
-.Subdomains in the Retail domain
-[.text-center]
-[plantuml,domains]
-....
-@startuml
-skinparam CloudFontName "Gloria Hallelujah"
-skinparam monochrome true
-skinparam handwritten true
-cloud "Retail Domain" {
-  cloud Products
-  cloud Inventory
-  cloud Rewards
-  cloud "Shopping Cart"
-  cloud "Online Orders"
-  cloud Payments
-  cloud Fulfillment
-  cloud Identity
-  cloud Auditing
-  cloud "Activity Tracking"
-  cloud "<b>..................." as c2
-}
-@enduml
-....
-
-In certain businesses, subdomains themselves may turn out to become very complex on their own and may require further decomposition. For instance, in the retail example above, it may be required to break the products subdomain into further constituent subdomains such as catalog, search, recommendations, reviews, etc. as shown below:
-
-.Subdomains in the Products subdomain
-[.text-center]
-[plantuml,subdomains]
-....
-@startuml
-skinparam CloudFontName "Gloria Hallelujah"
-skinparam monochrome true
-skinparam handwritten true
-  cloud "Product Subdomain" {
-  cloud Catalog
-  cloud Search
-  cloud Recommendations
-  cloud Reviews
-  cloud "<b>................" as c1
-  cloud "<b>..................." as c2
-}
-@enduml
-....
-Further breakdown of subdomains may be needed until we reach a level of manageable complexity.
-
-==== Types of Subdomains
-Breaking down a complex domain into more manageable subdomains is a great thing to do. However, not all subdomains are created equal. With any business, the following three types of subdomains are going to be encountered:
-
-* *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core sub-domains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above,
-* *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering is the primary focus of this business, catalog management may be a supporting subdomain.
-
-* *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution For the retail example above, the identity, auditing and activity tracking subdomains might fall in that category.
-
-CAUTION: It is important to note that the notion of core vs. supporting vs. generic subdomains is very context specific. What is core for one business may be supporting or generic for another. Identifying and distilling the core domain requires deep understanding and experience of what problem is being attempted to be solved.
-
-==== The ubiquitous language and domain models
-As we have discussed in the previous chapter, when a problem is presented to us, we subconsciously attempt to form mental representations of potential solutions. Further, the type and nature of these representations (models) may differ wildly based on factors like our understanding of the problem, our backgrounds and experiences, etc. This implies that it is natural for these models to be different. For example, the same problem can be thought of differently by various team members as shown here:
+==== Evolving a domain model and a solution
+The ubiquitous language helps establish a consistent albeit informal lingo among team members. To enhance understanding, this can be further refined into a formal set of abstractions -- a *_domain model_* to represent the solution in software. When a problem is presented to us, we subconsciously attempt to form mental representations of potential solutions. Further, the type and nature of these representations (models) may differ wildly based on factors like our understanding of the problem, our backgrounds and experiences, etc. This implies that it is natural for these models to be different. For example, the same problem can be thought of differently by various team members as shown here:
 
 .Multiple models to represent the solution to the problem using the ubiquitous language
 [.text-center]
 image::multiple-models.png[]
 
-As iilustrated here, the business expert may think of a process model, whereas the test engineer may think of exceptions and boundary conditions to arrive at a test strategy.
+As illustrated here, the business expert may think of a process model, whereas the test engineer may think of exceptions and boundary conditions to arrive at a test strategy and so on.
 
 NOTE: The illustration above is to depict the existence of multiple models. There may be several other perspectives, for example, a customer experience model, an information security model, etc. which are not depicted.
 
-The idea of domain-driven design is for individuals in these varied roles to increase collaboration by promoting the use of the _ubiquitous language_ at every step. This enhances the collective understanding, leading to a better quality of the models, and by extension, the quality of the solution. This approach mitigates the risk of the loss in fidelity of information as we transition organizational boundaries.
-
-
-==== Modeling tools
-
-==== Wardley maps
-
-==== Impact maps
-
-==== Business model canvas
-
-==== Product strategy canvas
-
-=== Domain model
-
-=== Strategic design
+Care should be taken to retain focus on solving the business problem at hand at all times. Teams will be better served if they expend the same amount of effort modeling business logic as the technical aspects of the solution. To keep accidental complexity in check, it will be best to isolate the infrastructure aspects of the solution from this model. These models can take several forms, including conversations, whiteboard sessions, documentation, diagrams, tests and other forms of architecture fitness functions. It is also important to note that this is *not* a one-time activity. As the business evolves, the domain model and the solution will need to keep up. This can only be achieved through close collaboration between the domain experts and the developers at all times.
 
 [WARNING]
 Anemic domain models
 
-==== Context maps
+==== Scope of domain models and the bounded context
 
-[#_bounded_contexts]
-==== Bounded contexts
+When creating domain models, one of the dilemmas is in deciding how to restrict the scope of these models. One can attempt to create a single domain model that acts as a solution for the entire problem. On the other hand, we may go the route of creating extremely fine-grained models that cannot exist meaningfully without having a strong dependency on others. There are pros and cons in going each way. Whatever be the case, each solution has a scope -- bounds to which it is confined to. This boundary is termed as a *bounded context*.
 
-=== Implementing the solution
+There seems to exist a lot of confusion between the terms subdomains and bounded contexts. What is the difference? It turns out that subdomains are problem space concepts whereas bounded contexts are solution space concepts. This is best explained through the use of an example. Let's consider the example of a fictitious Acme bank that provides two products: credit cards and retail bank. This may decompose to the following subdomains as depicted here:
 
-==== Tactical design
+.Banking subdomains at Acme bank
+[.text-center]
+image::banking-subdomains.png[]
+
+When creating a solution for the problem, many possible solution options exist. We have depicted a few options here:
+
+.Bounded contexts options at Acme bank
+[.text-center]
+image::banking-bounded-contexts.png[]
+
+These are just a few examples of decomposition patterns to create bounded contexts. The exact set of patterns one may choose to use may vary depending on currently prevailing realities like:
+
+* Current organizational structures
+* Domain experts' responsibilities
+* Key activities and pivotal events
+* Existing applications
+
+Whatever be the method used to decompose a problem into a set of bounded contexts, care should be taken to make sure that the coupling between them is kept as low as possible.
+
+While bounded contexts ideally need to be as independent as possible,  they may still need to communicate with each other. When using domain-driven design, the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*. A sample context map is shown here.
+
+image::sample-context-map.png[]
+
+We will discuss more details on context maps and communication patterns in <<_integrating_with_external_systems,Chapter 9: Integrating with external systems>>.
+
+We have now covered a catalog of concepts that are core to the strategic design tenets of domain-driven design. Let's look at some tools that can help expedite this process.
+
+=== Strategic design tools
+To arrive at an optimal solution, it is important to have a strong appreciation of the business goals and its alignment to support the needs of the users of the solution. We introduce a set of tools and techniques we have found to be useful.
+
+NOTE: These tools are not really tied to DDD in any way and can be practiced regardless. The use of these should be considered to be complementary in your DDD journey.
+
+==== Wardley maps
+A tool that can be used to map your business strategy. It integrates value chain with evolution. Value chain is the chain of systems or activities performed to provide value to the customer. Each of these activities is then placed on the map based on its evolutionary stage.
+
+==== Impact maps
+A visual technique that helps to identify the features for product development that align with primary business goals.
+
+==== Business model canvas
+A strategic tool that enables you to summarize your business model. It’s a single image document which focuses on key drivers of your business such as customers, infrastructure, revenue and resources.
+
+==== Product strategy canvas
+A system of achievable goals and visions that work together to align the team around desirable outcomes for both the business and your customers.
+
+==== Lean canvas
+A one-page document that has been adapted from Business Model Canvas that is entrepreneur focused and has customer-centric approach that emphasizes on problem, solution, key metrics and competitive advantage.
+
+=== Implementing the solution using tactical design
 
 [#_entities]
 ==== Entities
+Entity is an object with unique identity and encapsulates the object behaviour and attributes.
 
 ==== Value objects
+Value objects are immutable objects which do not have an identity but hold value and are defined by their attributes.
 
 [#_aggregates]
 ==== Aggregates
+When entities and objects with similar logic are grouped together, they are called as aggregates.
 
 ==== Services
+Business rules within the domain are encapsulated within domain services.
 
 ==== Repositories
+Repositories are objects that provide persistence while retrieving domain objects.
 
 ==== Factories
+Factories are methods used to create complex objects or aggregates.
+
+=== Tactical design tools
+
+==== Behavior-driven development
+
+==== Test-driven development
+
+==== Contract testing
+
+==== Refactoring
+
+==== Quality storming

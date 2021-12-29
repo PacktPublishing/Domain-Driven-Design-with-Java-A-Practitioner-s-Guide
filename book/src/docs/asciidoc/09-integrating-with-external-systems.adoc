@@ -1,7 +1,9 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
 
+[#_integrating_with_external_systems]
 [.text-justify]
+
 == Integrating with External Systems
 
 [quote,Carl Jung]
