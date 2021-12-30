@@ -234,25 +234,47 @@ Whatever be the method used to decompose a problem into a set of bounded context
 
 While bounded contexts ideally need to be as independent as possible,  they may still need to communicate with each other. When using domain-driven design, the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*. A sample context map is shown here.
 
+.Sample context map for Acme bank
+[.text-center]
 image::sample-context-map.png[]
 
-We will discuss more details on context maps and communication patterns in <<_integrating_with_external_systems,Chapter 9: Integrating with external systems>>.
+The context map shows the bounded contexts the relationship between them. These relationships can be a lot more nuanced than what is depicted here. We will discuss more details on context maps and communication patterns in <<_integrating_with_external_systems,Chapter 9: Integrating with external systems>>.
 
 We have now covered a catalog of concepts that are core to the strategic design tenets of domain-driven design. Let's look at some tools that can help expedite this process.
 
 === Strategic design tools
-To arrive at an optimal solution, it is important to have a strong appreciation of the business goals and its alignment to support the needs of the users of the solution. We introduce a set of tools and techniques we have found to be useful.
+To arrive at an optimal solution, it is important to have a strong appreciation of the business goals and their alignment to support the needs of the users of the solution. We introduce a set of tools and techniques we have found to be useful.
 
 NOTE: These tools are not really tied to DDD in any way and can be practiced regardless. The use of these should be considered to be complementary in your DDD journey.
 
+==== Business model canvas
+As we have mentioned several times, it is important to make sure that we are solving the right problem before attempting to solving it right. The business model canvas is a quick and easy way to establish that we are solving a valuable problem in a single visual that captures nine elements of your business namely:
+
+* _Value propositions_: what do you do?
+* _Key activities_: how do you do it?
+* _Key resources_: what do you need?
+* _Key partners_: who will help you?
+* _Cost structure_: what will it cost?
+* _Revenue streams_: how much will you make?
+* _Customer segments_: who are you creating value for?
+* _Customer relationships_: who do you interact with?
+* _Channels_: How do you reach your customers?
+
+.Business model canvas of a popular online movie subscription provider
+[.text-center]
+image::sample-business-model-canvas.png[]
+
+The business model canvas helps establish a shared understanding of the big picture among a varied set of groups including business stakeholders, domain experts, product owners, architects and developers. We have found it very useful when embarking on both greenfield and brownfield engagements alike.
+
 ==== Wardley maps
-A tool that can be used to map your business strategy. It integrates value chain with evolution. Value chain is the chain of systems or activities performed to provide value to the customer. Each of these activities is then placed on the map based on its evolutionary stage.
+The business model canvas can help establish clarity of purpose at a high level. The Wardley map is another tool to help build a business strategy. It provides a sketch of the people that the system is built for, followed by the benefits the system offers them and a chain of needs required to provide those benefits.
+
+.Wardley map
+[.text-center]
+image::wardley-map.png[]
 
 ==== Impact maps
 A visual technique that helps to identify the features for product development that align with primary business goals.
-
-==== Business model canvas
-A strategic tool that enables you to summarize your business model. It’s a single image document which focuses on key drivers of your business such as customers, infrastructure, revenue and resources.
 
 ==== Product strategy canvas
 A system of achievable goals and visions that work together to align the team around desirable outcomes for both the business and your customers.
