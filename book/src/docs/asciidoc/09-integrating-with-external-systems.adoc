@@ -15,8 +15,6 @@ To maintain both agility and reliability and enable loose coupling, it is import
 In this chapter, we will look at integrating with a legacy Inventory Management system.
 We will round off by looking at common patterns when integrating with legacy applications.
 
-=== Technical Requirements
-
 === Continuing our design journey
 
 From our domain analysis in the earlier chapters, we have arrived at four bounded contexts for our application as depicted here:
@@ -33,7 +31,7 @@ Let's examine how these team dynamics influence integration mechanisms between b
 
 === Bounded context relationships
 
-We need bounded contexts to as independent as possible.
+We need bounded contexts to be as independent as possible.
 However, this does not mean that bounded contexts are completely isolated from each other.
 Bounded contexts need to collaborate with others to provide business value.
 Whenever there is collaboration required between two bounded contexts, the nature of their relationship is not only influenced by their individual goals and priorities, but also by the prevailing organizational realities.
@@ -49,23 +47,23 @@ Let's look at these relationship types in more detail.
 ==== Symmetric relationship patterns
 
 Two teams can be said to have a symmetric relationship when they have an equal amount of influence in the decision-making process to arrive at a solution.
-Both teams are in a position to and indeed, do contribute more or less equally towards the outcome.
+Both teams are in a position to and indeed, do contribute more or less equally towards the outcome, as depicted here :
 
 .Both teams have an equal say in influencing the solution
 [.text-center]
 image::bounded-context-relationships/symmetric-relationship.png[]
 
-There are three variations of symmetric relationships, each of which we outline in more detail here:
+There are three variations of symmetric relationships, each of which we outline in more detail in the following sub-sections.
 
 ===== Partnership
 
-In a partnership, both teams integrate in an adhoc manner.
+In a partnership, both teams integrate in an ad hoc manner.
 There are no fixed responsibilities assigned when needing complete integration work.
 Each team picks up work as and when needed without the need for any specific ceremony or fanfare.
 The nature of the integration is usually two-way with both teams exchanging solution artifacts as and when needed.
-Such relationships require extremely high degrees of collaboration and understanding of the work done by both teams.
+Such relationships require extremely high degrees of collaboration and understanding of the work done by both teams, as depicted here :
 
-.There is an adhoc, mutual dependency between teams in a partnership relationship
+.There is an ad hoc, mutual dependency between teams in a partnership relationship
 [.text-center]
 image::bounded-context-relationships/partnership.png[]
 
@@ -80,7 +78,7 @@ Such reuse happens mostly arbitrarily and when API changes happen, the both team
 
 ====== When to use
 
-Partnership relationship between teams require high levels of collaboration, trust and understanding.
+Partnership between teams require high levels of collaboration, trust and understanding.
 Teams tend to use this when team boundaries are informal.
 It also helps if these teams are co-located and/or have a significant working time overlap.
 
@@ -98,7 +96,7 @@ Both teams take equal responsibility in the upkeep of these shared artifacts.
 The _LC Application Processing_ and _Customer Onboarding_ teams in our LC application may choose to use a common model to represent the `CustomerCreditValidatedEvent`.
 Any enhancements or changes to the event schema can affect both teams.
 The responsibility to make any changes is owned by both teams.
-Intentionally, these teams do not share anything beyond this mutually agreed upon models and artifacts.
+Intentionally, these teams do not share anything beyond this mutually agreed upon models and artifacts.  Here is the representation of shared kernel relationships in teams.
 
 .Teams have an explicit understanding of shared models
 [.text-center]
@@ -119,6 +117,7 @@ Needless to say, as the number of teams using the shared kernel increases, the c
 
 When two teams choose to not share any artifacts or models between them, they go their own separate ways.
 
+.Teams go separate ways and not share anything between them
 [.text-center]
 image::bounded-context-relationships/separate-ways.png[]
 
@@ -151,13 +150,13 @@ Let's look at examples of cases where one team may have a clear upper hand in te
 
 Two teams can be said to have an asymmetric relationship when one of the teams has a stronger influence in the decision-making process to arrive at a solution.
 In other words, there is a clear customer-supplier (or upstream-downstream) relationship where either the customer or the supplier plays a dominant role that affects solution design approaches.
-It is also likely that the customer and the supplier do not share common goals.
+It is also likely that the customer and the supplier do not share common goals.  Here is the representation of an asymmetric relationship between customer and supplier.
 
 .One of the teams has a dominant say in influencing the solution
 [.text-center]
 image::bounded-context-relationships/asymmetric-relationship.png[]
 
-There are at least three solution patterns when teams are in an asymmetric relationship, each of which we outline in more detail here:
+There are at least three solution patterns when teams are in an asymmetric relationship, each of which we outline in more detail in the following sub-sections.
 
 [#_conformist]
 ===== Conformist (CF)
@@ -196,7 +195,7 @@ And if a need arises to switch to another supplier or support multiple suppliers
 ===== Anti-corruption layer (ACL)
 
 There may be scenarios where a customer may need to collaborate with the supplier, but may want to shield itself from the supplier's ubiquitous language and models.
-In such cases, it may be prudent to redefine these conflicting models in the customer's own ubiquitous language using a translation layer at the time of integration, also known as an _anti-corruption layer_ (ACL).
+In such cases, it may be prudent to redefine these conflicting models in the customer's own ubiquitous language using a translation layer at the time of integration, also known as an _anti-corruption layer_ (ACL).  This is depicted in the following figure :
 
 .Customer wants to protect itself from supplier models
 [.text-center]
@@ -212,6 +211,7 @@ In addition, US zip codes are numeric whereas Canadian postal codes are alphanum
 Most importantly, we currently do not have the notion of a _country code_ in our address model, but now we will need to introduce this concept to differentiate addresses within the respective countries.
 Let's look at the address models from the respective countries here:
 
+.Address Models of different countries
 [.text-center]
 image::bounded-context-relationships/acl-example.png[]
 
@@ -228,7 +228,7 @@ It may also be necessary when we are looking to integrate similar concepts from 
 ====== Potential pitfalls
 
 Using an anti-corruption layer may be tempting in a lot of cases.
-However, it is less beneficial when the concepts being integrated don't often change, or are defined by a well known authority.
+However, it is less beneficial when the concepts being integrated don't often change, or are defined by a well-known authority.
 Using an ACL with a custom language may only cause more confusion.
 Creating an ACL usually requires additional translations and thereby may increase the overall complexity of the customer's bounded context and may be considered premature optimization.
 
@@ -359,10 +359,10 @@ A fairly common practice within organizations is to share source code with the o
 Depending on the relationship type (symmetric/asymmetric), teams sharing code may have varied levels of influence in how the shared artifacts evolve. This works well in a symmetric relationship, both teams are empowered to make changes compatible with each other. Similarly, in an asymmetric relationship, the supplier may accept changes from customers, while retaining ownership and control of the shared artifacts. This also tends to work well in case of non-core, infrequently changing code artifacts. Sharing source code also enables higher levels of transparency and visibility into the internals of the shared artifacts (case in point - open source software).
 
 ====== Potential pitfalls
-Sharing code artifacts means that individual teams take on responsibility to make sure that the process of converting source code into binary executables is uniform and compatible with requirements for all parties. This may include code conventions, static quality checks, tests (presence or lack thereof), compilation/build flags, versioning, etc. When a relatively large number of teams are involved, maintaining this form of compatibility may become burdensome.
+Sharing code artifacts means that individual teams take on responsibility to make sure that the process of converting source code into binary executables is uniform and compatible with requirements for all parties. This may include code conventions, static quality checks, tests (presence or lack thereof), compilation/build flags, versioning, and so on. When a relatively large number of teams are involved, maintaining this form of compatibility may become burdensome.
 
 ===== Sharing binary artifacts
-Another relatively common practice is to share artifacts at the binary level. In this scenario, the consumers may or may not have direct access to source code artifacts. Examples include third party libraries, client SDKs, API documentation, etc. This form of integration is fairly common when the relationship between the coordinating parties is asymmetric. The supplier of the library has a clear ownership of maintaining the lifecycle of the shared artifacts.
+Another relatively common practice is to share artifacts at the binary level. In this scenario, the consumers may or may not have direct access to source code artifacts. Examples include third-party libraries, client SDKs, API documentation, and so on. This form of integration is fairly common when the relationship between the coordinating parties is asymmetric. The supplier of the library has a clear ownership of maintaining the lifecycle of the shared artifacts.
 
 ====== When to use
 Sharing just binary artifacts may be necessary when the supplier is unable/unwilling to share source artifacts, possibly because they may be proprietary and/or part of the supplier's intellectual property. Because the supplier takes ownership of the _build_ process, it behooves the supplier to produce artifacts that are compatible with most potential consumers. Hence, this works well when the supplier is willing to do that. On the other hand, it requires that the customer place high levels of https://www.thoughtworks.com/en-us/insights/podcasts/technology-podcasts/securing-software-supply-chain[trust]footnote:[https://www.thoughtworks.com/en-us/insights/podcasts/technology-podcasts/securing-software-supply-chain] in the supplier's https://blog.sonatype.com/software-supply-chain-a-definition-and-introductory-guide[software supply chain]footnote:[https://blog.sonatype.com/software-supply-chain-a-definition-and-introductory-guide] when producing these artifacts.
@@ -384,7 +384,7 @@ When sharing code artifacts, it becomes a lot more important to be explicit in h
 
 5. *Documentation*: Needless to say, well-structured documentation can be invaluable when making contributions and also when consuming binary code artifacts. Teams will be well advised to proliferate the use of the ubiquitous language by striving to write self-documenting code all throughout to maximize benefits derived.
 
-6. *Dependency management*: When sharing binary code artifacts, managing dependencies can become fairly complicated due to having too many dependencies, long dependency chains, conflicting/cyclic dependencies, etc. Teams should strive to reduce afferent (incoming) coupling as much as possible to mitigate the problems described above.
+6. *Dependency management*: When sharing binary code artifacts, managing dependencies can become fairly complicated due to having too many dependencies, long dependency chains, conflicting/cyclic dependencies, and so on. Teams should strive to reduce afferent (incoming) coupling as much as possible to mitigate the problems described above.
 
 7. *Versioning*: In addition to minimizing the amount of afferent coupling, using an explicit versioning strategy can go a long way towards making dependency management easier. We strongly recommend considering the use of a technique like https://semver.org/[semantic versioning] for shared code artifacts.
 
@@ -392,7 +392,7 @@ When sharing code artifacts, it becomes a lot more important to be explicit in h
 In this style of integration, the bounded contexts exchange messages using some form of inter-process communication (IPC) to interact with each other. This may take the form of synchronous or asynchronous communication.
 
 ===== Synchronous messaging
-Synchronous messaging is a style of communication where the sender of the request waits for a response from the receiver, which implies that the sender and the receiver need to be active for this style to work. Usually, this form of communication is point-to-point. HTTP is one of the commonly used protocols for this style of communication.
+Synchronous messaging is a style of communication where the sender of the request waits for a response from the receiver, which implies that the sender and the receiver need to be active for this style to work. Usually, this form of communication is point-to-point. HTTP is one of the commonly used protocols for this style of communication. A visual representation of this form of communication is shown here:
 
 .Synchronous messaging
 [.text-center]
@@ -423,24 +423,26 @@ NOTE: Please take a look at the event APIs for the commands used during LC appli
 This form of integration is used when the sender does not care about receiving an *immediate* response from the receiver(s), resulting in the respective systems becoming a lot more decoupled from each other. This further enables these systems to scale independently. This also makes it possible to have the same message to be processed by multiple receivers. For example, in our LC application processing system, the `LCApplicationSubmittedEvent` is received by both the _Compliance_ and _Customer Onboarding_ systems.
 
 ====== Potential pitfalls
-The introduction of the intermediary component adds complexity to the overall solution. The <<_ignoring_non_functional_requirements,non-functional>> characteristics of the intermediary can have a profound effect on the resilience characteristics of the system as a whole. It can also be tempting to add processing logic to the intermediary, thereby coupling the overall system very tightly to this component. To ensure reliable communication between the sender and the receiver, the intermediary may have to support a variety of enhanced capabilities (such as ordering, producer flow control, durability, transactions, etc.)
+The introduction of the intermediary component adds complexity to the overall solution. The <<_ignoring_non_functional_requirements,non-functional>> characteristics of the intermediary can have a profound effect on the resilience characteristics of the system as a whole. It can also be tempting to add processing logic to the intermediary, thereby coupling the overall system very tightly to this component. To ensure reliable communication between the sender and the receiver, the intermediary may have to support a variety of enhanced capabilities (such as ordering, producer flow control, durability, transactions, and so on.)
 
 ===== Increasing effectiveness
 When implementing integration using some form of IPC, a lot of the techniques discussed in the <<_increasing_effectiveness_code_based,code-based implementation>> patterns section continue to apply. As discussed earlier, API documentation plays a significant role in reducing friction for customers. In addition, here are a few more techniques that apply specifically when using IPC-based integration. We outline some of these techniques here:
 
-. *Typed protocols*: When working with this form of integration, it is important to minimize the amount of time taken to gather feedback on structural validations. This is especially important given that the supplier and the customer may be in a constant state of independent evolution. The use of typed protocols such as protocol buffers, Avro, Netflix's Falcor, GraphQL, etc. can make it easier for customers to interact with suppliers while maintaining a lightweight mechanism to validate correctness of requests.
+. *Typed protocols*: When working with this form of integration, it is important to minimize the amount of time taken to gather feedback on structural validations. This is especially important given that the supplier and the customer may be in a constant state of independent evolution. The use of typed protocols such as protocol buffers, Avro, Netflix's Falcor, GraphQL, and so on. can make it easier for customers to interact with suppliers while maintaining a lightweight mechanism to validate correctness of requests.
 
 CAUTION: The operative word here is *lightweight*. It is pertinent to note that we are not advising against the use of JSON-based HTTP APIs (typically advertised as being RESTful) which do not enforce the use of an explicit schema. Neither are we promoting the use of (arguably) legacy protocols like SOAP, WSDL, CORBA, etc. Each of these, while being well-meaning suffered from being fairly heavyweight.
 
 [start=2]
-. *Self discovery*: As outlined above, when working with a IPC-based integration mechanism, we should look to reduce the barrier to entry. When working with RESTful APIs, the use of https://en.wikipedia.org/wiki/HATEOAS[HATEOAS]footnote:[https://en.wikipedia.org/wiki/HATEOAS], although difficult for suppliers to implement, can make it easier for customers to understand and consume APIs. In addition, making use of a service registry and/or a schema registry can further reduce consumption friction.
+. *Self discovery*: As outlined above, when working with a IPC-based integration mechanism, we should look to reduce the barrier to entry. When working with RESTful APIs, the use of https://restfulapi.net/hateoas[HATEOAS]footnote:[https://restfulapi.net/hateoas], although difficult for suppliers to implement, can make it easier for customers to understand and consume APIs. In addition, making use of a service registry and/or a schema registry can further reduce consumption friction.
 
 . *Contract tests*: In the spirit of failing fast and shifting left, the practice of contract testing and https://martinfowler.com/articles/consumerDrivenContracts.html[consumer-driven contracts] can further increase the quality and speed of integration. Tools such as https://pact.io/[Pact]footnote:[https://pact.io/] and https://spring.io/projects/spring-cloud-contract[Spring Cloud Contract]footnote:[https://spring.io/projects/spring-cloud-contract] make the adoption of these practices relatively simple.
+
+Thus far, we discussed implementation patterns, broadly categorized into data-based, code-based and IPC-based integrations.  Hopefully, this gives you a good idea to consciously choose the appropriate approach considering the benefits and the caveats that they bring along with them.
 
 === Summary
 In this chapter, we looked at the different types of bounded context relationships. We also examined common integration patterns that can be used when implementing these bounded context relationships.
 
-You should have learnt when specific techniques can be used, potential pitfalls and ideas on how to increase effectiveness when employing these methods.
+You have learned when specific techniques can be used, potential pitfalls and ideas on how to increase effectiveness when employing these methods.
 
 In the next chapter, we will explore means to distribute these bounded contexts into independently deployable components (in other words, employ a microservices-based architecture).
 
