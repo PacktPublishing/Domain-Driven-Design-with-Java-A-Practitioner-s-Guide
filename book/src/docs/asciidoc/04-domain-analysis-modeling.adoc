@@ -242,7 +242,7 @@ This is either user initiated or system initiated, in response to a domain event
 
 * *Hotspot*: Point of contention within the system that is likely confusing and/or puzzling beyond a small subsection of the team.
 
-* *Aggregate*: An object graph whose state changes consistently and atomically.
+* *Aggregate*: An object graph whose state changes consistently and atomically. This is consistent with the definition of <<#_aggregates,aggregates>> we saw in Chapter 2.
 
 The depiction of the stickies for our EventStorming workshop is shown here:
 

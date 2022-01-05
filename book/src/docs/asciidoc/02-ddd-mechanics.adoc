@@ -260,49 +260,188 @@ As we have mentioned several times, it is important to make sure that we are sol
 * _Customer relationships_: who do you interact with?
 * _Channels_: How do you reach your customers?
 
+Here is a sample canvas for a popular movie subscription provider:
+
 .Business model canvas of a popular online movie subscription provider
 [.text-center]
 image::sample-business-model-canvas.png[]
 
 The business model canvas helps establish a shared understanding of the big picture among a varied set of groups including business stakeholders, domain experts, product owners, architects and developers. We have found it very useful when embarking on both greenfield and brownfield engagements alike.
 
-==== Wardley maps
-The business model canvas can help establish clarity of purpose at a high level. The Wardley map is another tool to help build a business strategy. It provides a sketch of the people that the system is built for, followed by the benefits the system offers them and a chain of needs required to provide those benefits.
+NOTE: A variation of the business model canvas is the _lean canvas_, which is a one-page document that has been adapted from Business Model Canvas that is entrepreneur focused and has customer-centric approach that emphasizes on problem, solution, key metrics and competitive advantage.
 
-.Wardley map
+==== Wardley maps
+The business model canvas can help establish clarity of purpose at a high level. The Wardley map is another tool to help build a business strategy. It provides a sketch of the people that the system is built for, followed by the benefits the system offers them and a chain of needs required to provide those benefits (called the _value chain_). Next the value chain is plotted along an evolution axis which ranges from something that is uncharted and uncertain to something that is highly standardized.
+
+Here is a sample Wardley map for a bank that is looking to provide a suite of next generation credit card products:
+
+.Value chain to a Wardley map
 [.text-center]
 image::wardley-map.png[]
 
+The Wardley map makes it easy to understand the capabilities provided by our solution, their dependencies and how value is derived. It also helps depict how these capabilities play out in comparison to those offered by competitors, allowing you to prioritize attention appropriately and make build versus buy decisions.
+
 ==== Impact maps
-A visual technique that helps to identify the features for product development that align with primary business goals.
+An impact map is a visualisation of scope and underlying assumptions, created collaboratively by senior technical and business people. It is a mind-map grown during a discussion facilitated by considering the following four aspects:
 
-==== Product strategy canvas
-A system of achievable goals and visions that work together to align the team around desirable outcomes for both the business and your customers.
+* _Goals_: *Why* are we doing this?
 
-==== Lean canvas
-A one-page document that has been adapted from Business Model Canvas that is entrepreneur focused and has customer-centric approach that emphasizes on problem, solution, key metrics and competitive advantage.
+* _Actors_: *Who* are the consumers or users of our product?. In other words, who will be impacted by it.
+
+* _Impacts_: *How* can the consumers' change in behavior help achieve our goals? In other words, the impacts that we’re trying to create.
+
+* _Deliverables_: *What* we can do, as an organisation or a delivery team, to support the required impacts? In other words, the software features or process changes required to be realized as part of the solution.
+
+TODO: Example
+
+Impact mapping provides an easy to understand visual representation of the relationship between the goals, the users and the impacts to the deliverables.
 
 === Implementing the solution using tactical design
+In the previous section, we have seen how we can arrive at a shared understanding of the problem using the strategic design tools. We need to use this understanding to create a solution. DDD's tactical design aspects, tools and techniques help translate this understanding into working software. Let's look at these aspects in detail. In part 2 of the book, we will apply these to solve a real-world problem.
+
+It is convenient to think of the tactical design aspects as depicted in this picture:
+
+[.text-center]
+image::ddd-tactical-design.png[]
+
+Let's look at the definitions of these elements.
+
+==== Value objects
+Value objects are immutable objects that encapsulate the data and behavior of one or more related attributes. It may be convenient to think of value objects as named primitives. For example, consider a `MonetaryAmount` value object. A simple implementation can contain two attributes -- an _amount_ and a _currency code_. This allows encapsulation of behavior such as adding two `MonetaryAmount` objects safely.
+
+.A simple `MonetaryAmount` value object
+[.text-center]
+[plantuml,entity-example]
+....
+@startuml
+skinparam handwritten true
+skinparam monochrome true
+class MonetaryAmount {
+    -amount
+    -currencyCode
+    --
+    +add()
+    +subtract()
+    +convert()
+}
+@enduml
+....
+The effective use of value objects helps protect from the https://wiki.c2.com/?PrimitiveObsession[primitive obsession]footnote:[https://wiki.c2.com/?PrimitiveObsession] antipattern, while increasing clarity. It also allows composing higher level abstractions using one or more value objects. It is important to note that value objects do not have the notion of identity. That is, two value having the same value are treated equal. So two `MonetaryAmount` objects having the same `amount` and `currency code` will be considered equal. Also, it is important to make value objects immutable. That is, a need to change any of the attributes should result in the creation of a new attribute.
+
+It is easy to dismiss the use of value objects as a mere engineering technique, but the consequences of (not) using them can be far-reaching. In the `MonetaryAmount` example above, it is possible for the `amount` and `currency code` to exist as independent attributes. However, the use of the `MonetaryAmount` enforces the notion of the _ubiquitous language_. Hence, we recommend the use of value objects as a default instead of using primitives.
+
+CAUTION: Critics may be quick to point out problems such as class explosion and performance issues. But in our experience, the benefits usually outweigh the costs. But it may be necessary to re-examine this approach if problems occur.
 
 [#_entities]
 ==== Entities
-Entity is an object with unique identity and encapsulates the object behaviour and attributes.
+An entity is an object with a *unique identity* and *encapsulates* the data and behaviour of its attributes. It may be convenient to view entities as a collection of other entities and value objects that need to be grouped together. A very simple example of an entity is shown here:
 
-==== Value objects
-Value objects are immutable objects which do not have an identity but hold value and are defined by their attributes.
+[.text-center]
+[plantuml,entity-example]
+....
+@startuml
+skinparam handwritten true
+skinparam monochrome true
+entity Transaction {
+    * id: TransactionId <<generated>>
+    --
+    -amount: MonetaryAmount
+    -type: TransactionType
+    -date: Date
+    -status: TransactionStatus
+    --
+    #void approved()
+    #void rejected()
+}
+@enduml
+....
+
+In contrast to a value object, entities have the notion of a unique identifier. This means that two `Transaction` entities having the same underlying values, but having a different identifier (`id`) value, will be considered different. On the other hand, two entity instances having the same value for the identifier are considered equal. Furthermore, unlike value objects, entities are mutable. That is, their attributes can and will change over time.
+
+The concept of value objects and entities depends on the context within which they are used. In an order management system, the `Address` may be implemented as a value object in the _E-Commerce_ bounded context, whereas it may be needed to be implemented as an entity in the _Order Fulfillment_ bounded context.
+
+NOTE: It is common to collectively refer to entities and value objects as _domain objects_.
 
 [#_aggregates]
 ==== Aggregates
-When entities and objects with similar logic are grouped together, they are called as aggregates.
+As seen above, entities are hierarchical, in that they can be composed of one more children. Fundamentally, an aggregate:
+
+* Is an entity usually composed of other child entities and value objects.
+* Encapsulates access to child entities by exposing behavior (usually referred to as _commands_).
+* Is a boundary that is used to enforce business invariants (rules) in a consistent manner.
+* Is an entry point to get things done within a bounded context.
+
+Consider the example of a `CheckingAccount` aggregate:
+
+[.text-center]
+[plantuml,aggregate-example]
+....
+@startuml
+skinparam handwritten true
+skinparam monochrome true
+entity CheckingAccount {
+    * checkingAccountId: CheckingAccountId <<generated>>
+    --
+    -primaryHolder: AccountHolder
+    -secondaryHolders: Collection<AccountHolder>
+    -currentBalance: MonetaryAmount
+    -openingDate: Date
+    -status: Boolean
+    -transactions: Collection<Transaction>
+    --
+    +void tryWithdraw()
+    +void tryDeposit()
+    +void addSecondaryHolder()
+    +...
+}
+@enduml
+....
+
+Note how the `CheckingAccount` is composed using the `AccountHolder` and Transaction` entities among other things. In this example, let's assume that the overdraft feature (ability to hold a negative account balance) is only available for high net-worth individuals (HNI). Any attempt to change the `currentBalance` needs to occur in the form of a unique `Transaction` for audit purposes -- irrespective of its outcome. For this reason, the `CheckingAccount` aggregate makes use of the `Transaction` entity. Although the `Transaction` has `approve` and `reject` methods as part of its interface, only the aggregate has access to these methods. In this way, the aggregate enforces the business invariant while maintaining high levels of encapsulation. A potential implementation of the `tryWithdraw` method is shown here:
+
+[source,java,linenum]
+....
+class CheckingAccount {
+    private AccountHolder primaryHolder;                            // <1>
+private Collection<Transaction> transactions;                       // <1>
+    private MonetaryAmount currentBalance;                          // <1>
+    // Other code omitted for brevity
+
+    void tryWithdraw(MonetaryAmount amount) {                       // <2>
+        MonetaryAmount newBalance = this.currentBalance.subtract(amount);
+        Transaction transaction = add(Transaction.withdrawal(this.id, amount));
+        if (primaryHolder.isNotHNI() && newBalance.isOverdrawn()) { // <3>
+        transaction.rejected();
+        } else {
+            transaction.approved();
+            currentBalance = newBalance;
+        }
+    }
+}
+....
+<1> The `CheckingAccount` aggregate is composed of child entities and value objects.
+<2> The `tryWithdraw` method acts as a consistency boundary for the operation. Irrespective of the outcome (approved or rejected), the system will remain in a consistent state. In other words, the `currentBalance` can change only within the confines of the `CheckingAccount` aggregate.
+<3> The aggregate enforces the appropriate business invariant (rule) to allow overdrafts only for HNIs.
+
+NOTE: Aggregates are also referred to as *aggregate roots*. That is, the object that is at the root of the entity hierarchy. We use these terms synonymously in this book.
+
+==== Repositories
+Most businesses require durability of data. For this reason, aggregate state needs to be persisted and retrieved when needed. Repositories are objects that enable persisting and  loading _aggregate_ instances. This is well documented in Martin Fowler's _Patterns of Enterprise Application Architecture_ book as part of the https://martinfowler.com/eaaCatalog/repository.html[repository]footnote:[https://martinfowler.com/eaaCatalog/repository.html] pattern. It is pertinent to note that we are referring to aggregate repositories here, not just any entity repository. The singular purpose of this repository is to load a *single instance* of an aggregate using its identifier. A simple interface for this purpose is shown here:
+
+[source,java,linenum]
+....
+interface Repository<AggregateType, IdentifierType> {
+    AggregateType load(IdentifierType aggregateIdentifier);
+}
+....
+
+It is important to note that this repository does not support finding aggregate instances using any other means. This is because, business operations happen as part of manipulating a single instance of the aggregate within its bounded context.
+
+==== Factories
+In order to work with aggregates and value objects, instances of these need to be constructed. In simple cases, it might suffice to use a constructor to do so. However, aggregate and value object instances can become quite complex depending on amount the state they encapsulate. In such cases, it may be prudent to consider delegating object construction responsibilities to a _factory_ external to the aggregate/value object. We make use of the static factory method, builder, and dependency injection quite commonly in our day-to-day. Joshua Bloch discusses several variations of this pattern in _Chapter 2: Creating and destroying objects_ in his _Effective Java_ book.
 
 ==== Services
 Business rules within the domain are encapsulated within domain services.
-
-==== Repositories
-Repositories are objects that provide persistence while retrieving domain objects.
-
-==== Factories
-Factories are methods used to create complex objects or aggregates.
 
 === Tactical design tools
 
