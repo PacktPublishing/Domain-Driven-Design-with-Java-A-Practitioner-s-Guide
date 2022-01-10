@@ -49,7 +49,7 @@ According to the https://www.pmi.org/learning/library/project-success-definition
 
 |===
 
-With all of these criteria being applied to assess project success, a large percentage of projects fail for one reason or another.Let's examine some of the top reasons in more detail:
+With all of these criteria being applied to assess project success, a large percentage of projects fail for one reason or another. Let's examine some of the top reasons in more detail:
 
 ==== Inaccurate requirements
 PMI's __Pulse of the Profession__ report from 2017 highlights a very starking fact -- a vast majority of projects fail due to inaccurate or misinterpreted requirements. It follows that it is impossible to build something that clients can use, are happy with and makes them more effective at their jobs if the wrong thing gets built -- even much less for the project to be built on time, and under budget.
@@ -83,9 +83,9 @@ image::test-pyramid-reality.png[]
 The testing ice cream cone is a classic case of what Fred Brooks calls incidental complexity in his seminal paper titled http://faculty.salisbury.edu/~xswang/Research/Papers/SERelated/no-silver-bullet.pdf[No Silver Bullet -- Essence and Accident in Software Engineering]. All software has some amount of https://en.wikipedia.org/wiki/Essential_complexity[essential complexity] that is inherent to the problem being solved. This is especially true when creating solutions for non-trivial problems.  However, incidental or accidental complexity is not directly attributable to the problem itself -- but is caused by limitations of the people involved, their skill levels, the tools and/or abstractions being used. Not keeping tabs on incidental complexity causes teams to veer away from focusing on the real problems, solving which provide the most value. It naturally follows that such teams minimize their odds of success appreciably.
 
 ==== Uncontrolled technical debt
-Financial debt is the act of borrowing money from an outside party to quickly finance the operations of a business -- with the promise to repay the principal plus the agreed upon rate of interest in a timely manner.Under the right circumstances, this can accelerate the growth of a business considerably while allowing the owner to retain ownership, reduced taxes and lower interest rates.On the other hand, the inability to pay back this debt on time can adversely affect credit rating, result in higher interest rates, cash flow difficulties, and other restrictions.
+Financial debt is the act of borrowing money from an outside party to quickly finance the operations of a business -- with the promise to repay the principal plus the agreed upon rate of interest in a timely manner. Under the right circumstances, this can accelerate the growth of a business considerably while allowing the owner to retain ownership, reduced taxes and lower interest rates. On the other hand, the inability to pay back this debt on time can adversely affect credit rating, result in higher interest rates, cash flow difficulties, and other restrictions.
 
-Technical debt is what results when development teams take arguably sub-optimal actions to expedite the delivery of a set of features or projects.For a period of time, just like borrowed money allows you to do things sooner than you could otherwise, technical debt can result in short term speed.In the long term, however, software teams will have to dedicate a lot more time and effort towards simply managing complexity as opposed to thinking about producing architecturally sound solutions.This can result in a vicious negative cycle as illustrated in the diagram below:
+Technical debt is what results when development teams take arguably sub-optimal actions to expedite the delivery of a set of features or projects. For a period of time, just like borrowed money allows you to do things sooner than you could otherwise, technical debt can result in short term speed. In the long term, however, software teams will have to dedicate a lot more time and effort towards simply managing complexity as opposed to thinking about producing architecturally sound solutions. This can result in a vicious negative cycle as illustrated in the diagram below:
 
 .Technical Debt -- Implications
 [.text-center]
@@ -124,13 +124,13 @@ Project --right[dashed]--> Fail : Leads to
 @enduml
 ....
 
-In a recent https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity[McKinsey survey] sent out to CIOs, around 60% reported that the amount of tech debt increased over the past three years.At the same time, over 90% of CIOs allocated less than a fifth of their tech budget towards paying it off.Martin Fowler https://martinfowler.com/articles/is-quality-worth-cost.html#WeAreUsedToATrade-offBetweenQualityAndCost[explores] the deep correlation between high software quality (or the lack thereof) and the ability to enhance software predictably.While carrying a certain amount of tech debt is inevitable and part of doing business, not having a plan to systematically pay off this debt can have significantly detrimental effects on team productivity and ability to deliver value.
+In a recent https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity[McKinsey survey] sent out to CIOs, around 60% reported that the amount of tech debt increased over the past three years. At the same time, over 90% of CIOs allocated less than a fifth of their tech budget towards paying it off. Martin Fowler https://martinfowler.com/articles/is-quality-worth-cost.html#WeAreUsedToATrade-offBetweenQualityAndCost[explores] the deep correlation between high software quality (or the lack thereof) and the ability to enhance software predictably. While carrying a certain amount of tech debt is inevitable and part of doing business, not having a plan to systematically pay off this debt can have significantly detrimental effects on team productivity and ability to deliver value.
 
 [#_ignoring_non_functional_requirements]
 ==== Ignoring Non-Functional Requirements (NFRs)
-Stakeholders often want software teams to spend a majority (if not all) of their time working on features that provide enhanced functionality.This is understandable given that such features provide the highest ROI.These features are called functional requirements.
+Stakeholders often want software teams to spend a majority (if not all) of their time working on features that provide enhanced functionality. This is understandable given that such features provide the highest ROI.These features are called functional requirements.
 
-Non-functional requirements, on the other hand, are those aspects of the system that do not affect functionality directly, but have a profound effect on the efficacy of those using these using and maintaining these systems.There are many kinds of NFRs.A partial list of common NFRs is depicted below:
+Non-functional requirements, on the other hand, are those aspects of the system that do not affect functionality directly, but have a profound effect on the efficacy of those using these using and maintaining these systems. There are many kinds of NFRs. A partial list of common NFRs is depicted below:
 
 .Non-Functional Requirements
 [.text-center]
@@ -161,7 +161,7 @@ mindmapDiagram {
 @endmindmap
 ....
 
-Very rarely do users explicitly request non-functional requirements, but almost always expect these features to be part of any system they use.Oftentimes, systems may continue to function without NFRs being met, but not without having an adverse impact on the _quality_ of the user experience.For example, the home page of a web site that loads in under 1 second under low load and takes upwards of 30 seconds under higher loads may not be usable during those times of stress.Needless to say, not treating non-functional requirements with the same amount of rigor as explicit, value-adding functional features, can lead to unusable systems -- and subsequently failure.
+Very rarely do users explicitly request non-functional requirements, but almost always expect these features to be part of any system they use. Oftentimes, systems may continue to function without NFRs being met, but not without having an adverse impact on the _quality_ of the user experience. For example, the home page of a web site that loads in under 1 second under low load and takes upwards of 30 seconds under higher loads may not be usable during those times of stress. Needless to say, not treating non-functional requirements with the same amount of rigor as explicit, value-adding functional features, can lead to unusable systems -- and subsequently failure.
 
 In this section we examined some common reasons that cause software projects to fail. Is it possible to improve our odds? Before we do that, let's look at the nature of modern software systems and how we can deal with the ensuing complexity.
 
