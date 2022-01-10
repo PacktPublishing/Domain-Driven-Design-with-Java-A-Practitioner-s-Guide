@@ -1,12 +1,10 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
-:toc:
-:toclevels: 4
 
 [#_where_does_ddd_fit]
 [.text-justify]
 [#_mechanics_of_domain_driven_design]
-== The Mechanics of Domain-Driven Design (30 Pages)
+== The Mechanics of Domain-Driven Design
 
 [quote,Creighton Abrams]
 When eating an elephant, take one bite at a time.
@@ -502,8 +500,7 @@ To restore confidence, teams then resort to verifying functionality by mostly ru
 
 What we need are tests that both run rapidly, are easy to maintain (like unit tests), and provide a high degree of confidence that the system is functionally correct when they pass (like end-to-end tests). Contract tests can act as the missing link between unit and end-to-end tests by affording a set of _blessed_ mocks (those that are always compatible with the real implementation). We will cover contract testing in more detail in Chapter 10.
 
-=== Bridging strategic and tactical design
-In addition to the tools and techniques discussed above, we would like to mention we would like to call out domain story telling and eventstorming as two valuable techniques that cover aspects of both strategic and tactical design. We cover both these techniques with more concrete examples in Chapter 4.
+In addition to the tools and techniques discussed above, we would like to call out https://domainstorytelling.org/[domain story telling]footnote:[https://domainstorytelling.org/] and https://www.eventstorming.com/[eventstorming]footnote:[https://www.eventstorming.com/] as two valuable techniques that cover aspects of both strategic and tactical design. We cover both these techniques with more concrete examples in Chapter 4.
 
 === Summary
 In this chapter we looked at the differences in perspective that arise due to problem domain and solution domain thinking.
