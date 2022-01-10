@@ -230,6 +230,8 @@ These are just a few examples of decomposition patterns to create bounded contex
 * Key activities and pivotal events
 * Existing applications
 
+NOTE: Conway's Law asserts that organizations are constrained to produce application designs which are copies of their communication structures. Your current organizational structures may not be optimally aligned to your desired solution approach. The https://www.thoughtworks.com/en-us/radar/techniques/inverse-conway-maneuver[*inverse Conway maneuver*]footnote:[https://www.thoughtworks.com/en-us/radar/techniques/inverse-conway-maneuver] may be applied to achieve isomorphism with the business architecture.
+
 Whatever be the method used to decompose a problem into a set of bounded contexts, care should be taken to make sure that the coupling between them is kept as low as possible.
 
 While bounded contexts ideally need to be as independent as possible,  they may still need to communicate with each other. When using domain-driven design, the system as a whole can be represented as a set of bounded contexts which have relationships with each other. These relationships define how these bounded contexts can integrate with each other and are called *_context maps_*. A sample context map is shown here.
@@ -292,7 +294,9 @@ An impact map is a visualisation of scope and underlying assumptions, created co
 
 * _Deliverables_: *What* we can do, as an organisation or a delivery team, to support the required impacts? In other words, the software features or process changes required to be realized as part of the solution.
 
-TODO: Example
+.A simple impact map for a retail bank
+[.text-center]
+image::impact-mapping-example.png[]
 
 Impact mapping provides an easy to understand visual representation of the relationship between the goals, the users and the impacts to the deliverables.
 
@@ -425,32 +429,95 @@ private Collection<Transaction> transactions;                       // <1>
 
 NOTE: Aggregates are also referred to as *aggregate roots*. That is, the object that is at the root of the entity hierarchy. We use these terms synonymously in this book.
 
+==== Domain events
+As mentioned above, aggregates dictate how and when state changes occur. Other parts of the system may be interested in knowing about the occurrence of changes that are significant to the business. For example, an order being placed or a payment being received, etc. _Domain events_ are the means to convey that something business significant has occurred. It is important to differentiate between system events and domain events. For example, in the context of a retail bank, a _row was saved_ in the database, or a _server ran out of disk space_, etc. may classify as system events, whereas a _deposit was made_ to a checking account, _fraudulent activity was detected_ on a transaction, etc. In other words, domain events are things that *domain experts care about*.
+
+It may be prudent to make use of domain events to reduce the amount of coupling between bounded contexts, making it a critical building block of domain-driven design.
+
 ==== Repositories
-Most businesses require durability of data. For this reason, aggregate state needs to be persisted and retrieved when needed. Repositories are objects that enable persisting and  loading _aggregate_ instances. This is well documented in Martin Fowler's _Patterns of Enterprise Application Architecture_ book as part of the https://martinfowler.com/eaaCatalog/repository.html[repository]footnote:[https://martinfowler.com/eaaCatalog/repository.html] pattern. It is pertinent to note that we are referring to aggregate repositories here, not just any entity repository. The singular purpose of this repository is to load a *single instance* of an aggregate using its identifier. A simple interface for this purpose is shown here:
-
-[source,java,linenum]
-....
-interface Repository<AggregateType, IdentifierType> {
-    AggregateType load(IdentifierType aggregateIdentifier);
-}
-....
-
-It is important to note that this repository does not support finding aggregate instances using any other means. This is because, business operations happen as part of manipulating a single instance of the aggregate within its bounded context.
+Most businesses require durability of data. For this reason, aggregate state needs to be persisted and retrieved when needed. Repositories are objects that enable persisting and  loading _aggregate_ instances. This is well documented in Martin Fowler's _Patterns of Enterprise Application Architecture_ book as part of the https://martinfowler.com/eaaCatalog/repository.html[repository]footnote:[https://martinfowler.com/eaaCatalog/repository.html] pattern. It is pertinent to note that we are referring to aggregate repositories here, not just any entity repository. The singular purpose of this repository is to load a *single instance* of an aggregate using its identifier. It is important to note that this repository does not support finding aggregate instances using any other means. This is because, business operations happen as part of manipulating a single instance of the aggregate within its bounded context.
 
 ==== Factories
 In order to work with aggregates and value objects, instances of these need to be constructed. In simple cases, it might suffice to use a constructor to do so. However, aggregate and value object instances can become quite complex depending on amount the state they encapsulate. In such cases, it may be prudent to consider delegating object construction responsibilities to a _factory_ external to the aggregate/value object. We make use of the static factory method, builder, and dependency injection quite commonly in our day-to-day. Joshua Bloch discusses several variations of this pattern in _Chapter 2: Creating and destroying objects_ in his _Effective Java_ book.
 
 ==== Services
-Business rules within the domain are encapsulated within domain services.
+When working within the confines of a single bounded context, the public interface (commands) of the aggregate provides a natural API. However, more complex business operations may require interacting with multiple bounded contexts and aggregates. In other words, we may find ourselves in situations where certain business operations do not fit naturally with any single aggregate. Even if interactions are limited to a single bounded context, there may be a need to expose that functionality in an implementation-neutral manner. In such cases, one may consider the use of objects termed as _services_. Services come in at least 3 flavors:
+
+. *Domain services*: To enable coordinating operations among more than one aggregate. For example, transferring money between two checking accounts at a retail bank.
+. *Infrastructure services*: To enable interactions with a utility that is not core to the business. For example, logging, sending emails, etc. at the retail bank.
+. *Application services*: Enable coordination between domain services, infrastructure services and other application services. For example, sending email notifications after a successful inter-account money transfer.
+
+Services can also be stateful or stateless. It is best to allow aggregates to manage state making use of repositories, while allowing services to coordinate and/or orchestrate business flows. In complex cases, there may be a need to manage the state of the flow itself. We will look at more concrete examples in part 2 of this book.
+
+CAUTION: It may become tempting to implement business logic almost exclusively using services -- inadvertently leading to the https://martinfowler.com/bliki/AnemicDomainModel.html[anemic domain model]footnote:[https://martinfowler.com/bliki/AnemicDomainModel.html] anti-pattern. It is worthwhile striving to encapsulate business logic within the confines of aggregates as a default.
 
 === Tactical design tools
+As we have mentioned a few times, DDD is about making sure that we build the right thing and then build it right.
 
-==== Behavior-driven development
+==== BDD and TDD
+Test-Driven Development (TDD) was conceived by Kent Beck as a means to encourage simple designs and inspire confidence by writing a *test before writing the production code* required to satisfy that requirement. The intent behind this was to arrive at an optimal design iteratively, guided by a set of executable test cases. Unfortunately, it got misconstrued as a unit-testing technique as opposed to a design technique, leading to it being employed in a manner where teams were unable to derive the benefits of the practice. Behavior-Driven Development (BDD) was conceived by Chris Matts and Dan North as a means to practice TDD the right way by using better terminology (for example, using _specifications_ instead of _test suites_, _scenarios_ instead of _tests_, _confirming behavior_ instead of _testing code_, etc). Consider the example of the overdraft facility for premium customers. A potential test for this feature using *JUnit* may look something like this:
 
-==== Test-driven development
+[source,java,linenum]
+....
+class CheckingAccountOverdraftTests {
+
+    @Test
+    public void shouldAllowOverdraftForPremiumCustomers() {
+        Account account = Account.checking("ABC123")
+                            .withCustomer(premiumCustomer())
+                            .withBalance(Money.usd(100));
+
+        account.withdraw(Money.usd(150));
+
+        assertThat(account.balance()).isEqualTo(Money.usd(-50));
+    }
+}
+....
+
+The BDD specification for this same feature using *Cucumber* and *Gherkin* looks something like this:
+[source,gherkin,linenum]
+....
+Feature: Overdraft capability for premium customers
+
+Scenario: Should allow overdraft facility for premium customers.
+
+Given I am a premium customer with account number "ABC123"
+  And I have 100 dollars in my account
+ When I attempt to withdraw 150 dollars
+ Then I should have a negative balance of 50 dollars
+....
+
+Conceptually, there is no difference between the two versions, although it is arguable that less technical domain experts will likely prefer the BDD specification over the TDD test case because it uses the language of the problem domain in an implementation-neutral manner. This has led to BDD being used for more coarse-grained acceptance testing, while TDD gets used for more fine-grained unit testing. In our experience, both these techniques complement each other in achieving better software design. Because BDD tools (like https://cucumber.io/docs/installation/java/[Cucumber]footnote:[https://cucumber.io/docs/installation/java/], https://jbehave.org/[JBehave]footnote:[https://jbehave.org/]) allow the use of implementation-neutral specification languages like Gherkin, they tend to be more approachable for less technical stakeholders. However, a plethora of tools like https://easyb.io/[easyb]footnote:[https://easyb.io/], https://site.mockito.org/[Mockito]footnote:[https://site.mockito.org], https://joel-costigliola.github.io/assertj/[AssertJ]footnote:[https://joel-costigliola.github.io/assertj/] etc. make it fairly natural to adopt the BDD style even in Java, proving that they are very complementary as shown here:
+
+.TDD and BDD are complementary concepts.
+[.text-center]
+image::ddd-vs-tdd-vs-bdd.png[]
+
+Both BDD and TDD, when used in close conjunction with DDD's ubiquitous language, can promote closer synergy between the problem and solution domain and in our experience is an indispensable tool when building software solutions.
 
 ==== Contract testing
+When implementing a sound test strategy, one encounters two broad classes of tests: *unit* and *end-to-end* (and everything in between). Unit tests tend to be fairly fine-grained, especially when they mimic the behavior of collaborating components using mocks/stubs. This allows us to run a large suite of such tests while consuming very little time. In an ideal world, we would prefer restricting ourselves to running just unit tests. However, unit tests do have a limitation in that the assumptions made while mocking/stubbing collaborator behavior may become inaccurate when the owners of these components make changes to their respective solutions. This may lead to a situation where unit tests work just fine, but the solution as a whole does not work in a formal end-to-end environment, resulting in non-technical stakeholders losing faith in these tests.
 
-==== Refactoring
+To restore confidence, teams then resort to verifying functionality by mostly running time-consuming, error-prone manual end-to-end tests, occasionally throwing in some automation. In our experience, running a stable, non-trivial suite of automated end-to-end tests remains quite a challenge, due to the computational and cognitive expense involved in setup and ongoing upkeep. Because these tests require large portions of the real solution stack to be in place, they tend to often happen very close to the end, causing them to be rushed and coarse-grained.
 
-==== Quality storming
+What we need are tests that both run rapidly, are easy to maintain (like unit tests), and provide a high degree of confidence that the system is functionally correct when they pass (like end-to-end tests). Contract tests can act as the missing link between unit and end-to-end tests by affording a set of _blessed_ mocks (those that are always compatible with the real implementation). We will cover contract testing in more detail in Chapter 10.
+
+=== Bridging strategic and tactical design
+In addition to the tools and techniques discussed above, we would like to mention we would like to call out domain story telling and eventstorming as two valuable techniques that cover aspects of both strategic and tactical design. We cover both these techniques with more concrete examples in Chapter 4.
+
+=== Summary
+In this chapter we looked at the differences in perspective that arise due to problem domain and solution domain thinking.
+We examined how to arrive at a shared understanding of the problem domain using DDD's strategic design elements. We introduced a few tools and techniques that can aid in accelerating the strategic design process.
+
+We also looked at how to build robust solutions using DDD's tactical design elements along with tools and techniques that can enhance our journey of building solutions that can evolve durably.
+
+In the next chapter we will take a closer look at where DDD fits in the scheme of various architecture approaches, patterns and how it is applicable in a wide array of scenarios.
+
+=== Questions
+. Can you draw a business model canvas for the current ecosystem you are working with? Did this exercise help in enhancing your understanding of the big picture?
+
+. Are you able to identify the different subdomains in your problem domain? Do your solutions (bounded context) align with these subdomains?
+
+. Are you able to draw a simple context map of your current ecosystem?
+
+. Do your bounded contexts align along specific aggregate roots?
