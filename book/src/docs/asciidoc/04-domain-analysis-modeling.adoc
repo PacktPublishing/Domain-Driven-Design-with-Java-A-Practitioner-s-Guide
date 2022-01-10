@@ -123,7 +123,7 @@ Represented by a labelled arrow connecting the actor and the work object.
 *Sequence Numbers* - Usually, stories are told one sentence after the other.
 Sequence numbers helps capture the sequence of the activities in a story.
 
-*Groups* - An outline to represent a collection of related concepts ranging from repeated/optional activities to sub-domains/organizational boundaries.
+*Groups* - An outline to represent a collection of related concepts ranging from repeated/optional activities to subdomains/organizational boundaries.
 
 ==== Using DST for the LC application
 

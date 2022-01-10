@@ -132,7 +132,7 @@ Whatever the case may be, these teams may decide that the cost of collaboration 
 ====== Potential pitfalls
 
 Choosing to go separate ways may result in duplicate work across affected bounded contexts.
-When working in bounded contexts that map to the core sub-domains, this may prove counter-productive as it could lead to inconsistent behaviors unintentionally.
+When working in bounded contexts that map to the core subdomains, this may prove counter-productive as it could lead to inconsistent behaviors unintentionally.
 
 It is possible to transition from one relationship type to another over a period of time.
 In our experience, transitioning from any one of these relationships may not be straightforward.
