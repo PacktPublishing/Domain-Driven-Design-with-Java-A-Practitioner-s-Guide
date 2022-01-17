@@ -1,4 +1,6 @@
 ifndef::imagesdir[:imagesdir: images]
+[.text-justify]
+
 [#_where_does_ddd_fit]
 == Where and How Does DDD Fit? (15 pages)
 
@@ -10,6 +12,83 @@ Software architecture refers to the fundamental structures of a software system 
 === Architecture Styles
 
 === Layered Architecture
+The layered architecture is one of the most common architecture styles where the solution is typically organized into four broad categories: *presentation*, *application*, *domain* and *persistence*. Each of the layers provides a solution to a particular concern it represents as shown here:
+
+.Essence of a layered architecture.
+[.text-center]
+image::architecture-styles/layered.png[]
+
+The main idea behind the layered architecture is a separation of concerns -- where the dependencies between layers are unidirectional (from the top to the bottom). For example, the domain layer can depend on the persistence layer, not the other way round. In addition, any given layer typically accesses the layer immediately beneath it without bypassing layers in between. For example, the presentation layer may access the domain layer only through the application layer.
+
+This structure enables looser coupling between layers and allows them to evolve independently of each other. The idea of the layered architecture fits very well with domain-driven design's tactical design elements as depicted here:
+
+.Layered architecture mapped to DDD's tactical design elements.
+[.text-center]
+image::architecture-styles/layered-vs-ddd.png[]
+
+DDD actively promotes the use of a layered architecture, primarily because it makes it possible to focus on the domain layer in isolation of other concerns like how to information gets displayed, how end-to-end flows are managed, how data is stored and retrieved, etc. From that perspective, solutions that apply DDD tend to naturally be layered as well.
+
+However, any architecture approach we choose comes with its set of tradeoffs and limitations. We discuss some of these here.
+
+==== Considerations
+
+===== Layer cake anti-pattern
+Sticking to a fixed set of layers
+
+[.text-center]
+[plantuml,layer-cake-anti-pattern]
+....
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+
+@startuml
+skinparam handwritten true
+skinparam sequence {
+  ActorFontName "Gloria Hallelujah"
+  ActorFontSize 20
+
+  ArrowFontName "Gloria Hallelujah"
+  ArrowFontSize 20
+}
+skinparam DatabaseFontName "Gloria Hallelujah"
+skinparam DatabaseFontSize 20
+skinparam DatabaseBackgroundColor #E1D5E7
+skinparam DatabaseBorderColor #9673A6
+
+skinparam Participant {
+  FontName "Gloria Hallelujah"
+  FontSize 20
+}
+actor "U I" as ui
+participant Controller as c
+participant Service as s
+participant Repository as r
+database Database as data
+
+
+activate ui
+ui -> c: findById
+activate c
+c -> s: findById
+activate s
+s -> r: findById
+activate r
+r -> data: findById
+activate data
+data -> r: entity
+deactivate data
+r -> s: entity
+deactivate r
+s -> c: entity
+deactivate s
+c -> ui: entity
+deactivate c
+deactivate ui
+@enduml
+....
+
+===== Inter-layer translation:
+===== Layer bypass
 
 === Onion Architecture
 
