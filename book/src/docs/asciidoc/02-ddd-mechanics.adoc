@@ -77,7 +77,7 @@ Further breakdown of subdomains may be needed until we reach a level of manageab
 ==== Types of subdomains
 Breaking down a complex domain into more manageable subdomains is a great thing to do. However, not all subdomains are created equal. With any business, the following three types of subdomains are going to be encountered:
 
-* *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core subdomains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above,
+* *Core*: The main focus area for the business. This is what provides the biggest differentiation and value. It is therefore natural to want to place the most focus on the core subdomain. In the retail example above, shopping cart and orders might be the biggest differentiation -- and hence may form the core subdomains for that business venture. It is prudent to implement core subdomains in-house given that it is something that businesses will desire to have the most control over. In the online retail example above, the business may want to focus on providing an enriched experience to place online orders. This will make the _online orders_ and _shopping cart_ part of the core domain.
 * *Supporting*: Like with every great movie, where it is not possible to create a masterpiece without a solid supporting cast, so it is with supporting or auxiliary subdomains. Supporting subdomains are usually very important and very much required, but may not be the primary focus to run the business. These supporting subdomains, while necessary to run the business, do not usually offer a significant competitive advantage. Hence, it might be even fine to completely outsource this work or use an off-the-shelf solution as is or with minor tweaks. For the retail example above, assuming that online ordering is the primary focus of this business, catalog management may be a supporting subdomain.
 
 * *Generic*: When working with business applications, one is required to provide a set of capabilities *not* directly related to the problem being solved. Consequently, it might suffice to just make use of an off-the-shelf solution. For the retail example above, the identity, auditing and activity tracking subdomains might fall in that category.
@@ -90,7 +90,7 @@ Given that the core subdomain establishes most of the business differentiation, 
 [.text-center]
 image::core-domain-chart.png[]
 
-Over a period of time, it is only natural that competitors will attempt to emulate your successes. Newer, more efficient methods will arise, reducing the complexity involved, disrupting your core. This may cause the notion of what is currently core, to shift and become a supporting or generic capability.
+Over a period of time, it is only natural that competitors will attempt to emulate your successes. Newer, more efficient methods will arise, reducing the complexity involved, disrupting your core. This may cause the notion of what is currently core, to shift and become a supporting or generic capability as depicted here:
 
 .Core domain erosion
 [.text-center]
@@ -152,6 +152,8 @@ The problem domain expressed in the form of why, what and how is shown here:
 
 |===
 
+Now that we have defined the problem and the motivations surrounding it, let's examine how it can inform the solution.
+
 ==== Solution domain
 
 A term used to describe the environment in which the solution is developed.
@@ -201,9 +203,6 @@ As illustrated here, the business expert may think of a process model, whereas t
 NOTE: The illustration above is to depict the existence of multiple models. There may be several other perspectives, for example, a customer experience model, an information security model, etc. which are not depicted.
 
 Care should be taken to retain focus on solving the business problem at hand at all times. Teams will be better served if they expend the same amount of effort modeling business logic as the technical aspects of the solution. To keep accidental complexity in check, it will be best to isolate the infrastructure aspects of the solution from this model. These models can take several forms, including conversations, whiteboard sessions, documentation, diagrams, tests and other forms of architecture fitness functions. It is also important to note that this is *not* a one-time activity. As the business evolves, the domain model and the solution will need to keep up. This can only be achieved through close collaboration between the domain experts and the developers at all times.
-
-[WARNING]
-Anemic domain models
 
 ==== Scope of domain models and the bounded context
 
@@ -303,13 +302,14 @@ In the previous section, we have seen how we can arrive at a shared understandin
 
 It is convenient to think of the tactical design aspects as depicted in this picture:
 
+.The elements of DDD's tactical design
 [.text-center]
 image::ddd-tactical-design.png[]
 
 Let's look at the definitions of these elements.
 
 ==== Value objects
-Value objects are immutable objects that encapsulate the data and behavior of one or more related attributes. It may be convenient to think of value objects as named primitives. For example, consider a `MonetaryAmount` value object. A simple implementation can contain two attributes -- an _amount_ and a _currency code_. This allows encapsulation of behavior such as adding two `MonetaryAmount` objects safely.
+Value objects are immutable objects that encapsulate the data and behavior of one or more related attributes. It may be convenient to think of value objects as named primitives. For example, consider a `MonetaryAmount` value object. A simple implementation can contain two attributes -- an _amount_ and a _currency code_. This allows encapsulation of behavior such as adding two `MonetaryAmount` objects safely as shown here:
 
 .A simple `MonetaryAmount` value object
 [.text-center]
@@ -338,6 +338,7 @@ CAUTION: Critics may be quick to point out problems such as class explosion and 
 ==== Entities
 An entity is an object with a *unique identity* and *encapsulates* the data and behaviour of its attributes. It may be convenient to view entities as a collection of other entities and value objects that need to be grouped together. A very simple example of an entity is shown here:
 
+.A simple depiction of `Transaction` entity
 [.text-center]
 [plantuml,entity-example]
 ....
@@ -375,6 +376,7 @@ As seen above, entities are hierarchical, in that they can be composed of one mo
 
 Consider the example of a `CheckingAccount` aggregate:
 
+.A simple depiction of a `CheckingAccount` aggregate
 [.text-center]
 [plantuml,aggregate-example]
 ....
