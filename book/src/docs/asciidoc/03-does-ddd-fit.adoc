@@ -33,8 +33,9 @@ However, any architecture approach we choose comes with its set of tradeoffs and
 ==== Considerations
 
 ===== Layer cake anti-pattern
-Sticking to a fixed set of layers
+Sticking to a fixed set of layers provides a level of isolation, but in simpler cases, it may prove overkill without adding any perceptible benefit other than adherence to an agreed on architectural guidelines. In the layer cake anti-pattern, each layer merely proxies the call to the layer beneath it without adding any value. The example below illustrates this scenario that is fairly common:
 
+.Example of the *layer cake* anti-pattern to find an entity representation by ID
 [.text-center]
 [plantuml,layer-cake-anti-pattern]
 ....
@@ -52,8 +53,7 @@ skinparam sequence {
 }
 skinparam DatabaseFontName "Gloria Hallelujah"
 skinparam DatabaseFontSize 20
-skinparam DatabaseBackgroundColor #E1D5E7
-skinparam DatabaseBorderColor #9673A6
+skinparam DatabaseBorderColor darkred
 
 skinparam Participant {
   FontName "Gloria Hallelujah"
@@ -75,26 +75,115 @@ s -> r: findById
 activate r
 r -> data: findById
 activate data
-data -> r: entity
+data -> r: Entity
 deactivate data
-r -> s: entity
+r -> s: Entity
 deactivate r
-s -> c: entity
+s -> c: Entity
 deactivate s
-c -> ui: entity
+c -> ui: Entity
 deactivate c
 deactivate ui
 @enduml
 ....
 
-===== Inter-layer translation:
+Here the `findById` method is replicated in every layer and simply calls the method with the same name in the layer below with no additional logic. This introduces a level of accidental complexity to the solution. Some amount of redundancy in the layering may be unavoidable for the purposes of standardization. It may be best to re-examine the layering guidelines if the _layer cake_ occurs prominently in the codebase.
+
+===== Anemic translation
+Another variation of the layer cake we see commonly is one where layers refuse to share input and output types in the name of higher isolation and looser coupling. This makes it necessary to perform translations at the boundary of each layer. If the objects being translated are more or less structurally identical, we have an _anemic translation_. Let's look at a variation of the `findById` example we discussed above.
+
+.Example of the *anemic translation* anti-pattern to find an entity representation by ID
+[.text-center]
+[plantuml,layer-cake-anti-pattern]
+....
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+
+@startuml
+skinparam handwritten true
+skinparam sequence {
+  ActorFontName "Gloria Hallelujah"
+  ActorFontSize 20
+
+  ArrowFontName "Gloria Hallelujah"
+  ArrowFontSize 20
+}
+skinparam DatabaseFontName "Gloria Hallelujah"
+skinparam DatabaseFontSize 20
+skinparam DatabaseBorderColor darkred
+
+skinparam Participant {
+  FontName "Gloria Hallelujah"
+  FontSize 20
+}
+actor "U I" as ui
+box "Bounded Context" #LightYellow
+participant Controller as c
+participant Service as s
+participant Repository as r
+database Database as data
+end box
+
+activate ui
+ui -> c: findById
+activate c
+c -> s: findById
+activate s
+s -> r: findById
+activate r
+r -> data: findById
+activate data
+data -> r: db.Entity
+deactivate data
+r -> s: service.Entity
+deactivate r
+s -> c: controller.Entity
+deactivate s
+c -> ui: ui.Entity
+deactivate c
+deactivate ui
+@enduml
+....
+In this case, each layer defines a `Entity` type of its own, requiring a translation between types at each layer. To make matters worse, the structure of the `Entity` type may have seemingly minor variations (for example, `lastName` being referred to as `surname`). While such translations may be necessary across bounded contexts, teams should strive to avoid the need for variations in names and structures of the same concept within a single bounded context. The intentional use of the *ubiquitous language* helps avoid such scenarios.
+
 ===== Layer bypass
+When working with a layered architecture, it is reasonable to start by being strict about layers only interacting with the layer immediately beneath it. As we have seen above, such rigid enforcements may lead to an intolerable degree of accidental complexity, especially when applied generically to a large number of use-cases. In such scenarios, it may be worth considering consciously allowing one or more layers to be bypassed. For example, the `controller` layer may be allowed to work directly with the `repository` without using the `service` layer.
+
+This can be a slippery slope. To continue maintaining a level of sanity, teams should consider the use of a lightweight architecture governance tool like https://www.archunit.org/[*ArchUnit*]footnote:[https://www.archunit.org/] to make agreements explicit and afford quick feedback. A simple example of how to use ArchUnit for this purpose is shown here:
+
+[source,java,linenum]
+....
+class LayeredArchitectureTests {
+    @ArchTest
+    static final ArchRule layer_dependencies_are_respected_with_exception = layeredArchitecture()
+
+            .layer("Controllers").definedBy("..controller..")
+            .layer("Services").definedBy("..service..")
+            .layer("Domain").definedBy("..domain..")
+            .layer("Repository").definedBy("..repository..")
+
+            .whereLayer("Controllers").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Services").mayOnlyBeAccessedByLayers("Controllers")
+            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Services", "Repository", "Controllers")
+            .whereLayer("Repository")
+                .mayOnlyBeAccessedByLayers("Services", "Controllers"); // <1>
+}
+....
+<1> The Repository layer can be accessed by both the Services and Controllers layers -- effectively allowing Controllers to bypass the use of the Services layer.
 
 === Onion Architecture
 
 === Hexagonal Architecture
 
-=== Service Oriented Architecture
+=== Service Oriented Architecture (SOA)
+Service Oriented Architecture (SOA) is an architectural style where software components expose (potentially) reusable functionality over standardized interfaces. The use of standardized interfaces (such as SOAP, REST, gRPC, etc. to name a few) enables easier interoperability when integrating heterogeneous solutions. Previously, the use of non-standard, proprietary interfaces made this kind of integration a lot more challenging. For example, a retail bank may expose inter-account transfer functionality in the form of RESTful web services.
+
+.SOA: Expose reusable functionality over standard interfaces.
+[.text-center]
+image::architecture-styles/architecture-styles-soa.png[]
+
+While SOA prescribes exposing functionality over standardized interfaces, the focus is more on integrating heterogeneous applications than on implementing them. At one of the banks I worked at, we exposed a set of over 500 service interfaces over SOAP. Under the covers, we implemented these using EJB 2.0 which largely delegated most if not all the logic to a set of underlying stored procedures within a single monolithic Oracle database! Indeed, we advertised this implementation as an example of SOA and it would be hard to argue that it was not. However, our implementation of SOA
+
 
 === Microservice Architecture
 
