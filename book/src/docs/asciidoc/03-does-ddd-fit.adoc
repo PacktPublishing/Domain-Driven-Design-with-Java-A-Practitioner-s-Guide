@@ -171,8 +171,6 @@ class LayeredArchitectureTests {
 ....
 <1> The Repository layer can be accessed by both the Services and Controllers layers -- effectively allowing Controllers to bypass the use of the Services layer.
 
-==== Making it work with DDD
-
 === Onion Architecture
 
 === Hexagonal Architecture
