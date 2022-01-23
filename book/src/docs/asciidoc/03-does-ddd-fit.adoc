@@ -24,7 +24,7 @@ This structure enables looser coupling between layers and allows them to evolve 
 
 .Layered architecture mapped to DDD's tactical design elements.
 [.text-center]
-image::architecture-styles/layered-vs-ddd.png[]
+image::architecture-styles/layered-vs-ddd.png[width=75%]
 
 DDD actively promotes the use of a layered architecture, primarily because it makes it possible to focus on the domain layer in isolation of other concerns like how to information gets displayed, how end-to-end flows are managed, how data is stored and retrieved, etc. From that perspective, solutions that apply DDD tend to naturally be layered as well.
 
@@ -37,7 +37,7 @@ Sticking to a fixed set of layers provides a level of isolation, but in simpler 
 
 .Example of the *layer cake* anti-pattern to find an entity representation by ID
 [.text-center]
-[plantuml,layer-cake-anti-pattern]
+[plantuml,layer-cake-anti-pattern,width=50%,pdfwidth=50%]
 ....
 skinparam backgroundColor #EEEBDC
 skinparam handwritten true
@@ -94,7 +94,7 @@ Another variation of the layer cake we see commonly is one where layers refuse t
 
 .Example of the *anemic translation* anti-pattern to find an entity representation by ID
 [.text-center]
-[plantuml,layer-cake-anti-pattern]
+[plantuml,layer-cake-anti-pattern,width=50%,pdfwidth=50%]
 ....
 skinparam backgroundColor #EEEBDC
 skinparam handwritten true
@@ -171,21 +171,37 @@ class LayeredArchitectureTests {
 ....
 <1> The Repository layer can be accessed by both the Services and Controllers layers -- effectively allowing Controllers to bypass the use of the Services layer.
 
+==== Making it work with DDD
+
 === Onion Architecture
 
 === Hexagonal Architecture
 
 === Service Oriented Architecture (SOA)
-Service Oriented Architecture (SOA) is an architectural style where software components expose (potentially) reusable functionality over standardized interfaces. The use of standardized interfaces (such as SOAP, REST, gRPC, etc. to name a few) enables easier interoperability when integrating heterogeneous solutions. Previously, the use of non-standard, proprietary interfaces made this kind of integration a lot more challenging. For example, a retail bank may expose inter-account transfer functionality in the form of RESTful web services.
+Service Oriented Architecture (SOA) is an architectural style where software components expose (potentially) reusable functionality over standardized interfaces. The use of standardized interfaces (such as SOAP, REST, gRPC, etc. to name a few) enables easier interoperability when integrating heterogeneous solutions as shown here:
 
 .SOA: Expose reusable functionality over standard interfaces.
 [.text-center]
-image::architecture-styles/architecture-styles-soa.png[]
+image::architecture-styles/soa.png[]
 
-While SOA prescribes exposing functionality over standardized interfaces, the focus is more on integrating heterogeneous applications than on implementing them. At one of the banks I worked at, we exposed a set of over 500 service interfaces over SOAP. Under the covers, we implemented these using EJB 2.0 which largely delegated most if not all the logic to a set of underlying stored procedures within a single monolithic Oracle database! Indeed, we advertised this implementation as an example of SOA and it would be hard to argue that it was not. However, our implementation of SOA
+Previously, the use of non-standard, proprietary interfaces made this kind of integration a lot more challenging. For example, a retail bank may expose inter-account transfer functionality in the form of SOAP web services. While SOA prescribes exposing functionality over standardized interfaces, the focus is more on integrating heterogeneous applications than on implementing them.
 
+At one of the banks we worked at, we exposed a set of over 500 service interfaces over SOAP. Under the covers, we implemented these services using EJB 2.x (a combination of stateless session beans and message-driven beans) hosted on a commercial J2EE application server which also did double duty as an enterprise service bus (ESB). These services largely delegated most if not all the logic to a set of underlying stored procedures within a single monolithic Oracle database using a canonical data model for the entire enterprise! To the outside world, these services were _location transparent_, stateless, _composable_ and _discoverable_. Indeed, we advertised this implementation as an example of SOA, and it would be hard to argue that it was not.
+
+This suite of services had evolved organically over the years with no explicit boundaries, concepts from various parts of the organization and generations of people mixed in, each adding their own interpretation of how business functionality needed to be implemented. In essence, the implementation resembled the dreaded big ball of mud which was extremely hard to enhance and maintain.
+
+The intentions behind SOA are noble. However, the promises of reuse, loose coupling are hard to achieve in practice given the lack of concrete implementation guidance on component granularity. It is also true that SOA https://martinfowler.com/bliki/ServiceOrientedAmbiguity.html[means many things]footnote:[https://martinfowler.com/bliki/ServiceOrientedAmbiguity.html] to different people. This ambiguity leads to most SOA implementations becoming complex, unmaintainable monoliths, centered around technology components like a service bus or the persistence store or both. This is where using DDD to solve a complex problem by breaking it down into subdomains and bounded contexts can be invaluable.
 
 === Microservice Architecture
+In the last decade or so, microservices have gained quite a lot of popularity with lots of organizations wanting to adopt this style of architecture. In a lot of ways, microservices are an extension of service-oriented architectures -- one where a lot of emphasis is placed on creating focused components that deal with doing a limited number of things and doing them right. Sam Newman, the author of the _Building Microservices_ book defines microservices as _small_-sized, independently deployable components that maintain their own state and are *modeled around a business domain*. This affords benefits such as adopting a horses for courses approach when modeling solutions, limiting the blast radius, improved productivity and speed, autonomous cross-functional teams, etc. Microservices usually exist as a collective, working collaboratively to achieve the desired business outcomes, as depicted here:
+
+.A microservices ecosystem
+[.text-center]
+image::architecture-styles/microservices.png[]
+
+As we can see, SOA and microservices are very similar from the perspective of the consumers in that they access functionality through a set of standardized interfaces. The microservices approach is an evolution of SOA in that the focus now is on building smaller, self-sufficient, independently deployable components with the intent of avoiding single points of failure (like an enterprise database or service bus), which was fairly common with a number of SOA-based implementations.
+
+While microservices have definitely helped, there still exists quite a lot of ambiguity when it comes to answering how https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice[big or small]footnote:[https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice] a microservice should be. Indeed, a lot of teams seem to struggle to get this balance right resulting in a https://www.infoq.com/news/2016/02/services-distributed-monolith/[distributed monolith]footnote:[https://www.infoq.com/news/2016/02/services-distributed-monolith/] -- which in a lot of ways can be much worse than even the single process monolith from the SOA days. Again, applying the strategic design concepts of DDD can help create independent, loosely coupled components, making it an ideal companion for the microservices style of architecture.
 
 === Event-Driven Architecture (EDA)
 
@@ -194,7 +210,8 @@ While SOA prescribes exposing functionality over standardized interfaces, the fo
 In traditional applications, a single domain, data/persistence model is used to handle all kinds of operations. With CQRS, we create distinct models to handle updates (commands) and enquiries. This is depicted in the following diagram:
 
 .Traditional versus CQRS Architecture
-image::cqrs/traditional-vs-cqrs-architecture.png[]
+[.text-center]
+image::cqrs/traditional-vs-cqrs-architecture.png[width=75%]
 
 NOTE: We depict multiple query models above because it is possible (but not necessary) to create more than one query model, depending on the kinds of query use cases that need to be supported.
 
