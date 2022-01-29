@@ -10,6 +10,7 @@ We won’t be distracted by comparison if we are captivated with purpose.
 Software architecture refers to the fundamental structures of a software system and the discipline of creating such structures and systems. Over the years, we have accumulated a series of architecture styles to help us deal with system complexity. In this chapter we will examine how DDD compares with several of these architecture styles and how/where it fits in the overall scheme of things when crafting a software solution.
 
 === Architecture Styles
+// TODO: Testing
 
 === Layered Architecture
 The layered architecture is one of the most common architecture styles where the solution is typically organized into four broad categories: *presentation*, *application*, *domain* and *persistence*. Each of the layers provides a solution to a particular concern it represents as shown here:
