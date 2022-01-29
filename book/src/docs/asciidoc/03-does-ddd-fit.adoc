@@ -1,3 +1,5 @@
+:icons: font
+:icon-set: fas
 ifndef::imagesdir[:imagesdir: images]
 [.text-justify]
 
@@ -10,7 +12,6 @@ We won’t be distracted by comparison if we are captivated with purpose.
 Software architecture refers to the fundamental structures of a software system and the discipline of creating such structures and systems. Over the years, we have accumulated a series of architecture styles to help us deal with system complexity. In this chapter we will examine how DDD compares with several of these architecture styles and how/where it fits in the overall scheme of things when crafting a software solution.
 
 === Architecture Styles
-// TODO: Testing
 
 === Layered Architecture
 The layered architecture is one of the most common architecture styles where the solution is typically organized into four broad categories: *presentation*, *application*, *domain* and *persistence*. Each of the layers provides a solution to a particular concern it represents as shown here:
@@ -196,13 +197,28 @@ In the last decade or so, microservices have gained quite a lot of popularity wi
 
 .A microservices ecosystem
 [.text-center]
-image::architecture-styles/microservices.png[]
+image::architecture-styles/microservices.png[width=50%]
 
 As we can see, SOA and microservices are very similar from the perspective of the consumers in that they access functionality through a set of standardized interfaces. The microservices approach is an evolution of SOA in that the focus now is on building smaller, self-sufficient, independently deployable components with the intent of avoiding single points of failure (like an enterprise database or service bus), which was fairly common with a number of SOA-based implementations.
 
 While microservices have definitely helped, there still exists quite a lot of ambiguity when it comes to answering how https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice[big or small]footnote:[https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice] a microservice should be. Indeed, a lot of teams seem to struggle to get this balance right resulting in a https://www.infoq.com/news/2016/02/services-distributed-monolith/[distributed monolith]footnote:[https://www.infoq.com/news/2016/02/services-distributed-monolith/] -- which in a lot of ways can be much worse than even the single process monolith from the SOA days. Again, applying the strategic design concepts of DDD can help create independent, loosely coupled components, making it an ideal companion for the microservices style of architecture.
 
 === Event-Driven Architecture (EDA)
+Irrespective of the granularity of components (monolith or microservices or something in between), most non-trivial solutions have a boundary, beyond which there may be a need to communicate with external system(s). This communication usually happens through the exchange of messages between systems, causing them to become coupled with each other. Coupling comes in two broad flavors: _afferent_ -- who depends on you and _efferent_ -- who you depend on. Excessive amounts of efferent coupling can make systems very brittle and hard to work with.
+
+Event-driven systems enable authoring solutions that have a relatively low amount of efferent coupling by emitting events when they attain a certain state without caring about who consumes those events. In this regard, it is important to differentiate between message-driven and event-driven systems as mentioned in the _Reactive Manifesto_:
+
+.Message-driven versus Event-driven
+****
+[quote,Reactive Manifesto]
+A message is an item of data that is sent to a specific destination. An event is a signal emitted by a component upon reaching a given state. In a message-driven system addressable recipients await the arrival of messages and react to them, otherwise lying dormant. In an event-driven system notification listeners are attached to the sources of events such that they are invoked when the event is emitted. This means that an event-driven system focuses on addressable event sources while a message-driven system concentrates on addressable recipients.
+
+In simpler terms, event-driven systems do not care who the downstream consumers are, whereas in a message-driven system that may not necessarily be true. When we say event-driven in the context of this book, we mean the former.
+****
+
+Typically, event-driven systems eliminate the need for point-to-point messaging with the ultimate consumers by making use of an intermediary infrastructure component usually known as a message broker, event bus, etc. This effectively reduces the efferent coupling from _n_ consumers to 1. There are a few variations on how event-driven systems can be implemented. In the context of publishing events, Martin Fowler talks about two broad styles (among other things) -- event notifications and event-carried state transfer in his https://martinfowler.com/articles/201701-event-driven.html[What do you mean by "event-driven"?]footnote:[https://martinfowler.com/articles/201701-event-driven.html] article. One of the main trade-offs when building an event-driven system is to decide the amount of state (payload) that should be embedded in each event. It may be prudent to consider embedding just enough state indicating changes that occurred as a result of the emitted event to keep the various opposing forces such as producer scaling, encapsulation, consumer complexity, resiliency, etc. We will discuss the related implications in more detail when we cover <<_implementing_the_event,implementing events>> in Chapter 5.
+
+Domain-driven design is all about keeping complexity in check by creating these independent bounded contexts. However, independent does not mean isolated. Bounded contexts may still need to communicate with each other. One way to do that is through the use of a fundamental DDD building block -- domain events. Event-driven architecture and DDD are thus complementary. It is typical to make use of an event-driven architecture to allow bounded contexts to communicate while continuing to loosely coupled with each other.
 
 [#_cqrs_pattern]
 === Command Query Responsibility Segregation (CQRS)
@@ -227,6 +243,8 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 * *Different security requirements*: Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
 
 * *More uniform distribution of complexity*: Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern. For query-side use cases, we create models as needed that are distinct from the command-side model. This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+
+=== Event sourcing
 
 === Serverless architecture
 
