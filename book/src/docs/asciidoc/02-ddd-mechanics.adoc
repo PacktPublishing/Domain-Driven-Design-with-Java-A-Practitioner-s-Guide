@@ -1,7 +1,6 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
-:toc:
-:toclevels: 2
+
 [#_where_does_ddd_fit]
 [.text-justify]
 [#_mechanics_of_domain_driven_design]
@@ -286,7 +285,7 @@ Here is a sample Wardley map for a bank that is looking to provide a suite of ne
 
 .Value chain to a Wardley map
 [.text-center]
-image::wardley-map.png[]
+image::wardley-map-canvas.png[]
 
 The Wardley map makes it easy to understand the capabilities provided by our solution, their dependencies and how value is derived. It also helps depict how these capabilities play out in comparison to those offered by competitors, allowing you to prioritize attention appropriately and make build versus buy decisions.
 
