@@ -1,6 +1,7 @@
 ifndef::imagesdir[:imagesdir: images]
 :icons: font
-
+:toc:
+:toclevels: 2
 [#_where_does_ddd_fit]
 [.text-justify]
 [#_mechanics_of_domain_driven_design]
@@ -12,6 +13,15 @@ When eating an elephant, take one bite at a time.
 As mentioned in the previous chapter, many things can render a project to veer off-course.
 The intent of DDD is to decompose complex problems on the basis of clear domain boundaries and the communication between them.
 In this chapter, we look at a set of tenets and techniques to arrive at a collective understanding of the problem at hand in the face of ambiguity, break it down into manageable chunks and translate it into reliably working software.
+
+The following topics will be covered in this chapter:
+
+* Understanding the problem using strategic design
+* Strategic design tools
+* Implementing the solution using tactical design
+* Tactical design tools
+
+By the end of this chapter, you would have learned how to apply strategic design techniques to break down the problem into different types of subdomains, evolving domain models and bounded contexts as part of the solution, also a high level introduction to popular strategic design tools like Business model canvas, Wardley maps and Impact maps.  You also would have learned how to apply tactical design techniques for the solution along with introductions to tactical design tools like Behavior driven development, Test driven development, Contract testing etc.
 
 === Understanding the problem using strategic design
 In this section, let's demystify some commonly used concepts and terms when working with domain-driven design. First and foremost, we need to understand what we mean by the first "D" -- *domain*.
