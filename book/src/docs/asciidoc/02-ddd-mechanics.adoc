@@ -26,7 +26,7 @@ By the end of this chapter, you would have learned how to apply strategic design
 In this section, let's demystify some commonly used concepts and terms when working with domain-driven design. First and foremost, we need to understand what we mean by the first "D" -- *domain*.
 
 ==== What is a domain?
-The foundational concept when working with domain-driven design is the notion of a domain. But what exactly is a domain? The word https://en.wiktionary.org/wiki/domain[#_domain_#], which has its https://www.etymonline.com/word/domain[origins] in the 1600s to the Old French word _domaine_ (power), Latin word _dominium_ (property, right of ownership) is a rather confusing word. Depending on who, when, where and how it is used, it can mean different things:
+The foundational concept when working with domain-driven design is the notion of a domain. But what exactly is a domain? The word https://en.wiktionary.org/wiki/domain[domain], which has its https://www.etymonline.com/word/domain[origins] in the 1600s to the Old French word _domaine_ (power), Latin word _dominium_ (property, right of ownership) is a rather confusing word. Depending on who, when, where and how it is used, it can mean different things:
 
 .*Domain*: Means many things depending on context
 [link=https://en.wiktionary.org/wiki/domain#Noun,window=_blank]
