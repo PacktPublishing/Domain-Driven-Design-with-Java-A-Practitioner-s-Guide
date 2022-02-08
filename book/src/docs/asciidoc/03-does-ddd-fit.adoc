@@ -183,25 +183,30 @@ class LayeredArchitectureTests {
 ==== Layered architecture variations
 
 
-===== Ports and adapters (Hexagonal) architecture
-A variation of the layered architecture was invented by Alistair Cockburn, which he originally called the _Hexagonal architecture_ (alternatively called the ports and adapters architecture). The idea behind this style was to avoid inadvertent dependencies between layers, specifically between the core of the system and the peripheral layers. The main idea here is to make use of interfaces (_ports_) exclusively within the core to enable modern drivers such as testing and looser coupling. This allows the core to  be developed and evolved independently of the non-core parts and the external dependencies. Integration with real-world components such as a database, file systems, web services, etc. is achieved through concrete implementations of the _ports_ termed as _adapters_. A visual representation of this architecture style is shown here:
+===== Hexagonal and onion architecture
+A variation of the layered architecture was invented by Alistair Cockburn, which he originally called the https://alistair.cockburn.us/hexagonal-architecture/[_hexagonal architecture_]footnote:[https://alistair.cockburn.us/hexagonal-architecture/] (alternatively called the ports and adapters architecture). The idea behind this style was to avoid inadvertent dependencies between layers (as could occur in the layered architecture), specifically between the core of the system and the peripheral layers. The main idea here is to make use of interfaces (_ports_) exclusively within the core to enable modern drivers such as testing and looser coupling. This allows the core to  be developed and evolved independently of the non-core parts and the external dependencies. Integration with real-world components such as a database, file systems, web services, etc. is achieved through concrete implementations of the _ports_ termed as _adapters_. The use of interfaces within the core enables much easier testing of the core in isolation of the rest of the system using mocks and stubs. It is also common to use dependency injection frameworks to dynamically swap out implementations of these interfaces when working with the real system in an end-to-end environment. A visual representation of the hexagonal architecture is shown here:
 
-NOTE: It turns out that the use of the term hexagon in this context was purely for visual purposes -- not to limit the system to exactly six types of ports.
-
-.Ports and adapters (hexagonal architecture)
+.Hexagonal architecture
 [.text-center]
 image::architecture-styles/hexagonal.png[width=75%]
 
-This is synergistic to DDD's idea of context maps where the integration between bounded contexts is through the use of clearly defined interfaces. We will cover this in more detail when we talk about integration with external systems in chapter 9.
+NOTE: It turns out that the use of the term hexagon in this context was purely for visual purposes -- not to limit the system to exactly six types of ports.
 
-===== Onion architecture
-Yet another variation of the layered architecture was coined by Jeffrey Palermo and called the _onion architecture_. Similar to an onion, the core is in the center, with other enabling capabilities being added on as additional layers.
+Similar to the hexagonal architecture, the https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/[onion architecture]footnote:[https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/], conceived by Jeffrey Palermo is based on creating an application based on an independent object model within the core that can be compiled and run separately from the outer layers. This is done by defining interfaces (called ports in the hexagonal architecture) in the core and implementing (called adapters in the hexagonal architecture) them in the outer layers. From our perspective, the hexagonal and onion architecture styles have no perceptible differences that we could identify.
+
+A visual representation of the onion architecture is shown here:
 
 .Onion architecture
 [.text-center]
 image::architecture-styles/onion.png[width=75%]
 
+Both architecture styles are synergistic with DDD's idea of developing the domain model for the core subdomain (and by extension its bounded context) independently of the rest of the system.
+
 ===== Clean architecture
+
+.Clean architecture
+[.text-center]
+image::architecture-styles/clean.png[width=50%]
 
 ===== Vertical slice architecture
 
