@@ -2,7 +2,7 @@
 :icon-set: fas
 
 :toc:
-:toclevels: 4
+:toclevels: 5
 
 ifndef::imagesdir[:imagesdir: images]
 [.text-justify]
@@ -36,6 +36,33 @@ This structure enables looser coupling between layers and allows them to evolve 
 image::architecture-styles/layered-vs-ddd.png[width=75%]
 
 DDD actively promotes the use of a layered architecture, primarily because it makes it possible to focus on the domain layer in isolation of other concerns like how to information gets displayed, how end-to-end flows are managed, how data is stored and retrieved, etc. From that perspective, solutions that apply DDD tend to naturally be layered as well.
+
+===== Notable variations
+A variation of the layered architecture was invented by Alistair Cockburn, which he originally called the https://alistair.cockburn.us/hexagonal-architecture/[_hexagonal architecture_]footnote:[https://alistair.cockburn.us/hexagonal-architecture/] (alternatively called the ports and adapters architecture). The idea behind this style was to avoid inadvertent dependencies between layers (as could occur in the layered architecture), specifically between the core of the system and the peripheral layers. The main idea here is to make use of interfaces (_ports_) exclusively within the core to enable modern drivers such as testing and looser coupling. This allows the core to  be developed and evolved independently of the non-core parts and the external dependencies. Integration with real-world components such as a database, file systems, web services, etc. is achieved through concrete implementations of the _ports_ termed as _adapters_. The use of interfaces within the core enables much easier testing of the core in isolation of the rest of the system using mocks and stubs. It is also common to use dependency injection frameworks to dynamically swap out implementations of these interfaces when working with the real system in an end-to-end environment. A visual representation of the hexagonal architecture is shown here:
+
+.Hexagonal architecture
+[.text-center]
+image::architecture-styles/hexagonal.png[width=75%]
+
+NOTE: It turns out that the use of the term hexagon in this context was purely for visual purposes -- not to limit the system to exactly six types of ports.
+
+Similar to the hexagonal architecture, the https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/[onion architecture]footnote:[https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/], conceived by Jeffrey Palermo is based on creating an application based on an independent object model within the core that can be compiled and run separately from the outer layers. This is done by defining interfaces (called ports in the hexagonal architecture) in the core and implementing (called adapters in the hexagonal architecture) them in the outer layers. From our perspective, the hexagonal and onion architecture styles have no perceptible differences that we could identify.
+
+A visual representation of the onion architecture is shown here:
+
+.Onion architecture
+[.text-center]
+image::architecture-styles/onion.png[width=75%]
+
+Yet another variation of the layered architecture, popularized by Robert C. Martin (known endearingly as Uncle Bob) is the clean architecture. This is based on adhering to the https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html[SOLID principles]footnote:[https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html] also perpetrated by him. The fundamental message here (just like in the case of hexagonal and onion architecture) is to avoid dependencies between the core -- the one that houses business logic and other layers that tend to be volatile (like frameworks, third-party libraries, UIs, databases, etc).
+
+.Clean architecture
+[.text-center]
+image::architecture-styles/clean.png[width=75%]
+
+All these architecture styles are synergistic with DDD's idea of developing the domain model for the core subdomain (and by extension its bounded context) independently of the rest of the system.
+
+While each of these architecture styles provide additional guidance in terms of how to structure a layered architecture, you will need to be cognizant of the same considerations we described above as part of the conversation on the layered architecture.
 
 However, any architecture approach we choose comes with its set of tradeoffs and limitations. We discuss some of these here.
 
@@ -180,47 +207,25 @@ class LayeredArchitectureTests {
 ....
 <1> The Repository layer can be accessed by both the Services and Controllers layers -- effectively allowing Controllers to bypass the use of the Services layer.
 
-==== Layered architecture variations
-
-
-===== Hexagonal, onion and clean architectures
-A variation of the layered architecture was invented by Alistair Cockburn, which he originally called the https://alistair.cockburn.us/hexagonal-architecture/[_hexagonal architecture_]footnote:[https://alistair.cockburn.us/hexagonal-architecture/] (alternatively called the ports and adapters architecture). The idea behind this style was to avoid inadvertent dependencies between layers (as could occur in the layered architecture), specifically between the core of the system and the peripheral layers. The main idea here is to make use of interfaces (_ports_) exclusively within the core to enable modern drivers such as testing and looser coupling. This allows the core to  be developed and evolved independently of the non-core parts and the external dependencies. Integration with real-world components such as a database, file systems, web services, etc. is achieved through concrete implementations of the _ports_ termed as _adapters_. The use of interfaces within the core enables much easier testing of the core in isolation of the rest of the system using mocks and stubs. It is also common to use dependency injection frameworks to dynamically swap out implementations of these interfaces when working with the real system in an end-to-end environment. A visual representation of the hexagonal architecture is shown here:
-
-.Hexagonal architecture
-[.text-center]
-image::architecture-styles/hexagonal.png[width=75%]
-
-NOTE: It turns out that the use of the term hexagon in this context was purely for visual purposes -- not to limit the system to exactly six types of ports.
-
-Similar to the hexagonal architecture, the https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/[onion architecture]footnote:[https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/], conceived by Jeffrey Palermo is based on creating an application based on an independent object model within the core that can be compiled and run separately from the outer layers. This is done by defining interfaces (called ports in the hexagonal architecture) in the core and implementing (called adapters in the hexagonal architecture) them in the outer layers. From our perspective, the hexagonal and onion architecture styles have no perceptible differences that we could identify.
-
-A visual representation of the onion architecture is shown here:
-
-.Onion architecture
-[.text-center]
-image::architecture-styles/onion.png[width=75%]
-
-Yet another variation of the layered architecture, popularized by Robert C. Martin (known endearingly as Uncle Bob) is the clean architecture. This is based on adhering to the https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html[SOLID principles]footnote:[https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html] also perpetrated by him. The fundamental message here (just like in the case of hexagonal and onion architecture) is to avoid dependencies between the core -- the one that houses business logic and other layers that tend to be volatile (like frameworks, third-party libraries, UIs, databases, etc).
-
-.Clean architecture
-[.text-center]
-image::architecture-styles/clean.png[width=75%]
-
-All these architecture styles are synergistic with DDD's idea of developing the domain model for the core subdomain (and by extension its bounded context) independently of the rest of the system.
-
-While each of these architecture styles provide additional guidance in terms of how to structure a layered architecture, you will need to be cognizant of the same considerations we described above as part of the conversation on the layered architecture.
-
-===== Vertical slice architecture
+==== Vertical slice architecture
 The layered architecture and its variants described above, provide reasonably good guidance on how to structure complex applications. The vertical slice architecture championed by Jimmy Boggard recognizes that it may be too rigid to adopt a standard layering strategy for all use cases across the entire application. Furthermore, it is important to note that business value cannot be derived by implementing any of these horizontal layers in isolation. Doing so will only result in unusable inventory and lots of unnecessary context switching until all these layers are connected. Therefore, the vertical slice architecture proposes https://jimmybogard.com/vertical-slice-architecture/[_minimizing coupling between slices, and maximizing coupling in a slice_]footnote:[https://jimmybogard.com/vertical-slice-architecture/] as shown here:
 
 .Vertical slice architecture
 [.text-center]
 image::architecture-styles/vertical-slice.png[width=75%]
 
-In the example above, _place order_ might require us to apply complex business invariants and operate within the purview of an ACID transaction. However, _search orders_ may require us to simply fetch existing data from a query optimized view. As shown here, this style makes use of a horses for courses approach to layering that may help alleviate some anti-patterns we may encounter when implementing a plain vanilla layered architecture.
+In the example above, _place order_ might require us to coordinate with other components through the application layer, apply complex business invariants while operating within the purview of an ACID transaction. Similarly, _cancel order_ might require applying business invariants within an ACID transaction without any additional coordination -- obviating the need for the application layer in this case. However, _search orders_ might require us to simply fetch existing data from a query optimized view. This style makes use of a horses for courses approach to layering that may help alleviate some anti-patterns listed above when implementing a plain vanilla layered architecture.
 
-For example, a very simple classification might be to segregate requests into two broad categories: commands (operations that require state mutations) and queries (operations that merely present information without mutating it). We cover this style of architecture in more detail in the <<_cqrs_pattern,CQRS>> section of this chapter.
+===== Considerations
+The vertical slice architecture affords a lot of flexibility when implementing a solution -- taking into consideration the specific needs of the use-case being implemented. However, without some level of governance, this may quickly devolve to the big ball of mud with layering decisions being made seemingly arbitrarily based on personal preferences and experiences (or lack thereof). As a sensible default, you may want to consider using a distinct layering strategy for <<_cqrs_pattern,commands and queries>>. Beyond that, non-functional requirements may dictate how you may need to deviate from here. For example, you may need to bypass layers to meet performance SLAs for certain use cases.
 
+When used pragmatically, the vertical slice architecture does enable applying DDD very effectively within each or a group of related vertical slices -- allowing them to be treated as  bounded contexts. We show two possibilities using the _place order_ and _cancel order_ examples here:
+
+.Vertical slices used to evolve bounded contexts
+[.text-center]
+image::architecture-styles/vertical-slice-example.png[width=75%]
+
+In example (i) above, _place order_ and _cancel order_, each use a distinct domain model, whereas in example (ii), both use cases share a common domain model and by extension become part of the same bounded context. This does pave the way to slice functionality when looking to adopt the <<_serverless_architecture,serverless architecture>> along use case boundaries.
 
 ==== Service Oriented Architecture (SOA)
 Service Oriented Architecture (SOA) is an architectural style where software components expose (potentially) reusable functionality over standardized interfaces. The use of standardized interfaces (such as SOAP, REST, gRPC, etc. to name a few) enables easier interoperability when integrating heterogeneous solutions as shown here:
@@ -248,7 +253,7 @@ image::architecture-styles/microservices.png[width=50%]
 As we can see, SOA and microservices are very similar from the perspective of the consumers in that they access functionality through a set of standardized interfaces. The microservices approach is an evolution of SOA in that the focus now is on building smaller, self-sufficient, independently deployable components with the intent of avoiding single points of failure (like an enterprise database or service bus), which was fairly common with a number of SOA-based implementations.
 
 ===== Considerations
-While microservices have definitely helped, there still exists quite a lot of ambiguity when it comes to answering how https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice[big or small]footnote:[https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice] a microservice should be. Indeed, a lot of teams seem to struggle to get this balance right resulting in a https://www.infoq.com/news/2016/02/services-distributed-monolith/[distributed monolith]footnote:[https://www.infoq.com/news/2016/02/services-distributed-monolith/] -- which in a lot of ways can be much worse than even the single process monolith from the SOA days. Again, applying the strategic design concepts of DDD can help create independent, loosely coupled components, making it an ideal companion for the microservices style of architecture.
+While microservices have definitely helped, there still exists quite a lot of ambiguity when it comes to answering how https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice[big or small]footnote:[https://martinfowler.com/articles/microservices.html#HowBigIsAMicroservice] a microservice should be. Indeed, a lot of teams seem to struggle to get this balance right, resulting in a https://www.infoq.com/news/2016/02/services-distributed-monolith/[distributed monolith]footnote:[https://www.infoq.com/news/2016/02/services-distributed-monolith/] -- which in a lot of ways can be much worse than even the single process monolith from the SOA days. Again, applying the strategic design concepts of DDD can help create independent, loosely coupled components, making it an ideal companion for the microservices style of architecture.
 
 ==== Event-Driven Architecture (EDA)
 Irrespective of the granularity of components (monolith or microservices or something in between), most non-trivial solutions have a boundary, beyond which there may be a need to communicate with external system(s). This communication usually happens through the exchange of messages between systems, causing them to become coupled with each other. Coupling comes in two broad flavors: _afferent_ -- who depends on you and _efferent_ -- who you depend on. Excessive amounts of efferent coupling can make systems very brittle and hard to work with.
@@ -290,27 +295,28 @@ The traditional, single-model approach works well for simple, CRUD-style applica
 In most systems, read operations often outnumber write operations by significant orders of magnitude. For example, consider the number of times a trader checks stock prices vs. the number of times they actually transact (buy or sell stock trades). It is also usually true that write operations are the ones that make businesses money. Having a single model for both reads and writes in a system with a majority of read operations can overwhelm a system to an extent where write performance can start getting affected.
 
 ====== Need for multiple read representations
-When working with relatively complex systems, it is not uncommon to require more than one representation of the same data. For example, when looking at personal health data, one may want to look at a daily, weekly, monthly view. While these views can be computed on the fly from the _raw_ data, each transformation (aggregation, summarization, etc.) adds to the cognitive load on the system. Several times, it is not possible to predict ahead of time, the nature of these requirements. By extension, it is not feasible to design a single canonical model that can provide answers to all these requirements. Creating domain models specifically designed to meet a focused set of requirements can be much easier.
+When working with relatively complex systems, it is not uncommon to require more than one representation of the same data.For example, when looking at personal health data, one may want to look at a daily, weekly, monthly view.While these views can be computed on the fly from the _raw_ data, each transformation (aggregation, summarization, etc.) adds to the cognitive load on the system.Several times, it is not possible to predict ahead of time, the nature of these requirements.By extension, it is not feasible to design a single canonical model that can provide answers to all these requirements.Creating domain models specifically designed to meet a focused set of requirements can be much easier.
 
 ====== Different security requirements
-Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome. For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries. Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
+Managing authorization and access requirements to data/APIs when working a single model can start to become cumbersome.For example, higher levels of security may be desirable for debit operations in comparison to balance enquiries.Having distinct models can considerably ease the complexity in designing fine-grained authorization controls.
 
 ====== More uniform distribution of complexity
-Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern. For query-side use cases, we create models as needed that are distinct from the command-side model. This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases. It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
+Having a model dedicated to serve only command-side use cases means that they can now be focused towards solving a single concern.For query-side use cases, we create models as needed that are distinct from the command-side model.This helps spread complexity more uniformly over a larger surface area -- as opposed to increasing the complexity on the single model that is used to serve all use cases.It is worth noting that the essence of domain-driven design is mainly to work effectively with complex software systems and CQRS fits well with this line of thinking.
 
-NOTE: When working with a CQRS based architecture, choosing the persistence mechanism for the command side is a key decision. When working in conjunction with an event-driven architecture, one could choose to persist aggregates as a series of events (ordered in the sequence of their occurrence). This style of persistence is known as event sourcing. We will cover this in more detail in Chapter 5 in the section on <<#_event_sourced_aggregates,event-sourced aggregates>>.
+NOTE: When working with a CQRS based architecture, choosing the persistence mechanism for the command side is a key decision.When working in conjunction with an event-driven architecture, one could choose to persist aggregates as a series of events (ordered in the sequence of their occurrence).This style of persistence is known as event sourcing.We will cover this in more detail in Chapter 5 in the section on <<#_event_sourced_aggregates,event-sourced aggregates>>.
 
+[#_serverless_architecture]
 ==== Serverless Architecture
 
-Serverless architecture is an approach to software design that allows developers to build and run services without having to manage the underlying infrastructure. The advent of AWS Lambda service has popularized this style of architecture, although several other services (like S3 and DynamoDB for persistence, SNS for notifications, SQS for message queuing etc.) have existed long before Lambda was launched. While AWS Lambda provided a compute solution in the form of Functions-as-a-Service (FaaS), these other services are just as essential, if not more, in order to benefit from the serverless paradigm.
+Serverless architecture is an approach to software design that allows developers to build and run services without having to manage the underlying infrastructure.The advent of AWS Lambda service has popularized this style of architecture, although several other services (like S3 and DynamoDB for persistence, SNS for notifications, SQS for message queuing etc.) have existed long before Lambda was launched.While AWS Lambda provided a compute solution in the form of Functions-as-a-Service (FaaS), these other services are just as essential, if not more, in order to benefit from the serverless paradigm.
 
-In conventional DDD, bounded contexts are formed by grouping related operations around an aggregate, which then informs how the solution is deployed as a unit -- usually within th confines of a single process. With the serverless paradigm, each operation (task) is required to be deployed as an independent unit of its own as distributed components. This requires that we look at how we model aggregates and bounded contexts differently -- now centered around individual tasks as opposed to a group of related tasks.
+In conventional DDD, bounded contexts are formed by grouping related operations around an aggregate, which then informs how the solution is deployed as a unit -- usually within th confines of a single process.With the serverless paradigm, each operation (task) is required to be deployed as an independent unit of its own as distributed components.This requires that we look at how we model aggregates and bounded contexts differently -- now centered around individual tasks as opposed to a group of related tasks.
 
-Does that mean that the principles of DDD to arrive at a solution do not apply anymore? While serverless introduces an additional dimension of having to treat finely-grained deployable units as first-class citizens in the modeling process, the overall process of applying DDD's strategic and tactical design continue to apply. We will examine this in more detail in Chapter 12 when we refactor the solution we build throughout this book to employ a serverless approach.
+Does that mean that the principles of DDD to arrive at a solution do not apply anymore?While serverless introduces an additional dimension of having to treat finely-grained deployable units as first-class citizens in the modeling process, the overall process of applying DDD's strategic and tactical design continue to apply.We will examine this in more detail in Chapter 12 when we refactor the solution we build throughout this book to employ a serverless approach.
 
 [#_big_ball_of_mud]
 ==== Big ball of mud
-Thus far, we have examined a catalog of named architecture styles along with their pitfalls and how applying DDD can help alleviate them. On the other extreme, we may encounter solutions that lack a perceivable architecture, infamously termed as the _big ball of mud_.
+Thus far, we have examined a catalog of named architecture styles along with their pitfalls and how applying DDD can help alleviate them.On the other extreme, we may encounter solutions that lack a perceivable architecture, infamously termed as the _big ball of mud_.
 
 [quote, Brian Foote and Joseph Yoder]
 A BIG BALL OF MUD is haphazardly structured, sprawling, sloppy, duct-tape and bailing wire, spaghetti code jungle. We’ve all seen them. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated. The overall structure of the system may never have been well-defined. If it was, it may have eroded beyond recognition. Programmers with a shred of architectural sensibility shun these quagmires. Only those who are unconcerned about architecture, and, perhaps, are comfortable with the inertia of the day-to-day chore of patching the holes in these failing dikes, are content to work on such systems.
