@@ -25,7 +25,7 @@ The layered architecture is one of the most common architecture styles where the
 
 .Essence of a layered architecture.
 [.text-center]
-image::architecture-styles/layered.png[]
+image::architecture-styles/layered.png[width=50%]
 
 The main idea behind the layered architecture is a separation of concerns -- where the dependencies between layers are unidirectional (from the top to the bottom). For example, the domain layer can depend on the persistence layer, not the other way round. In addition, any given layer typically accesses the layer immediately beneath it without bypassing layers in between. For example, the presentation layer may access the domain layer only through the application layer.
 
@@ -183,7 +183,7 @@ class LayeredArchitectureTests {
 ==== Layered architecture variations
 
 
-===== Hexagonal and onion architecture
+===== Hexagonal, onion and clean architectures
 A variation of the layered architecture was invented by Alistair Cockburn, which he originally called the https://alistair.cockburn.us/hexagonal-architecture/[_hexagonal architecture_]footnote:[https://alistair.cockburn.us/hexagonal-architecture/] (alternatively called the ports and adapters architecture). The idea behind this style was to avoid inadvertent dependencies between layers (as could occur in the layered architecture), specifically between the core of the system and the peripheral layers. The main idea here is to make use of interfaces (_ports_) exclusively within the core to enable modern drivers such as testing and looser coupling. This allows the core to  be developed and evolved independently of the non-core parts and the external dependencies. Integration with real-world components such as a database, file systems, web services, etc. is achieved through concrete implementations of the _ports_ termed as _adapters_. The use of interfaces within the core enables much easier testing of the core in isolation of the rest of the system using mocks and stubs. It is also common to use dependency injection frameworks to dynamically swap out implementations of these interfaces when working with the real system in an end-to-end environment. A visual representation of the hexagonal architecture is shown here:
 
 .Hexagonal architecture
@@ -200,15 +200,27 @@ A visual representation of the onion architecture is shown here:
 [.text-center]
 image::architecture-styles/onion.png[width=75%]
 
-Both architecture styles are synergistic with DDD's idea of developing the domain model for the core subdomain (and by extension its bounded context) independently of the rest of the system.
-
-===== Clean architecture
+Yet another variation of the layered architecture, popularized by Robert C. Martin (known endearingly as Uncle Bob) is the clean architecture. This is based on adhering to the https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html[SOLID principles]footnote:[https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html] also perpetrated by him. The fundamental message here (just like in the case of hexagonal and onion architecture) is to avoid dependencies between the core -- the one that houses business logic and other layers that tend to be volatile (like frameworks, third-party libraries, UIs, databases, etc).
 
 .Clean architecture
 [.text-center]
-image::architecture-styles/clean.png[width=50%]
+image::architecture-styles/clean.png[width=75%]
+
+All these architecture styles are synergistic with DDD's idea of developing the domain model for the core subdomain (and by extension its bounded context) independently of the rest of the system.
+
+While each of these architecture styles provide additional guidance in terms of how to structure a layered architecture, you will need to be cognizant of the same considerations we described above as part of the conversation on the layered architecture.
 
 ===== Vertical slice architecture
+The layered architecture and its variants described above, provide reasonably good guidance on how to structure complex applications. The vertical slice architecture championed by Jimmy Boggard recognizes that it may be too rigid to adopt a standard layering strategy for all use cases across the entire application. Furthermore, it is important to note that business value cannot be derived by implementing any of these horizontal layers in isolation. Doing so will only result in unusable inventory and lots of unnecessary context switching until all these layers are connected. Therefore, the vertical slice architecture proposes https://jimmybogard.com/vertical-slice-architecture/[_minimizing coupling between slices, and maximizing coupling in a slice_]footnote:[https://jimmybogard.com/vertical-slice-architecture/] as shown here:
+
+.Vertical slice architecture
+[.text-center]
+image::architecture-styles/vertical-slice.png[width=75%]
+
+In the example above, _place order_ might require us to apply complex business invariants and operate within the purview of an ACID transaction. However, _search orders_ may require us to simply fetch existing data from a query optimized view. As shown here, this style makes use of a horses for courses approach to layering that may help alleviate some anti-patterns we may encounter when implementing a plain vanilla layered architecture.
+
+For example, a very simple classification might be to segregate requests into two broad categories: commands (operations that require state mutations) and queries (operations that merely present information without mutating it). We cover this style of architecture in more detail in the <<_cqrs_pattern,CQRS>> section of this chapter.
+
 
 ==== Service Oriented Architecture (SOA)
 Service Oriented Architecture (SOA) is an architectural style where software components expose (potentially) reusable functionality over standardized interfaces. The use of standardized interfaces (such as SOAP, REST, gRPC, etc. to name a few) enables easier interoperability when integrating heterogeneous solutions as shown here:
