@@ -284,6 +284,7 @@ It is worth noting that the `merchandiseDescription` is left as a primitive `Str
 
 Now let’s look at what the event we will emit as a result of successfully processing the command will look like.
 
+[#_implementing_the_event]
 ==== Implementing the event
 In an event-driven system, mutating system state by successfully processing a command usually results in a domain event being emitted to signal the state mutation to the rest of the system. A simplified representation of a real-world `LCApplicationCreatedEvent` is shown here:
 
