@@ -323,12 +323,126 @@ A BIG BALL OF MUD is haphazardly structured, sprawling, sloppy, duct-tape and ba
 
 Although Foote and Yoder advise avoiding this style of architecture at all costs, software systems that resemble the big ball of mud continue to be a day-to-day inevitability for a lot of us. The strategic and tactical design elements of DDD provide a set of techniques to help deal with and recover from these near-hopeless situations in a pragmatic manner without potentially having to adopt a big bang approach. Indeed, the focus of this book is to apply these principles to prevent or at least delay further devolution towards the big ball of mud.
 
+In this section, we have examined popular architecture styles and how we can amplify their effectiveness when used in conjunction with DDD. Now let's look at how DDD can complement the use of existing programming paradigms.
+
 === Programming paradigms
+The tactical elements of DDD introduce a specific vocabulary (aggregates, entities, value objects, repositories, services, factories, domain events, etc.) when arriving at a solution. At the end of the day, we need to translate these concepts into running software. Over the years, we have employed a variety of programming paradigms including procedural, object-oriented, functional, aspect-oriented, etc. Is it possible to apply DDD in conjunction with one or more of these paradigms? In this section, we will explore how some common programming paradigms and techniques help us express the tactical design elements in code.
 
 ==== Object-oriented programming
+On the surface of it, DDD seems to simply replicate a set of OO terms and call them using different names. For example, the central concepts of tactical DDD such as `aggregates`, `entities` and `value objects` could simply be referred to as objects in OO terms. Others like `services` may not have a direct OO analog. So how does one apply DDD in an object-oriented world? Let's look at a simple example:
+
+[source,java,linenum]
+....
+
+interface PasswordService {
+    String generateStrongPassword();
+    boolean isStrong(String password);
+    boolean isWeak(String password);
+}
+
+class PasswordClient {
+    private PasswordService service;
+
+    void register(String userEnteredPassword) {
+        if (service.isStrong(userEnteredPassword)) {
+            //...
+        }
+    }
+}
+
+....
+OO purists will be quick to point out that the `PasswordService` is procedural and that a `Password` class might be needed to encapsulate related behaviours. Similarly, DDD enthusiasts might point out that this is an anemic domain model implementation. An arguably better object-oriented version might look something like:
+
+[source,java,linenum]
+....
+class Password {
+    private final String password;
+
+    private Password(String password) {
+        this.password = password;
+    }
+
+    public boolean isStrong() { ... }
+    public boolean isWeak() { ... }
+    public static Password generateStrongPassword() { ... }
+    public static Password passwordFrom(String password) { ... }
+
+}
+
+interface PasswordService {
+    Password generateStrongPassword();
+    Password createPasswordFrom(String userEntered);
+}
+
+class PasswordClient {
+    private PasswordService service;
+
+    void register(String userEnteredPassword) {
+        Password password = service.createPasswordFrom(userEnteredPassword);
+        if (password.isStrong()) {
+            // ...
+        }
+    }
+}
+....
+
+In this case, the `Password` class stops exposing its internals and exposes the idea of a strong or weak password in the form of behavior (the `isStrong` and `isWeak` methods). From an OO perspective, the second implementation is arguably superior. If so, shouldn't we be using the object-oriented version at all times? As it turns out, the answer is nuanced and depends on what the consumers desire and the ubiquitous language used in that context. If the concept of the `Password` is in common usage within the domain, it perhaps warrants introducing such a concept in the implementation as well. If not, the first solution might suffice even though it seems to violate OO principles of encapsulation.
+
+Our default position is to apply good OO practices as a starting point. However, it is more important to mirror the language of the domain as opposed to applying OO in a dogmatic manner. So we will be willing to compromise on OO purity if it appears unnatural to do so in that context. But when we do make such compromises, it is important to do so *intentionally* and make it unambiguously clear why we are making such a decision (preferably using some lightweight mechanism such as https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records[ADR]sfootnote:[https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records]). This is important because it may become hard to justify this to others and even ourselves when we look at it in the future.
 
 ==== Functional programming
+Functions are a fundamental building block to code organization that exist in all higher order programming languages. Functional programming is a programming paradigm where programs are constructed by applying and composing functions. This is in contrast to imperative programming that uses statements to change a program's state. The most significant differences stem from the fact that functional programming avoids side effects, which are used in imperative programming. Pure functional programming completely prevents side effects and forces immutability. Embracing a functional style when designing a domain model to be more declarative and express intent a lot more clearly while remaining terse. It also allows us to keep complexity in check by enabling us to compose more complex concepts by using simpler ones.The functional implementation allows us to use a language closer to the problem domain, while having the added benefit of also being terse. Consider a simple example where we need to find the item with the least inventory across all our warehouses using a functional style as shown here:
 
-==== Functional reactive programming
+.Functional example
+[source,java,linenum]
+....
+class Functional {
+    public static Optional<Item> scarcestItem(Warehouse... warehouses) {
+        return Stream.of(warehouses)
+                .flatMap(Warehouse::items)
+                .collect(groupingBy(Item::name, summingInt(Item::quantity)))
+                .entrySet().stream()
+                .map(Item::new)
+                .min(comparing(Item::quantity));
+    }
+}
+....
 
-==== Procedural programming
+The imperative style shown here does get the job done, but is arguably a lot more verbose and harder to follow, sometimes even for technical team members!
+
+.Imperative example
+[source,java,linenum]
+....
+class Imperative {
+    public static Optional<Item> scarcestItem(Warehouse... warehouses) {
+        Collection<Item> allItems = new ArrayList<>();
+        for (Warehouse warehouse : warehouses) {
+            allItems.addAll(warehouse.getItems());
+        }
+        Map<String, Integer> itemNamesByQuantity = new HashMap<>();
+        for (Item item : allItems) {
+            final String name = item.name();
+            final int quantity = item.quantity();
+            if (itemNamesByQuantity.containsKey(name)) {
+                itemNamesByQuantity.put(name, itemNamesByQuantity.get(name) + quantity);
+            } else {
+                itemNamesByQuantity.put(name, quantity);
+            }
+        }
+        final Map.Entry<String, Integer> min =
+            Collections.min(itemNamesByQuantity.entrySet(), Map.Entry.comparingByValue());
+        return min != null ? Optional.of(new Item(min)) : Optional.empty();
+
+    }
+}
+....
+
+From a DDD perspective, this yields a few benefits:
+
+* *Increase collaboration with domain experts* because the declarative style allows placing a bigger focus on the what, rather than the how. This makes it a lot less intimidating to technical and non-technical stakeholders alike to work with on an ongoing basis.
+* *Better testability*: because the use of pure functions (those that are side effect free) makes it easier to create data-driven tests. This has also afforded us an additional benefit of less mocking/stubbing. These characteristics make tests that are a lot easier to maintain and reason about. This has the benefit of allowing even technical team members to visualize corner cases a lot earlier in the process.
+
+==== Which paradigm should you choose?
+DDD simply states that you should build your software around a domain model that represents the actual problem that the software is trying to solve. When encountered with complex real-life problems, often we will find it hard to conform to any single paradigm across the board. Looking to use a one-size-fits-all approach may work to one's detriment. Our experience indicates that we will need to make use of a variety of techniques in order to solve the problem at hand elegantly. Java is inherently an object-oriented language. But with the advent of Java 8, it has started to embrace a variety of functional constructs as well. This allows us to make use of a multitude of techniques to create elegant solutions. The most important thing is to agree on the ubiquitous language and allow it to guide the approach taken. It also largely depends on the talent and experience one has at their disposal. Making use of a style that is foreign to a majority of the team will likely prove counter-productive. Although we haven't covered the procedural paradigm here in this text, there may be occasions where it might be the best solution given the current situation. As long as we are intentional about areas where we deviate from the accepted norm for a particular programming paradigm, we should be in a reasonably good place.
+
+=== Summary
