@@ -1,9 +1,6 @@
 :icons: font
 :icon-set: fas
 
-:toc:
-:toclevels: 5
-
 ifndef::imagesdir[:imagesdir: images]
 [.text-justify]
 
@@ -323,6 +320,9 @@ A BIG BALL OF MUD is haphazardly structured, sprawling, sloppy, duct-tape and ba
 
 Although Foote and Yoder advise avoiding this style of architecture at all costs, software systems that resemble the big ball of mud continue to be a day-to-day inevitability for a lot of us. The strategic and tactical design elements of DDD provide a set of techniques to help deal with and recover from these near-hopeless situations in a pragmatic manner without potentially having to adopt a big bang approach. Indeed, the focus of this book is to apply these principles to prevent or at least delay further devolution towards the big ball of mud.
 
+==== Which architecture style should you use?
+As we have seen, there are a variety of architecture styles one can lean on to when crafting a software solution. A lot of these architecture styles share quite a few common tenets. It can become difficult to claim conformance to any single architecture style. DDD, with its emphasis on breaking down complex business problems into subdomains and bounded contexts, enables the use of more than one approach across bounded contexts. We would like to make a special mention of the vertical slice architecture because it places an emphasis on dividing functionality along specific business outcomes and thus more naturally to DDD's ideas of subdomains and bounded contexts. In reality, one may find the need to extend and even deviate from pedantic definitions of architecture styles in order to meet real-world needs. But when we do make such compromises, it is important to do so *intentionally* and make it unambiguously clear why we are making such a decision (preferably using some lightweight mechanism such as https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records[ADR]sfootnote:[https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records]). This is important because it may become hard to justify this to others and even ourselves when we look at it in the future.
+
 In this section, we have examined popular architecture styles and how we can amplify their effectiveness when used in conjunction with DDD. Now let's look at how DDD can complement the use of existing programming paradigms.
 
 === Programming paradigms
@@ -388,7 +388,7 @@ class PasswordClient {
 
 In this case, the `Password` class stops exposing its internals and exposes the idea of a strong or weak password in the form of behavior (the `isStrong` and `isWeak` methods). From an OO perspective, the second implementation is arguably superior. If so, shouldn't we be using the object-oriented version at all times? As it turns out, the answer is nuanced and depends on what the consumers desire and the ubiquitous language used in that context. If the concept of the `Password` is in common usage within the domain, it perhaps warrants introducing such a concept in the implementation as well. If not, the first solution might suffice even though it seems to violate OO principles of encapsulation.
 
-Our default position is to apply good OO practices as a starting point. However, it is more important to mirror the language of the domain as opposed to applying OO in a dogmatic manner. So we will be willing to compromise on OO purity if it appears unnatural to do so in that context. But when we do make such compromises, it is important to do so *intentionally* and make it unambiguously clear why we are making such a decision (preferably using some lightweight mechanism such as https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records[ADR]sfootnote:[https://www.thoughtworks.com/de-de/radar/techniques/lightweight-architecture-decision-records]). This is important because it may become hard to justify this to others and even ourselves when we look at it in the future.
+Our default position is to apply good OO practices as a starting point. However, it is more important to mirror the language of the domain as opposed to applying OO in a dogmatic manner. So we will be willing to compromise on OO purity if it appears unnatural to do so in that context. As mentioned earlier, clearly communicating the rationale for such decisions can go a long way.
 
 ==== Functional programming
 Functions are a fundamental building block to code organization that exist in all higher order programming languages. Functional programming is a programming paradigm where programs are constructed by applying and composing functions. This is in contrast to imperative programming that uses statements to change a program's state. The most significant differences stem from the fact that functional programming avoids side effects, which are used in imperative programming. Pure functional programming completely prevents side effects and forces immutability. Embracing a functional style when designing a domain model to be more declarative and express intent a lot more clearly while remaining terse. It also allows us to keep complexity in check by enabling us to compose more complex concepts by using simpler ones.The functional implementation allows us to use a language closer to the problem domain, while having the added benefit of also being terse. Consider a simple example where we need to find the item with the least inventory across all our warehouses using a functional style as shown here:
@@ -446,3 +446,16 @@ From a DDD perspective, this yields a few benefits:
 DDD simply states that you should build your software around a domain model that represents the actual problem that the software is trying to solve. When encountered with complex real-life problems, often we will find it hard to conform to any single paradigm across the board. Looking to use a one-size-fits-all approach may work to one's detriment. Our experience indicates that we will need to make use of a variety of techniques in order to solve the problem at hand elegantly. Java is inherently an object-oriented language. But with the advent of Java 8, it has started to embrace a variety of functional constructs as well. This allows us to make use of a multitude of techniques to create elegant solutions. The most important thing is to agree on the ubiquitous language and allow it to guide the approach taken. It also largely depends on the talent and experience one has at their disposal. Making use of a style that is foreign to a majority of the team will likely prove counter-productive. Although we haven't covered the procedural paradigm here in this text, there may be occasions where it might be the best solution given the current situation. As long as we are intentional about areas where we deviate from the accepted norm for a particular programming paradigm, we should be in a reasonably good place.
 
 === Summary
+
+In this chapter, we covered a series of commonly used architecture patterns and how we can practice DDD when working with them. We also looked at common pitfalls and gotchas that one may need to be cognizant of when using these architectures. We also looked at popular programming paradigms and their influence on the tactical elements of DDD.
+
+Additionally, you should have an appreciation of the various architecture styles that we need to employ when coming up with a solution. In addition, you should have an understanding of how DDD can play a role no matter which style of architecture you choose to adopt.
+
+In the next section, we will look to apply all the learnings in this and previous chapters against a real-world business use case. We will apply both the strategic and tactical patterns of DDD to break a complex domain into subdomains, bounded contexts and iteratively build a solution using technologies that are based on the Java programming language.
+
+=== Questions
+
+. What architecture style(s) are you using in your current ecosystem? Are you seeing any of the common pitfalls that we have covered in this chapter?
+. Do you see merit in employing a hybrid of the architecture approaches covered here?
+. What programming paradigms are you employing in your current ecosystem?
+. Are there areas where you have had to violate principles that are strictly aligned with any given paradigm or approach? Are these deviations well understood and documented?
