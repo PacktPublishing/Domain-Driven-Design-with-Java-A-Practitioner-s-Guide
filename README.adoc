@@ -1,4 +1,4 @@
-= Implementing Domain-Driven Design Using Java
+= Domain-Driven Design with Java - A Practitioner’s Guide
 
 This is the source code repository for the book.
 
