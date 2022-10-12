@@ -39,6 +39,11 @@ interface PasswordService {
 **Following is what you need for this book:**
 This book is for intermediate Java programmers looking to upgrade their software engineering skills and adopt a collaborative and structured approach to designing complex software systems. Specifically, the book will assist senior developers and hands-on architects to gain a deeper understanding of domain-driven design and implement it in their organization. Familiarity with DDD techniques is not a prerequisite; however, working knowledge of Java is expected.
 
+## Errata
+
+* Page 28: Figure 1.21 is incorrect and the correct image is as follows: 
+<img src="https://github.com/PacktPublishing/Domain-Driven-Design-with-Java-A-Practitioner-s-Guide/blob/master/value-object-example.png">
+
 ## Pre-Requisites
 * JDK 14
 * Maven 3.3+
