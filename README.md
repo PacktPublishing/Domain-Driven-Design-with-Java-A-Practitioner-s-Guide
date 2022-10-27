@@ -85,3 +85,7 @@ We also provide a PDF file that has color images of the screenshots/diagrams use
 
 **Karthik Krishnan**
  is a technology leader with over 25 years of experience in designing and building large-scale enterprise solutions across financial and retail domains. He has played numerous technical roles in leading product development for major financial institutions. He is currently serving the role of Technical Principal at Thoughtworks. He is passionate about platform thinking, solution architecture, application security and strives to be known as a coding architect. His most recent assignment entailed leading a large technology team helping their clients in their legacy modernization journey with Cloud. When not working, he spends time practicing playing tunes on his musical keyboard.
+### Download a free PDF
+
+ <i>If you have already purchased a print or Kindle version of this book, you can get a DRM-free PDF version at no cost.<br>Simply click on the link to claim your free PDF.</i>
+<p align="center"> <a href="https://packt.link/free-ebook/9781800560734">https://packt.link/free-ebook/9781800560734 </a> </p>
